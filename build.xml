@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<project>
+	<property name="srcdir" value="src/" />
+
+	<target name="format">
+		<taskdef name="jalopy" classname="de.hunsicker.jalopy.plugin.ant.AntPlugin">
+			<classpath>
+				<pathelement path="tools/jalopy-ant-0.1-1.5rc3.jar" />
+				<pathelement path="tools/jalopy.jar"/>
+				<pathelement path="tools/log4j.jar"/>
+			</classpath>
+		</taskdef>
+		<jalopy encoding="utf-8" convention="${basedir}/tools/jalopy.xml" threads="1">
+			<fileset dir="${srcdir}">
+				<include name="**/*.java" />
+			</fileset>
+		</jalopy>
+	</target>
+
+	<target name="pmd">
+		<taskdef name="pmd" classname="net.sourceforge.pmd.ant.PMDTask">
+			<classpath>
+				<pathelement path="tools/pmd-4.2.5.jar"/>
+			</classpath>
+		</taskdef>
+		<pmd targetjdk="1.6">
+			<ruleset>tools/all-java-with-exclusions.xml</ruleset>
+			<formatter type="xml" toFile="tools/pmd.xml" />
+			<fileset dir=".">
+				<include name="**/*.java" />
+			</fileset>
+		</pmd>
+
+		<xslt in="tools/pmd.xml" style="tools/fabian-pmd.xslt" out="tools/pmd.html" />
+		<delete file="tools/pmd.xml" />
+	</target>
+</project>
