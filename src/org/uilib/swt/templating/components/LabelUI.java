@@ -13,6 +13,10 @@ public class LabelUI implements UIController {
 
 	@Override
 	public Control initialize(final Composite parent, final Options options) {
-		return new Label(parent, SWT.NONE);
+		Label label = new Label(parent, SWT.NONE);
+
+		label.setText("test");
+
+		return label;
 	}
 }

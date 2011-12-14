@@ -1,0 +1,17 @@
+{
+    columns: "variable",
+    children: [
+        {
+            name: "mark-ordered",
+            type: "button"
+        },
+        {
+            name: "cancel",
+            type: "button"
+        },
+        {
+            name: "bookin",
+            type: "button"
+        }
+    ]
+}

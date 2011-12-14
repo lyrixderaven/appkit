@@ -15,9 +15,7 @@ public class TextUI implements UIController {
 	public Control initialize(final Composite parent, final Options options) {
 
 		int style = SWT.NONE;
-		if (options.get("border", false)) {
-			style = SWT.BORDER;
-		}
+		style |= (options.get("border", true) ? SWT.BORDER : SWT.NONE);
 
 		return new Text(parent, style);
 	}

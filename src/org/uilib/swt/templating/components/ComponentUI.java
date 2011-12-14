@@ -13,10 +13,7 @@ public class ComponentUI implements UIController {
 	public Composite initialize(final Composite parent, final Options options) {
 
 		int style = SWT.NONE;
-
-		if (options.get("border", false)) {
-			style = SWT.BORDER;
-		}
+		style |= (options.get("border", true) ? SWT.BORDER : SWT.NONE);
 
 		return new Composite(parent, style);
 	}

@@ -1,0 +1,60 @@
+{
+    columns: 2,
+    children: [
+        {
+            
+        },
+        {
+            name: "search",
+            type: "search"
+        },
+        {
+            name: "sidebar",
+            width: 250,
+            children: [
+                {
+                    name: "stores",
+                    type: "label",
+                    options: "bold"
+                },
+                {
+                    name: "stores",
+                    type: "table",
+                    vindent: 2
+                },
+                {
+                    name: "datefilter",
+                    type: "datepicker",
+                    vindent: 2,
+                    options: "range"
+                },
+                {
+                    name: "status",
+                    type: "label",
+                    options: "bold"
+                },
+                {
+                    name: "status",
+                    type: "radioset",
+                    vindent: 2,
+                    options: "requested ordered delivered"
+                }
+            ]
+        },
+        {
+            name: "orders",
+            grow: "|-",
+            children: [
+                {
+                    type: "table",
+                    grow: "-|",
+                    options: "fullselect"
+                },
+                {
+                    name: "actions",
+                    type: "orderview.actions"
+                }
+            ]
+        }
+    ]
+}

@@ -13,9 +13,7 @@ public class PlaceholderUI implements UIController {
 
 	@Override
 	public Control initialize(final Composite parent, final Options options) {
-
 		Label label = new Label(parent, SWT.NONE);
-		label.setText("placeholder");
 
 		return label;
 	}

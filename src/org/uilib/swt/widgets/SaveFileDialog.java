@@ -9,6 +9,7 @@ import org.eclipse.swt.widgets.Shell;
 
 import org.uilib.util.Texts;
 
+// TODO: should this be a component?
 public class SaveFileDialog {
 
 	//~ Instance fields ------------------------------------------------------------------------------------------------

@@ -13,11 +13,7 @@ public class ButtonUI implements UIController {
 
 	@Override
 	public Control initialize(final Composite parent, final Options options) {
-
 		int style = SWT.NONE;
-		if (options.get("border", false)) {
-			style = SWT.BORDER;
-		}
 
 		return new Button(parent, style);
 	}

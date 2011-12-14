@@ -7,6 +7,7 @@ import com.google.common.collect.ImmutableMultimap;
 
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -16,6 +17,8 @@ import org.eclipse.swt.widgets.Control;
 import org.uilib.swt.templating.components.UIController;
 
 public final class Component {
+
+	private static final Logger L = Logger.getLogger(Component.class);
 
 	//~ Instance fields ------------------------------------------------------------------------------------------------
 
@@ -33,7 +36,7 @@ public final class Component {
 					 final UIController controller, final Options options) {
 		this.name = name;
 
-		// FIXME: Templating: a-z,-, / , alles klein
+		// TODO: Templating: a-z,-, / , alles klein
 		Preconditions.checkNotNull(type);
 		Preconditions.checkNotNull(children);
 		Preconditions.checkNotNull(controller);
@@ -98,13 +101,14 @@ public final class Component {
 		return this.options;
 	}
 
-	public Control get(final String query) {
+	@SuppressWarnings("unchecked")
+	public <E extends Control> E get(final String query, final Class<E> clazz) {
 
 		ImmutableCollection<Component> controls = this.nameMap.get(query);
 
 		Preconditions.checkState(controls.size() == 1, "found " + controls.size() + " controls for '" + query + "'");
 
-		return controls.iterator().next().getControl();
+		return (E) controls.iterator().next().getControl();
 	}
 
 	public void initialize(final Composite parent) {
@@ -124,7 +128,7 @@ public final class Component {
 		comp.setLayout(new GridLayout(-1, false));
 		for (final Component child : this.children) {
 			child.initialize(comp);
-			child.getControl().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+			child.getControl().setLayoutData(this.genGridData(child.getOptions()));
 		}
 
 		/* layout columns */
@@ -134,5 +138,43 @@ public final class Component {
 		} else {
 			((GridLayout) comp.getLayout()).numColumns = Integer.valueOf(columns);
 		}
+	}
+
+	// TODO: Templating: fill/nicht für verschiedene typen
+	private GridData genGridData(Options options) {
+
+		GridData gd = new GridData();
+
+		gd.grabExcessHorizontalSpace = options.get("grow", "").contains("-");
+		gd.horizontalIndent = options.get("hindent",0);
+		gd.horizontalSpan = options.get("hspan",1);
+
+		// TODO: Templating: automatic translation
+		String hAlign = options.get("halign","");
+		if (hAlign.contains("center"))
+			gd.horizontalAlignment = SWT.CENTER;
+		else if (hAlign.contains("left"))
+			gd.horizontalAlignment = SWT.LEFT;
+		else if (hAlign.contains("right"))
+			gd.horizontalAlignment = SWT.RIGHT;
+		else
+			gd.horizontalAlignment = SWT.FILL;
+
+		gd.grabExcessVerticalSpace = options.get("grow", "").contains("|");
+		gd.verticalIndent = options.get("vspan",0);
+		gd.verticalSpan = options.get("vspan",1);
+
+		// TODO: Templating: automatic translation
+		String vAlign = options.get("valign","");
+		if (vAlign.contains("center"))
+			gd.verticalAlignment = SWT.CENTER;
+		else if (vAlign.contains("top"))
+			gd.verticalAlignment = SWT.TOP;
+		else if (vAlign.contains("bottom"))
+			gd.verticalAlignment = SWT.BOTTOM;
+		else
+			gd.verticalAlignment = SWT.FILL;
+
+		return gd;
 	}
 }

@@ -1,6 +1,6 @@
 package org.uilib;
 
-
-// TODO: Tests
-// TODO: instance() raus
-public final class Todo {}
+// TODO: Unit-Tests
+// TOOD X: licenses
+public final class Todo {
+}

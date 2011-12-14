@@ -5,7 +5,7 @@ import org.eclipse.swt.widgets.Control;
 
 import org.uilib.swt.templating.Options;
 
-// FIXME: Templating: umbenennen? UI-Creator?
+// TODO: Templating: umbenennen? UI-Creator?
 public interface UIController {
 
 	//~ Methods --------------------------------------------------------------------------------------------------------

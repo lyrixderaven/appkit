@@ -11,12 +11,11 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 
-public final class SmartExecutor {
+public final class SmartExecutor implements Throttler {
 
 	//~ Static fields/initializers -------------------------------------------------------------------------------------
 
 	private static final Logger L			    = Logger.getLogger(SmartExecutor.class);
-	private static final SmartExecutor INSTANCE = new SmartExecutor();
 
 	//~ Instance fields ------------------------------------------------------------------------------------------------
 
@@ -33,10 +32,6 @@ public final class SmartExecutor {
 	}
 
 	//~ Methods --------------------------------------------------------------------------------------------------------
-
-	public static SmartExecutor instance() {
-		return SmartExecutor.INSTANCE;
-	}
 
 	/* execute a Runnable once */
 	public void execute(final Runnable runnable) {
@@ -58,6 +53,7 @@ public final class SmartExecutor {
 		this.executor.shutdownNow();
 	}
 
+	@Override
 	public void throttle(final String throttleName, final long delay, final TimeUnit timeUnit, final Runnable runnable) {
 
 		final ThrottledRunnable thrRunnable = new ThrottledRunnable(runnable, throttleName, delay, timeUnit);

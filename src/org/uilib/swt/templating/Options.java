@@ -8,6 +8,8 @@ import com.google.common.collect.ImmutableMap;
 import java.util.Locale;
 import java.util.Map;
 
+// TODO: Templating: OptionList = steht für boolwert = true,yes,etc.; no-border dann?
+// TODO: Templating: failfast bei doppelte angaben !!!!!
 public class Options {
 
 	//~ Instance fields ------------------------------------------------------------------------------------------------

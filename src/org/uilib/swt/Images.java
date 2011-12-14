@@ -23,17 +23,12 @@ public final class Images {
 	//~ Static fields/initializers -------------------------------------------------------------------------------------
 
 	private static final Logger L		 = Logger.getLogger(Images.class);
-	private static final Images INSTANCE = new Images();
 
 	//~ Instance fields ------------------------------------------------------------------------------------------------
 
 	private final Map<String, Image> images = Maps.newHashMap();
 
 	//~ Methods --------------------------------------------------------------------------------------------------------
-
-	public static Images instance() {
-		return INSTANCE;
-	}
 
 	public String translate(final Type imgType) {
 		switch (imgType) {

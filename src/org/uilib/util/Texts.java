@@ -13,11 +13,9 @@ import java.util.Properties;
 
 import org.apache.log4j.Logger;
 
-public class Texts {
+// TODO 1: Texts: "context", damit man nicht immer alles ausschreiben muss?
+public class Texts implements TextProvider {
 
-	//~ Static fields/initializers -------------------------------------------------------------------------------------
-
-	private static final Texts INSTANCE = new Texts();
 	private static final Logger L	    = Logger.getLogger(Texts.class);
 
 	//~ Instance fields ------------------------------------------------------------------------------------------------
@@ -25,10 +23,6 @@ public class Texts {
 	private final Map<String, String> msgs = Maps.newHashMap();
 
 	//~ Methods --------------------------------------------------------------------------------------------------------
-
-	public static Texts instance() {
-		return INSTANCE;
-	}
 
 	public void loadLanguage(final String code) {
 		try {
@@ -64,7 +58,8 @@ public class Texts {
 		}
 	}
 
-	public String msg(final String identifier) {
+	@Override
+	public String get(final String identifier) {
 
 		String msg = this.msgs.get(identifier);
 		if (msg == null) {
