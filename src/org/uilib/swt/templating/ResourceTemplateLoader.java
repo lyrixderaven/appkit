@@ -10,7 +10,7 @@ import java.util.Scanner;
 
 import org.apache.log4j.Logger;
 
-// TODO: simples Caching
+// TODO: simples Caching / allgemeiner StringLoader?
 public class ResourceTemplateLoader implements TemplateLoader {
 
 	//~ Static fields/initializers -------------------------------------------------------------------------------------

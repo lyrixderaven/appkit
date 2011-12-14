@@ -18,7 +18,7 @@ import org.eclipse.swt.widgets.TableColumn;
 
 import org.uilib.swt.SWTSyncedRunnable;
 import org.uilib.util.PrefStore;
-import org.uilib.util.SmartExecutor;
+import org.uilib.util.Throttler;
 
 public final class TableColumnSizeMemory {
 
@@ -30,15 +30,17 @@ public final class TableColumnSizeMemory {
 	//~ Instance fields ------------------------------------------------------------------------------------------------
 
 	private final PrefStore prefStore;
+	private final Throttler throttler;
 	private final Table table;
 	private final String memoryKey;
 	private final int defaultSize;
 
 	//~ Constructors ---------------------------------------------------------------------------------------------------
 
-	private TableColumnSizeMemory(final PrefStore prefStore, final Table table, final String memoryKey,
+	private TableColumnSizeMemory(final PrefStore prefStore, final Throttler throttler, final Table table, final String memoryKey,
 								  final int defaultSize) {
 		this.prefStore										 = prefStore;
+		this.throttler = throttler;
 		this.table											 = table;
 		this.memoryKey										 = memoryKey + ".columnsizes";
 		this.defaultSize									 = defaultSize;
@@ -76,9 +78,9 @@ public final class TableColumnSizeMemory {
 
 	//~ Methods --------------------------------------------------------------------------------------------------------
 
-	public static void install(final PrefStore prefStore, final Table table, final String memoryKey,
+	public static void install(final PrefStore prefStore, final Throttler throttler, final Table table, final String memoryKey,
 							   final int defaultSize) {
-		new TableColumnSizeMemory(prefStore, table, memoryKey, defaultSize);
+		new TableColumnSizeMemory(prefStore, throttler, table, memoryKey, defaultSize);
 	}
 
 	//~ Inner Classes --------------------------------------------------------------------------------------------------
@@ -89,7 +91,7 @@ public final class TableColumnSizeMemory {
 
 		@Override
 		public void controlResized(final ControlEvent event) {
-			SmartExecutor.instance().throttle(
+			throttler.throttle(
 				memoryKey,
 				50,
 				TimeUnit.MILLISECONDS,

@@ -15,11 +15,13 @@ public class SaveFileDialog {
 	//~ Instance fields ------------------------------------------------------------------------------------------------
 
 	private final FileDialog dlg;
+	private final Texts texts;
 
 	//~ Constructors ---------------------------------------------------------------------------------------------------
 
-	public SaveFileDialog(final Shell shell) {
+	public SaveFileDialog(final Shell shell, final Texts texts) {
 		this.dlg = new FileDialog(shell, SWT.SAVE);
+		this.texts = texts;
 	}
 
 	//~ Methods --------------------------------------------------------------------------------------------------------
@@ -50,7 +52,7 @@ public class SaveFileDialog {
 
 					// The file already exists; asks for confirmation
 					MessageBox mb = new MessageBox(dlg.getParent(), SWT.ICON_WARNING | SWT.YES | SWT.NO);
-					mb.setMessage(Texts.instance().msg("dialog_filereplace", fileName));
+					mb.setMessage(this.texts.get("dialog_filereplace", fileName));
 
 					// If they click Yes, we're done and we drop out. If
 					// they click No, we redisplay the File Dialog

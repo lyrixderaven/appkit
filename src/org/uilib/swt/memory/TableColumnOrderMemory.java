@@ -17,7 +17,7 @@ import org.eclipse.swt.widgets.TableColumn;
 
 import org.uilib.swt.SWTSyncedRunnable;
 import org.uilib.util.PrefStore;
-import org.uilib.util.SmartExecutor;
+import org.uilib.util.Throttler;
 
 public final class TableColumnOrderMemory {
 
@@ -29,13 +29,15 @@ public final class TableColumnOrderMemory {
 	//~ Instance fields ------------------------------------------------------------------------------------------------
 
 	private final PrefStore prefStore;
+	private final Throttler throttler;
 	private final Table table;
 	private final String memoryKey;
-
+	
 	//~ Constructors ---------------------------------------------------------------------------------------------------
 
-	private TableColumnOrderMemory(final PrefStore prefStore, final Table table, final String memoryKey) {
+	private TableColumnOrderMemory(final PrefStore prefStore, Throttler throttler, final Table table, final String memoryKey) {
 		this.prefStore										 = prefStore;
+		this.throttler = throttler;
 		this.table											 = table;
 		this.memoryKey										 = memoryKey + ".columnorder";
 
@@ -67,8 +69,8 @@ public final class TableColumnOrderMemory {
 
 	//~ Methods --------------------------------------------------------------------------------------------------------
 
-	public static void install(final PrefStore prefStore, final Table table, final String memoryKey) {
-		new TableColumnOrderMemory(prefStore, table, memoryKey);
+	public static void install(final PrefStore prefStore, Throttler throttler, final Table table, final String memoryKey) {
+		new TableColumnOrderMemory(prefStore, throttler, table, memoryKey);
 	}
 
 	//~ Inner Classes --------------------------------------------------------------------------------------------------
@@ -76,7 +78,7 @@ public final class TableColumnOrderMemory {
 	private class ColumnMoveListener implements ControlListener {
 		@Override
 		public void controlMoved(final ControlEvent event) {
-			SmartExecutor.instance().throttle(
+			throttler.throttle(
 				memoryKey,
 				50,
 				TimeUnit.MILLISECONDS,

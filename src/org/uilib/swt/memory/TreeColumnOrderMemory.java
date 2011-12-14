@@ -17,7 +17,7 @@ import org.eclipse.swt.widgets.TreeColumn;
 
 import org.uilib.swt.SWTSyncedRunnable;
 import org.uilib.util.PrefStore;
-import org.uilib.util.SmartExecutor;
+import org.uilib.util.Throttler;
 
 public final class TreeColumnOrderMemory {
 
@@ -29,13 +29,15 @@ public final class TreeColumnOrderMemory {
 	//~ Instance fields ------------------------------------------------------------------------------------------------
 
 	private final PrefStore prefStore;
+	private  final Throttler throttler;
 	private final Tree tree;
 	private final String memoryKey;
 
 	//~ Constructors ---------------------------------------------------------------------------------------------------
 
-	private TreeColumnOrderMemory(final PrefStore prefStore, final Tree tree, final String memoryKey) {
+	private TreeColumnOrderMemory(final PrefStore prefStore,  final Throttler throttler, final Tree tree, final String memoryKey) {
 		this.prefStore										 = prefStore;
+		this.throttler = throttler;
 		this.tree											 = tree;
 		this.memoryKey										 = memoryKey + ".columnorder";
 
@@ -67,8 +69,8 @@ public final class TreeColumnOrderMemory {
 
 	//~ Methods --------------------------------------------------------------------------------------------------------
 
-	public static void install(final PrefStore prefStore, final Tree tree, final String memoryKey) {
-		new TreeColumnOrderMemory(prefStore, tree, memoryKey);
+	public static void install(final PrefStore prefStore, final Throttler throttler, final Tree tree, final String memoryKey) {
+		new TreeColumnOrderMemory(prefStore, throttler, tree, memoryKey);
 	}
 
 	//~ Inner Classes --------------------------------------------------------------------------------------------------
@@ -76,7 +78,7 @@ public final class TreeColumnOrderMemory {
 	private class ColumnMoveListener implements ControlListener {
 		@Override
 		public void controlMoved(final ControlEvent event) {
-			SmartExecutor.instance().throttle(
+			throttler.throttle(
 				memoryKey,
 				50,
 				TimeUnit.MILLISECONDS,

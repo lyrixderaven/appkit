@@ -16,7 +16,7 @@ import org.eclipse.swt.widgets.Shell;
 
 import org.uilib.swt.SWTSyncedRunnable;
 import org.uilib.util.PrefStore;
-import org.uilib.util.SmartExecutor;
+import org.uilib.util.Throttler;
 
 // TODO: ShellMemory: Sorting
 // TODO: ShellMemory: Builder
@@ -31,6 +31,7 @@ public final class ShellMemory {
 	//~ Instance fields ------------------------------------------------------------------------------------------------
 
 	private final PrefStore prefStore;
+	private final Throttler throttler;
 	private final Shell shell;
 	private final String memoryKey;
 	private final int defaultX;
@@ -42,15 +43,16 @@ public final class ShellMemory {
 
 	//~ Constructors ---------------------------------------------------------------------------------------------------
 
-	private ShellMemory(final PrefStore prefStore, final Shell shell, final String memoryKey, final int defaultWidth,
+	private ShellMemory(final PrefStore prefStore, Throttler throttler, final Shell shell, final String memoryKey, final int defaultWidth,
 						final int defaultHeight, final int defaultX, final int defaultY) {
-		this(prefStore, shell, memoryKey, defaultWidth, defaultHeight, defaultX, defaultY, false, false);
+		this(prefStore, throttler, shell, memoryKey, defaultWidth, defaultHeight, defaultX, defaultY, false, false);
 	}
 
-	private ShellMemory(final PrefStore prefStore, final Shell shell, final String memoryKey, final int defaultWidth,
+	private ShellMemory(final PrefStore prefStore, Throttler throttler, final Shell shell, final String memoryKey, final int defaultWidth,
 						final int defaultHeight, final int defaultX, final int defaultY,
 						final boolean defaultMaximized, final boolean sizeOnly) {
 		this.prefStore										 = prefStore;
+		this.throttler =throttler;
 		this.shell											 = shell;
 		this.memoryKey										 = memoryKey;
 		this.defaultX										 = defaultX;
@@ -107,14 +109,14 @@ public final class ShellMemory {
 
 	//~ Methods --------------------------------------------------------------------------------------------------------
 
-	public static void install(final PrefStore prefStore, final Shell shell, final String memoryKey,
+	public static void install(final PrefStore prefStore, Throttler throttler, final Shell shell, final String memoryKey,
 							   final int defaultWidth, final int defaultHeight, final int defaultX, final int defaultY) {
-		new ShellMemory(prefStore, shell, memoryKey, defaultWidth, defaultHeight, defaultX, defaultY, false, false);
+		new ShellMemory(prefStore, throttler, shell, memoryKey, defaultWidth, defaultHeight, defaultX, defaultY, false, false);
 	}
 
-	public static void installSizeOnly(final PrefStore prefStore, final Shell shell, final String memoryKey,
+	public static void installSizeOnly(final PrefStore prefStore, Throttler throttler, final Shell shell, final String memoryKey,
 									   final int defaultWidth, final int defaultHeight) {
-		new ShellMemory(prefStore, shell, memoryKey, defaultWidth, defaultHeight, 0, 0, false, true);
+		new ShellMemory(prefStore, throttler, shell, memoryKey, defaultWidth, defaultHeight, 0, 0, false, true);
 	}
 
 	//~ Inner Classes --------------------------------------------------------------------------------------------------
@@ -128,7 +130,7 @@ public final class ShellMemory {
 
 		@Override
 		public void controlResized(final ControlEvent event) {
-			SmartExecutor.instance().throttle(
+			throttler.throttle(
 				memoryKey,
 				50,
 				TimeUnit.MILLISECONDS,

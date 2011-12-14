@@ -18,6 +18,7 @@ import org.uilib.swt.templating.components.UIController;
 
 public final class Component {
 
+	@SuppressWarnings("unused")
 	private static final Logger L = Logger.getLogger(Component.class);
 
 	//~ Instance fields ------------------------------------------------------------------------------------------------

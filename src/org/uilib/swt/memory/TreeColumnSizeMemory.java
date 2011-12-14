@@ -18,7 +18,7 @@ import org.eclipse.swt.widgets.TreeColumn;
 
 import org.uilib.swt.SWTSyncedRunnable;
 import org.uilib.util.PrefStore;
-import org.uilib.util.SmartExecutor;
+import org.uilib.util.Throttler;
 
 public final class TreeColumnSizeMemory {
 
@@ -30,15 +30,17 @@ public final class TreeColumnSizeMemory {
 	//~ Instance fields ------------------------------------------------------------------------------------------------
 
 	private final PrefStore prefStore;
+	private final Throttler throttler;
 	private final Tree tree;
 	private final String memoryKey;
 	private final int defaultSize;
 
 	//~ Constructors ---------------------------------------------------------------------------------------------------
 
-	private TreeColumnSizeMemory(final PrefStore prefStore, final Tree tree, final String memoryKey,
+	private TreeColumnSizeMemory(final PrefStore prefStore, final Throttler throttler, final Tree tree, final String memoryKey,
 								 final int defaultSize) {
 		this.prefStore										 = prefStore;
+		this.throttler = throttler;
 		this.tree											 = tree;
 		this.memoryKey										 = memoryKey + ".columnsizes";
 		this.defaultSize									 = defaultSize;
@@ -76,8 +78,8 @@ public final class TreeColumnSizeMemory {
 
 	//~ Methods --------------------------------------------------------------------------------------------------------
 
-	public static void install(final PrefStore prefStore, final Tree tree, final String memoryKey, final int defaultSize) {
-		new TreeColumnSizeMemory(prefStore, tree, memoryKey, defaultSize);
+	public static void install(final PrefStore prefStore, final Throttler throttler, final Tree tree, final String memoryKey, final int defaultSize) {
+		new TreeColumnSizeMemory(prefStore, throttler, tree, memoryKey, defaultSize);
 	}
 
 	//~ Inner Classes --------------------------------------------------------------------------------------------------
@@ -88,7 +90,7 @@ public final class TreeColumnSizeMemory {
 
 		@Override
 		public void controlResized(final ControlEvent event) {
-			SmartExecutor.instance().throttle(
+			throttler.throttle(
 				memoryKey,
 				50,
 				TimeUnit.MILLISECONDS,
