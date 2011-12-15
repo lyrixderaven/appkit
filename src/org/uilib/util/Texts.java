@@ -4,7 +4,7 @@ import java.text.MessageFormat;
 
 import org.apache.log4j.Logger;
 
-// TODO ?: DefaultTexts für SearchForm etc.?
+// TODO ?: DefaultTexts fÃ¼r SearchForm etc.?
 // TODO ?: Texts: "context", damit man nicht immer alles ausschreiben muss?
 public class Texts {
 

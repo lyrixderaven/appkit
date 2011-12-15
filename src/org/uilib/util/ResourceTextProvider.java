@@ -1,8 +1,7 @@
 package org.uilib.util;
 
-import java.io.BufferedInputStream;
 import java.io.IOException;
-import java.io.InputStream;
+import java.io.StringReader;
 
 import java.util.Map;
 import java.util.Properties;
@@ -17,37 +16,26 @@ public class ResourceTextProvider implements TextProvider {
 
 	private static final Logger L = Logger.getLogger(ResourceTextProvider.class);
 	private final Map<String, String> msgs = Maps.newHashMap();
+	private final StringResourceLoader loader = StringResourceLoader.create();
 	
 	//~ Methods --------------------------------------------------------------------------------------------------------
 
 	public ResourceTextProvider(final String langId) {
 		try {
 
-			String resource = "/resources/i18n/lang-" + langId + ".properties";
-
+			String resource = "i18n/lang-" + langId + ".properties";
 			L.debug("loading language out of ressource: " + resource);
 
+			String s = loader.get(resource);
 			Properties lang = new Properties();
-			InputStream in  = null;
-			try {
-				in = new BufferedInputStream(this.getClass().getResource(resource).openStream());
-				lang.load(in);
-			} finally {
-				try {
-					if (in != null) {
-						in.close();
-					}
-				} catch (final IOException e) {
-					L.error(e.getMessage(), e);
-				}
-			}
-
-			this.msgs.clear();
+			lang.load(new StringReader(s));
+			
 			for (final String property : lang.stringPropertyNames()) {
 				String msgIdentifier = property;
 				String msg			 = lang.getProperty(property);
 				this.msgs.put(msgIdentifier, msg);
 			}
+			
 		} catch (final IOException e) {
 			L.error(e.getMessage(), e);
 		}
