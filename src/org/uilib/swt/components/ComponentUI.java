@@ -1,11 +1,12 @@
-package org.uilib.swt.templating.components;
+package org.uilib.swt.components;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 
+import org.uilib.swt.states.State;
 import org.uilib.swt.templating.Options;
 
-public class ComponentUI implements UIController {
+public class ComponentUI implements UIController<State> {
 
 	//~ Methods --------------------------------------------------------------------------------------------------------
 
@@ -17,4 +18,22 @@ public class ComponentUI implements UIController {
 
 		return new Composite(parent, style);
 	}
+
+	@Override
+	public State getState() {
+		return State.emptyState();
+	}
+
+	@Override
+	public boolean fillVertByDefault() {
+		return false;
+	}
+
+	@Override
+	public boolean fillHorizByDefault() {
+		return false;
+	}
+
+	@Override
+	public void setI18nText(final String text) {}
 }

@@ -12,16 +12,21 @@ import org.apache.log4j.Logger;
 
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
+
 import org.uilib.util.Translatable;
 
+// TODO: images -> kind of a global object (memory leak beim new Images().load in rsystem)
 public final class Images {
 
 	//~ Static fields/initializers -------------------------------------------------------------------------------------
 
-	private static final Logger L		 = Logger.getLogger(Images.class);
-	private final Map<String, Image> images = Maps.newHashMap();
+	private static final Logger L = Logger.getLogger(Images.class);
 
 	//~ Instance fields ------------------------------------------------------------------------------------------------
+
+	private final Map<String, Image> images = Maps.newHashMap();
+
+	//~ Methods --------------------------------------------------------------------------------------------------------
 
 	public Image load(final Translatable imgType) {
 

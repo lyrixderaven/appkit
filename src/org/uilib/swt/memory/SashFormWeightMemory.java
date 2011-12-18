@@ -34,10 +34,10 @@ public final class SashFormWeightMemory {
 
 	//~ Constructors ---------------------------------------------------------------------------------------------------
 
-	private SashFormWeightMemory(final PrefStore prefStore, final Throttler throttler, final SashForm sashForm, final String memoryKey,
-								 final int defaultWeights[]) {
+	private SashFormWeightMemory(final PrefStore prefStore, final Throttler throttler, final SashForm sashForm,
+								 final String memoryKey, final int defaultWeights[]) {
 		this.prefStore										 = prefStore;
-		this.throttler = throttler;
+		this.throttler										 = throttler;
 		this.sashForm										 = sashForm;
 		this.memoryKey										 = memoryKey + ".sashsizes";
 		this.defaultWeights									 = defaultWeights;
@@ -69,8 +69,8 @@ public final class SashFormWeightMemory {
 
 	//~ Methods --------------------------------------------------------------------------------------------------------
 
-	public static void install(final PrefStore prefStore, final Throttler throttler, final SashForm sashForm, final String memoryKey,
-							   final int defaultWeights[]) {
+	public static void install(final PrefStore prefStore, final Throttler throttler, final SashForm sashForm,
+							   final String memoryKey, final int defaultWeights[]) {
 		new SashFormWeightMemory(prefStore, throttler, sashForm, memoryKey, defaultWeights);
 	}
 

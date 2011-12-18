@@ -37,10 +37,10 @@ public final class TableColumnSizeMemory {
 
 	//~ Constructors ---------------------------------------------------------------------------------------------------
 
-	private TableColumnSizeMemory(final PrefStore prefStore, final Throttler throttler, final Table table, final String memoryKey,
-								  final int defaultSize) {
+	private TableColumnSizeMemory(final PrefStore prefStore, final Throttler throttler, final Table table,
+								  final String memoryKey, final int defaultSize) {
 		this.prefStore										 = prefStore;
-		this.throttler = throttler;
+		this.throttler										 = throttler;
 		this.table											 = table;
 		this.memoryKey										 = memoryKey + ".columnsizes";
 		this.defaultSize									 = defaultSize;
@@ -78,8 +78,8 @@ public final class TableColumnSizeMemory {
 
 	//~ Methods --------------------------------------------------------------------------------------------------------
 
-	public static void install(final PrefStore prefStore, final Throttler throttler, final Table table, final String memoryKey,
-							   final int defaultSize) {
+	public static void install(final PrefStore prefStore, final Throttler throttler, final Table table,
+							   final String memoryKey, final int defaultSize) {
 		new TableColumnSizeMemory(prefStore, throttler, table, memoryKey, defaultSize);
 	}
 

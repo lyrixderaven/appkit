@@ -1,6 +1,8 @@
 package org.uilib;
 
+
 // TODO: Unit-Tests
 // TOOD X: licenses
-public final class Todo {
-}
+// TODO: Memory: ComboViewer
+// FIXME: try endless loops in components
+public final class Todo {}

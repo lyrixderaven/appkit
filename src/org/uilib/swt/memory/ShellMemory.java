@@ -18,9 +18,9 @@ import org.uilib.swt.SWTSyncedRunnable;
 import org.uilib.util.PrefStore;
 import org.uilib.util.Throttler;
 
-// TODO: ShellMemory: Sorting
-// TODO: ShellMemory: Builder
-// TODO: ShellMemory: Monitor(size)
+// TODO: Memory Shell: Sorting
+// TODO: Memory: Builder
+// TODO: Memory Shell: Monitor(size)
 public final class ShellMemory {
 
 	//~ Static fields/initializers -------------------------------------------------------------------------------------
@@ -43,16 +43,17 @@ public final class ShellMemory {
 
 	//~ Constructors ---------------------------------------------------------------------------------------------------
 
-	private ShellMemory(final PrefStore prefStore, Throttler throttler, final Shell shell, final String memoryKey, final int defaultWidth,
-						final int defaultHeight, final int defaultX, final int defaultY) {
+	private ShellMemory(final PrefStore prefStore, final Throttler throttler, final Shell shell,
+						final String memoryKey, final int defaultWidth, final int defaultHeight, final int defaultX,
+						final int defaultY) {
 		this(prefStore, throttler, shell, memoryKey, defaultWidth, defaultHeight, defaultX, defaultY, false, false);
 	}
 
-	private ShellMemory(final PrefStore prefStore, Throttler throttler, final Shell shell, final String memoryKey, final int defaultWidth,
-						final int defaultHeight, final int defaultX, final int defaultY,
-						final boolean defaultMaximized, final boolean sizeOnly) {
+	private ShellMemory(final PrefStore prefStore, final Throttler throttler, final Shell shell,
+						final String memoryKey, final int defaultWidth, final int defaultHeight, final int defaultX,
+						final int defaultY, final boolean defaultMaximized, final boolean sizeOnly) {
 		this.prefStore										 = prefStore;
-		this.throttler =throttler;
+		this.throttler										 = throttler;
 		this.shell											 = shell;
 		this.memoryKey										 = memoryKey;
 		this.defaultX										 = defaultX;
@@ -109,13 +110,24 @@ public final class ShellMemory {
 
 	//~ Methods --------------------------------------------------------------------------------------------------------
 
-	public static void install(final PrefStore prefStore, Throttler throttler, final Shell shell, final String memoryKey,
-							   final int defaultWidth, final int defaultHeight, final int defaultX, final int defaultY) {
-		new ShellMemory(prefStore, throttler, shell, memoryKey, defaultWidth, defaultHeight, defaultX, defaultY, false, false);
+	public static void install(final PrefStore prefStore, final Throttler throttler, final Shell shell,
+							   final String memoryKey, final int defaultWidth, final int defaultHeight,
+							   final int defaultX, final int defaultY) {
+		new ShellMemory(
+			prefStore,
+			throttler,
+			shell,
+			memoryKey,
+			defaultWidth,
+			defaultHeight,
+			defaultX,
+			defaultY,
+			false,
+			false);
 	}
 
-	public static void installSizeOnly(final PrefStore prefStore, Throttler throttler, final Shell shell, final String memoryKey,
-									   final int defaultWidth, final int defaultHeight) {
+	public static void installSizeOnly(final PrefStore prefStore, final Throttler throttler, final Shell shell,
+									   final String memoryKey, final int defaultWidth, final int defaultHeight) {
 		new ShellMemory(prefStore, throttler, shell, memoryKey, defaultWidth, defaultHeight, 0, 0, false, true);
 	}
 

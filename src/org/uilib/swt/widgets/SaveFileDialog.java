@@ -9,7 +9,7 @@ import org.eclipse.swt.widgets.Shell;
 
 import org.uilib.util.Texts;
 
-// TODO: should this be a component?
+// TODO: convert widgets to components
 public class SaveFileDialog {
 
 	//~ Instance fields ------------------------------------------------------------------------------------------------
@@ -20,8 +20,8 @@ public class SaveFileDialog {
 	//~ Constructors ---------------------------------------------------------------------------------------------------
 
 	public SaveFileDialog(final Shell shell, final Texts texts) {
-		this.dlg = new FileDialog(shell, SWT.SAVE);
-		this.texts = texts;
+		this.dlg	   = new FileDialog(shell, SWT.SAVE);
+		this.texts     = texts;
 	}
 
 	//~ Methods --------------------------------------------------------------------------------------------------------

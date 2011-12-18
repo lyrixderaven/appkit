@@ -15,7 +15,7 @@ public final class SmartExecutor implements Throttler {
 
 	//~ Static fields/initializers -------------------------------------------------------------------------------------
 
-	private static final Logger L			    = Logger.getLogger(SmartExecutor.class);
+	private static final Logger L = Logger.getLogger(SmartExecutor.class);
 
 	//~ Instance fields ------------------------------------------------------------------------------------------------
 

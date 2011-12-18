@@ -32,12 +32,13 @@ public final class TableColumnOrderMemory {
 	private final Throttler throttler;
 	private final Table table;
 	private final String memoryKey;
-	
+
 	//~ Constructors ---------------------------------------------------------------------------------------------------
 
-	private TableColumnOrderMemory(final PrefStore prefStore, Throttler throttler, final Table table, final String memoryKey) {
+	private TableColumnOrderMemory(final PrefStore prefStore, final Throttler throttler, final Table table,
+								   final String memoryKey) {
 		this.prefStore										 = prefStore;
-		this.throttler = throttler;
+		this.throttler										 = throttler;
 		this.table											 = table;
 		this.memoryKey										 = memoryKey + ".columnorder";
 
@@ -69,7 +70,8 @@ public final class TableColumnOrderMemory {
 
 	//~ Methods --------------------------------------------------------------------------------------------------------
 
-	public static void install(final PrefStore prefStore, Throttler throttler, final Table table, final String memoryKey) {
+	public static void install(final PrefStore prefStore, final Throttler throttler, final Table table,
+							   final String memoryKey) {
 		new TableColumnOrderMemory(prefStore, throttler, table, memoryKey);
 	}
 

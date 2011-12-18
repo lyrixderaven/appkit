@@ -37,9 +37,9 @@ public class SimpleLabel extends Composite {
 		int defaultFontHeight  = label.getFont().getFontData()[0].getHeight();
 		int defaultFontStyle   = label.getFont().getFontData()[0].getStyle();
 
-		String fontName = defaultFontName;
-		int fontHeight  = defaultFontHeight;
-		int fontStyle   = defaultFontStyle;
+		String fontName		   = defaultFontName;
+		int fontHeight		   = defaultFontHeight;
+		int fontStyle		   = defaultFontStyle;
 
 		switch (style) {
 			case BOLD:

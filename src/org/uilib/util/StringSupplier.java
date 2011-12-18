@@ -1,8 +1,8 @@
-package org.uilib.swt.templating;
+package org.uilib.util;
 
-public interface TemplateLoader {
+public abstract interface StringSupplier {
 
 	//~ Methods --------------------------------------------------------------------------------------------------------
 
-	String getTemplate(final String templateName);
+	public String get(final String name);
 }

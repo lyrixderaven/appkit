@@ -29,15 +29,16 @@ public final class TreeColumnOrderMemory {
 	//~ Instance fields ------------------------------------------------------------------------------------------------
 
 	private final PrefStore prefStore;
-	private  final Throttler throttler;
+	private final Throttler throttler;
 	private final Tree tree;
 	private final String memoryKey;
 
 	//~ Constructors ---------------------------------------------------------------------------------------------------
 
-	private TreeColumnOrderMemory(final PrefStore prefStore,  final Throttler throttler, final Tree tree, final String memoryKey) {
+	private TreeColumnOrderMemory(final PrefStore prefStore, final Throttler throttler, final Tree tree,
+								  final String memoryKey) {
 		this.prefStore										 = prefStore;
-		this.throttler = throttler;
+		this.throttler										 = throttler;
 		this.tree											 = tree;
 		this.memoryKey										 = memoryKey + ".columnorder";
 
@@ -69,7 +70,8 @@ public final class TreeColumnOrderMemory {
 
 	//~ Methods --------------------------------------------------------------------------------------------------------
 
-	public static void install(final PrefStore prefStore, final Throttler throttler, final Tree tree, final String memoryKey) {
+	public static void install(final PrefStore prefStore, final Throttler throttler, final Tree tree,
+							   final String memoryKey) {
 		new TreeColumnOrderMemory(prefStore, throttler, tree, memoryKey);
 	}
 

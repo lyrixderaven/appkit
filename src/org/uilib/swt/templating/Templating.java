@@ -22,19 +22,22 @@ import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 
-import org.uilib.swt.templating.components.ButtonUI;
-import org.uilib.swt.templating.components.ComponentUI;
-import org.uilib.swt.templating.components.DatepickerUI;
-import org.uilib.swt.templating.components.LabelUI;
-import org.uilib.swt.templating.components.PlaceholderUI;
-import org.uilib.swt.templating.components.RadioSetUI;
-import org.uilib.swt.templating.components.SpacerUI;
-import org.uilib.swt.templating.components.TableUI;
-import org.uilib.swt.templating.components.TextUI;
-import org.uilib.swt.templating.components.UIController;
+import org.uilib.swt.components.ButtonUI;
+import org.uilib.swt.components.ComponentUI;
+import org.uilib.swt.components.DatepickerUI;
+import org.uilib.swt.components.LabelUI;
+import org.uilib.swt.components.PlaceholderUI;
+import org.uilib.swt.components.RadioSetUI;
+import org.uilib.swt.components.SpacerUI;
+import org.uilib.swt.components.TableUI;
+import org.uilib.swt.components.TextUI;
+import org.uilib.swt.components.UIController;
+import org.uilib.util.ResourceToStringSupplier;
+import org.uilib.util.StringSupplier;
 
 import sun.reflect.generics.reflectiveObjects.ParameterizedTypeImpl;
 
+// TODO: Texts: getSystemDefault Lang
 public final class Templating {
 
 	//~ Static fields/initializers -------------------------------------------------------------------------------------
@@ -43,13 +46,13 @@ public final class Templating {
 
 	//~ Instance fields ------------------------------------------------------------------------------------------------
 
-	private TemplateLoader loader;
+	private final StringSupplier supplier;
 	private final Gson gson;
 
 	//~ Constructors ---------------------------------------------------------------------------------------------------
 
-	public Templating(final TemplateLoader loader) {
-		this.loader				  = loader;
+	public Templating(final StringSupplier supplier) {
+		this.supplier			  = supplier;
 
 		/* configure Gson */
 		GsonBuilder gBuilder = new GsonBuilder();
@@ -62,17 +65,21 @@ public final class Templating {
 
 	//~ Methods --------------------------------------------------------------------------------------------------------
 
-	public Component create(final String name) {
-		L.debug("creating component: " + name);
+	public static Templating create() {
+		return new Templating(new ResourceToStringSupplier());
+	}
 
-		String source = this.loader.getTemplate(name);
+	public Component create(final String componentType) {
+		L.debug("creating component: " + componentType);
+
+		String source = this.supplier.get("components/" + componentType + ".json");
 		if (source == null) {
-			L.debug("none found for: " + name);
+			L.debug("none found for: " + componentType);
 			return null;
 		}
 
 		try {
-			L.debug("deserializing component: " + name);
+			L.debug("deserializing component: " + componentType);
 			return this.gson.fromJson(source, Component.class);
 		} catch (final JsonParseException e) {
 			L.error(e.getMessage(), e);
@@ -82,24 +89,39 @@ public final class Templating {
 
 	//~ Inner Classes --------------------------------------------------------------------------------------------------
 
+	// FIXME: Templating: "options" not allowed for clarity
 	private final class ComponentDeserializer implements JsonDeserializer<Component> {
 
-		private final ImmutableMap<String, UIController> controllers;
+		private final ImmutableMap<String, Class<?extends UIController<?>>> controllers;
+		private final Type immutableListType = new TypeToken<ImmutableList<Component>>() {}
+			.getType();
 
 		public ComponentDeserializer() {
 
-			ImmutableMap.Builder<String, UIController> map = ImmutableMap.builder();
-			map.put("button", new ButtonUI());
-			map.put("datepicker", new DatepickerUI());
-			map.put("label", new LabelUI());
-			map.put("placeholder", new PlaceholderUI());
-			map.put("radioset", new RadioSetUI());
-			map.put("table", new TableUI());
-			map.put("component", new ComponentUI());
-			map.put("spacer", new SpacerUI());
-			map.put("text", new TextUI());
+			ImmutableMap.Builder<String, Class<?extends UIController<?>>> map = ImmutableMap.builder();
+			map.put("button", ButtonUI.class);
+			map.put("datepicker", DatepickerUI.class);
+			map.put("label", LabelUI.class);
+			map.put("placeholder", PlaceholderUI.class);
+			map.put("radioset", RadioSetUI.class);
+			map.put("table", TableUI.class);
+			map.put("component", ComponentUI.class);
+			map.put("spacer", SpacerUI.class);
+			map.put("text", TextUI.class);
 
 			this.controllers = map.build();
+		}
+
+		private UIController<?> instantiateController(final String type) {
+			try {
+				return this.controllers.get(type).newInstance();
+			} catch (final InstantiationException e) {
+				L.error(e.getMessage(), e);
+				throw new IllegalArgumentException(e.getMessage(), e);
+			} catch (final IllegalAccessException e) {
+				L.error(e.getMessage(), e);
+				throw new IllegalArgumentException(e.getMessage(), e);
+			}
 		}
 
 		@Override
@@ -107,73 +129,72 @@ public final class Templating {
 
 			JsonObject jsonObject = json.getAsJsonObject();
 
-			/* if component is empty, it's a spacer */
+			/* 1. if component is empty, it's a spacer */
 			if (jsonObject.entrySet().isEmpty()) {
 				return new Component(
 					null,
 					"spacer",
 					ImmutableList.<Component>of(),
-					this.controllers.get("spacer"),
+					this.instantiateController("spacer"),
 					new Options());
 			}
 
-			/* name: read name */
+			/* 2. read name (if existent) */
 			JsonElement jsonName = jsonObject.get("name");
 			String name			 = ((jsonName != null) ? jsonName.getAsString() : null);
 
-			/* type: what is it, defaults: to component */
+			/* 3. read type, default to 'component' if non-existant */
 			JsonElement jsonType = jsonObject.get("type");
 			String componentType = ((jsonType != null) ? jsonType.getAsString() : "component");
+
 			L.debug("deserializing: " + componentType);
 
-			/* load parameters into options except for name, children and type */
+			/* 4. read all other parameters (no name, children or type)  into options */
 			Map<String, String> options = Maps.newHashMap();
 			for (final Entry<String, JsonElement> entry : jsonObject.entrySet()) {
 
-				// FIXME: Predicate
 				String key = entry.getKey();
 				if (key.equals("name") || key.equals("children") || key.equals("type")) {
 					continue;
 				}
 
-				String value = entry.getValue().getAsString();
-				options.put(key, value);
+				// FIXME: force that this is a string, boolean or integer
+				options.put(key, entry.getValue().getAsString());
 			}
 
-			/** load potentially existing component-description for type */
-			// FIXME: Templating: kann defaults überschreiben
+			/* 5. try to load component which is called like this type (subcomponent) */
 			Component subComp = Templating.this.create(componentType);
 
-			/** Check: either this component has children itself or the type refers to a sub-component */
+			/* 6. Check: if a sub-component was found this component isn't allowed to have children */
 			Preconditions.checkState(
 				(subComp == null) || (jsonObject.get("children") == null),
 				"can either refer to a subcomponent or have children itself");
 
-			UIController controller			  = null;
+			UIController<?> controller		  = null;
 			ImmutableList<Component> children = null;
 
-			if (subComp == null) {
-				/** set the controller */
-				controller = this.controllers.get(componentType);
-
-				if (jsonObject.has("children")) {
-
-					Type listType = new TypeToken<ImmutableList<Component>>() {}
-						.getType();
-					children = context.deserialize(jsonObject.get("children").getAsJsonArray(), listType);
-				} else {
-					children = ImmutableList.of();
-				}
-			} else {
-				/** if it's subcomponent, use it's type + controller and children */
+			/* 7. if a sub-component was found, we "inline" parts of it in this component by copying it's properties */
+			if (subComp != null) {
+				/* copy type, controller and children */
 				controller     = subComp.getController();
 				children	   = subComp.getChildren();
 
-				/** and copy the options */
+				/* copy the options, which weren't overridden in this composite  */
 				for (final Entry<String, String> entry : subComp.getOptions().getMap().entrySet()) {
 					if (! options.containsKey(entry.getKey())) {
 						options.put(entry.getKey(), entry.getValue());
 					}
+				}
+			} else {
+				/* 7b. if it wasn't a reference to a sub-component, we try the registered controllers */
+				controller = this.instantiateController(componentType);
+
+				/* deserialize children */
+				// FIXME: force this to be an array
+				if (jsonObject.has("children")) {
+					children = context.deserialize(jsonObject.get("children").getAsJsonArray(), this.immutableListType);
+				} else {
+					children = ImmutableList.of();
 				}
 			}
 

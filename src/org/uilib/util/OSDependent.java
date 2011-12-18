@@ -52,7 +52,7 @@ public class OSDependent {
 			}
 		}
 
-		// FIXME: this has to leave
+		// TODO: OSDependant: this has to leave
 		folder = folder + File.separator + "Busta rSystem" + File.separator;
 
 		return folder;

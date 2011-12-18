@@ -11,6 +11,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
+
 import org.uilib.util.Texts;
 
 public class SearchForm extends Composite {
@@ -26,7 +27,7 @@ public class SearchForm extends Composite {
 		super(parent, style);
 
 		this.texts = texts;
-		
+
 		boolean delButtonNeeded = true;
 		if (System.getProperty("os.name").equals("Mac OS X")) {
 			delButtonNeeded = false;
