@@ -21,6 +21,8 @@ public class TextUI implements UIController<StringState> {
 
 		int style = SWT.NONE;
 		style |= (options.get("border", true) ? SWT.BORDER : SWT.NONE);
+		style |= (options.get("search", true) ? SWT.SEARCH : SWT.NONE);
+		style |= (options.get("search", true) ? SWT.CANCEL : SWT.NONE);
 
 		this.text = new Text(parent, style);
 

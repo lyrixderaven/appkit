@@ -1,15 +1,19 @@
 package org.uilib.swt.components;
 
+import java.util.List;
+
 import com.google.common.base.Preconditions;
+import com.google.common.base.Splitter;
+import com.google.common.collect.Lists;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Listener;
 
 import org.uilib.swt.states.StringState;
 import org.uilib.swt.templating.Options;
@@ -18,8 +22,9 @@ public class RadioSetUI implements UIController<StringState> {
 
 	//~ Instance fields ------------------------------------------------------------------------------------------------
 
-	private SelectionListener listener;
+	private Listener listener;
 	private StringState state = StringState.empty();
+	private List<String> i18nTexts = null;
 
 	//~ Methods --------------------------------------------------------------------------------------------------------
 
@@ -27,17 +32,38 @@ public class RadioSetUI implements UIController<StringState> {
 	public Control initialize(final Composite parent, final Options options) {
 
 		Composite comp = new Composite(parent, SWT.NONE);
-		comp.setLayout(new GridLayout(1, false));
+		GridLayout gl = new GridLayout(1,false);
+		gl.marginHeight = 0;
+		gl.marginWidth = 0;
+		gl.horizontalSpacing = 0;
+		gl.verticalSpacing = 0;
+		comp.setLayout(gl);
 
+		List<String> choices = options.get("choices");
+		if (this.i18nTexts != null)
+			Preconditions.checkState(this.i18nTexts.size() == choices.size(),"number of buttons %s must equals number of translations %s", choices.size(), this.i18nTexts.size());
+
+		int i=0;
 		for (final String opt : options.get("choices")) {
 
-			Button btn = new Button(comp, SWT.NONE);
-			btn.setText(opt);
+			Button btn = new Button(comp, SWT.RADIO);
+
+			if (this.i18nTexts != null)
+				btn.setText(this.i18nTexts.get(i));
+
+			/* select first */
+			if (i == 0) {
+				btn.setSelection(true);
+				state = new StringState(opt);
+			}
+			i++;
+
 			btn.addSelectionListener(
 				new SelectionAdapter() {
 						@Override
 						public void widgetSelected(final SelectionEvent event) {
 							state = new StringState(opt);
+							listener.handleEvent(null);
 						}
 					});
 		}
@@ -45,9 +71,9 @@ public class RadioSetUI implements UIController<StringState> {
 		return comp;
 	}
 
-	public void setStatusQueue(final SelectionListener listener) {
+	public void setStatusQueue(final Listener listener) {
 		Preconditions.checkArgument(this.listener == null, "already a listener registered");
-		listener.widgetSelected(null);
+		this.listener = listener;
 	}
 
 	@Override
@@ -67,7 +93,6 @@ public class RadioSetUI implements UIController<StringState> {
 
 	@Override
 	public void setI18nText(final String text) {
-
-		// TODO Auto-generated method stub
+		this.i18nTexts = Lists.newArrayList(Splitter.on("/").split(text));
 	}
 }

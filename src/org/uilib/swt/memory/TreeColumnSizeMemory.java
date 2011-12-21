@@ -38,11 +38,11 @@ public final class TreeColumnSizeMemory {
 	//~ Constructors ---------------------------------------------------------------------------------------------------
 
 	private TreeColumnSizeMemory(final PrefStore prefStore, final Throttler throttler, final Tree tree,
-								 final String memoryKey, final int defaultSize) {
+								 final String key, final int defaultSize) {
 		this.prefStore										 = prefStore;
 		this.throttler										 = throttler;
 		this.tree											 = tree;
-		this.memoryKey										 = memoryKey + ".columnsizes";
+		this.memoryKey										 = key + ".columnsizes";
 		this.defaultSize									 = defaultSize;
 
 		/* install layout into parentComposite of Table */

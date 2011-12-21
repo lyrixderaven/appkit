@@ -1,26 +1,33 @@
 package org.uilib.swt.components;
 
+import java.util.List;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
-
+import org.uilib.swt.Fonts;
 import org.uilib.swt.states.State;
 import org.uilib.swt.templating.Options;
 
 public class LabelUI implements UIController<State> {
 
-	//~ Instance fields ------------------------------------------------------------------------------------------------
-
 	private Label label;
-
-	//~ Methods --------------------------------------------------------------------------------------------------------
+	private String i18nText;
 
 	@Override
 	public Control initialize(final Composite parent, final Options options) {
 		this.label = new Label(parent, SWT.NONE);
 
-		this.label.setText("test");
+		this.label.setText(this.i18nText);
+
+		List<String> fontInfo = options.get("font");
+		if (!fontInfo.isEmpty()) {
+
+			if (fontInfo.contains("bold"))
+				this.label.setFont((new Fonts()).create(Fonts.Style.BOLD, 0));
+		}
+
 
 		return this.label;
 	}
@@ -42,6 +49,6 @@ public class LabelUI implements UIController<State> {
 
 	@Override
 	public void setI18nText(final String text) {
-		this.label.setText(text);
+		this.i18nText = text;
 	}
 }

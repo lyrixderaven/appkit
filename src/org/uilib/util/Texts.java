@@ -37,6 +37,7 @@ public class Texts {
 
 				String msgIdentifier = property;
 				String msg			 = i18n.getProperty(property);
+				L.debug(msgIdentifier + " -> " + msg);
 				map.put(msgIdentifier, msg);
 			}
 		} catch (final IOException e) {
@@ -48,17 +49,24 @@ public class Texts {
 
 	//~ Methods --------------------------------------------------------------------------------------------------------
 
-	// TODO: Performance: darf nicht immer dasselbe zurückgeben
+	// TODO: Performance: darf nicht immer dasselbe zurückgeben, andere statics
 	public static Texts defaults(final String lang) {
-		return new Texts(new ResourceToStringSupplier(), "i18n/lang-" + lang + ".properties");
+		return new Texts(new ResourceToStringSupplier(), "i18n/" + lang + ".properties");
 	}
 
-	public static Texts forComponent(final String componentType) {
-		return new Texts(new ResourceToStringSupplier(), componentType);
+	public static Texts forComponent(final String componentType, String lang) {
+		return new Texts(new ResourceToStringSupplier(), "components/" + componentType + "." + lang + ".properties");
 	}
 
 	public String get(final String identifier, final Object... values) {
-		return MessageFormat.format(this.texts.get(identifier), values);
+		String text = this.texts.get(identifier);
+
+		if (text == null) {
+			text = "<missing identifier>";
+			L.error("missing identifier: " + identifier);
+		}
+
+		return MessageFormat.format(text, values);
 	}
 
 	public ImmutableMap<String, String> getMap() {

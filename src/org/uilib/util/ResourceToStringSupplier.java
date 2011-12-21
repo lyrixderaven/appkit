@@ -42,7 +42,7 @@ public class ResourceToStringSupplier implements StringSupplier {
 		InputStream in = null;
 		try {
 
-			URL url = this.getClass().getResource(fullName);
+			URL url = ResourceToStringSupplier.class.getResource(fullName);
 			if (url == null) {
 				return null;
 			}

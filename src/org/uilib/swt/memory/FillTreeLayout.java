@@ -1,0 +1,39 @@
+package org.uilib.swt.memory;
+
+import org.apache.log4j.Logger;
+
+import org.eclipse.jface.layout.TreeColumnLayout;
+import org.eclipse.jface.viewers.ColumnWeightData;
+import org.eclipse.swt.widgets.Tree;
+import org.eclipse.swt.widgets.TreeColumn;
+
+// FIXME: table utils, shell utils, widget utils?
+public final class FillTreeLayout {
+
+	//~ Static fields/initializers -------------------------------------------------------------------------------------
+
+	@SuppressWarnings("unused")
+	private static final Logger L							 = Logger.getLogger(FillTreeLayout.class);
+
+	//~ Instance fields ------------------------------------------------------------------------------------------------
+
+	//~ Constructors ---------------------------------------------------------------------------------------------------
+
+	private FillTreeLayout(final Tree tree) {
+		/* install layout into parentComposite of Table */
+		TreeColumnLayout layout = new TreeColumnLayout();
+		tree.getParent().setLayout(layout);
+
+		/* size all the columns */
+		int weight = 100 / tree.getColumnCount();
+		for (TreeColumn c : tree.getColumns()) {
+			layout.setColumnData(c, new ColumnWeightData(weight));
+		}
+	}
+
+	//~ Methods --------------------------------------------------------------------------------------------------------
+
+	public static void install(final Tree tree) {
+		new FillTreeLayout(tree);
+	}
+}

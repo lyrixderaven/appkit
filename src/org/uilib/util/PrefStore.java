@@ -81,8 +81,6 @@ public final class PrefStore {
 
 		ImmutableSet.Builder<String> matchingKeys = ImmutableSet.builder();
 		for (final String key : this.backend.getKeys()) {
-
-			// FIXME: Predicate
 			if (key.startsWith(match)) {
 				matchingKeys.add(key);
 			}

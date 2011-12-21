@@ -230,9 +230,7 @@ public class CocoaUIEnhancer {
 	}
 
 	private static Object invoke(final Class<?> clazz, final Object target, final String methodName, final Object args[]) {
-		try {
-
-			Class<?> signature[] = new Class<?>[args.length];
+		Class<?> signature[] = new Class<?>[args.length];
 			for (int i = 0; i < args.length; i++) {
 
 				Class<?> thisClass = args[i].getClass();
@@ -249,11 +247,21 @@ public class CocoaUIEnhancer {
 				}
 			}
 
-			Method method = clazz.getMethod(methodName, signature);
-			return method.invoke(target, args);
-		} catch (final Exception e) {
-			throw new IllegalStateException(e);
-		}
+			Method method;
+			try {
+				method = clazz.getMethod(methodName, signature);
+				return method.invoke(target, args);
+			} catch (SecurityException e) {
+				throw new IllegalStateException(e.getMessage(), e);
+			} catch (NoSuchMethodException e) {
+				throw new IllegalStateException(e.getMessage(), e);
+			} catch (IllegalArgumentException e) {
+				throw new IllegalStateException(e.getMessage(), e);
+			} catch (IllegalAccessException e) {
+				throw new IllegalStateException(e.getMessage(), e);
+			} catch (InvocationTargetException e) {
+				throw new IllegalStateException(e.getMessage(), e);
+			}
 	}
 
 	private Class<?> classForName(final String classname) {

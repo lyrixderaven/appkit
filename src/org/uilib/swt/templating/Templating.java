@@ -34,6 +34,7 @@ import org.uilib.swt.components.TextUI;
 import org.uilib.swt.components.UIController;
 import org.uilib.util.ResourceToStringSupplier;
 import org.uilib.util.StringSupplier;
+import org.uilib.util.Texts;
 
 import sun.reflect.generics.reflectiveObjects.ParameterizedTypeImpl;
 
@@ -80,7 +81,12 @@ public final class Templating {
 
 		try {
 			L.debug("deserializing component: " + componentType);
-			return this.gson.fromJson(source, Component.class);
+			Component component = this.gson.fromJson(source, Component.class);
+
+			L.debug("loading translations for: " + componentType);
+			component.i18nTranslate(Texts.forComponent(componentType, "de"));
+
+			return component;
 		} catch (final JsonParseException e) {
 			L.error(e.getMessage(), e);
 			throw new IllegalStateException(e.getMessage(), e);
@@ -89,7 +95,6 @@ public final class Templating {
 
 	//~ Inner Classes --------------------------------------------------------------------------------------------------
 
-	// FIXME: Templating: "options" not allowed for clarity
 	private final class ComponentDeserializer implements JsonDeserializer<Component> {
 
 		private final ImmutableMap<String, Class<?extends UIController<?>>> controllers;
@@ -136,7 +141,7 @@ public final class Templating {
 					"spacer",
 					ImmutableList.<Component>of(),
 					this.instantiateController("spacer"),
-					new Options());
+					Options.empty());
 			}
 
 			/* 2. read name (if existent) */
@@ -150,7 +155,7 @@ public final class Templating {
 			L.debug("deserializing: " + componentType);
 
 			/* 4. read all other parameters (no name, children or type)  into options */
-			Map<String, String> options = Maps.newHashMap();
+			Map<String, String> map = Maps.newHashMap();
 			for (final Entry<String, JsonElement> entry : jsonObject.entrySet()) {
 
 				String key = entry.getKey();
@@ -158,9 +163,10 @@ public final class Templating {
 					continue;
 				}
 
-				// FIXME: force that this is a string, boolean or integer
-				options.put(key, entry.getValue().getAsString());
+				// TODO: force that this is a string, boolean or integer
+				map.put(key, entry.getValue().getAsString());
 			}
+			Options options = Options.of(map);
 
 			/* 5. try to load component which is called like this type (subcomponent) */
 			Component subComp = Templating.this.create(componentType);
@@ -179,18 +185,13 @@ public final class Templating {
 				controller     = subComp.getController();
 				children	   = subComp.getChildren();
 
-				/* copy the options, which weren't overridden in this composite  */
-				for (final Entry<String, String> entry : subComp.getOptions().getMap().entrySet()) {
-					if (! options.containsKey(entry.getKey())) {
-						options.put(entry.getKey(), entry.getValue());
-					}
-				}
+				options = options.withDefaults(subComp.getOptions());
 			} else {
 				/* 7b. if it wasn't a reference to a sub-component, we try the registered controllers */
 				controller = this.instantiateController(componentType);
 
 				/* deserialize children */
-				// FIXME: force this to be an array
+				// TODO: force this to be an array
 				if (jsonObject.has("children")) {
 					children = context.deserialize(jsonObject.get("children").getAsJsonArray(), this.immutableListType);
 				} else {
@@ -198,7 +199,7 @@ public final class Templating {
 				}
 			}
 
-			return new Component(name, componentType, children, controller, new Options(options));
+			return new Component(name, componentType, children, controller, options);
 		}
 	}
 

@@ -1,4 +1,4 @@
-package org.uilib.swt.templating;
+ package org.uilib.swt.templating;
 
 import com.google.common.base.CharMatcher;
 import com.google.common.base.Preconditions;
@@ -24,7 +24,6 @@ public final class Component {
 
 	//~ Static fields/initializers -------------------------------------------------------------------------------------
 
-	@SuppressWarnings("unused")
 	private static final Logger L							 = Logger.getLogger(Component.class);
 
 	//~ Instance fields ------------------------------------------------------------------------------------------------
@@ -39,14 +38,17 @@ public final class Component {
 
 	//~ Constructors ---------------------------------------------------------------------------------------------------
 
-	// FIXME: builder syntax?
+	// TODO: Component: builder syntax?
+	// FIXME: warning if options ends with "
 	public Component(final String name, final String type, final List<Component> children,
 					 final UIController<?> controller, final Options options) {
 		this.name											 = name;
 
 		/* check arguments */
-		CharMatcher nameFilter = CharMatcher.inRange('a', 'z').or(CharMatcher.anyOf("?_-"));
-		Preconditions.checkArgument(nameFilter.matchesAllOf(name), "only a-z and '?' allowed in name");
+		if (this.name != null) {
+			CharMatcher nameFilter = CharMatcher.inRange('a', 'z').or(CharMatcher.anyOf("?-"));
+			Preconditions.checkArgument(nameFilter.matchesAllOf(name), "only a-z, '-' and '?' allowed in name");
+		}
 		Preconditions.checkNotNull(type);
 		Preconditions.checkNotNull(children);
 		Preconditions.checkNotNull(controller);
@@ -64,6 +66,7 @@ public final class Component {
 		/* 1. we are definitely addressable as $<type> */
 		map.put("$" + type, this);
 		if (this.name != null) {
+
 			/* 2. if we have a name we are also addressable as <name> and as <name>$<type> */
 			map.put(name, this);
 			map.put(name + "$" + type, this);
@@ -78,7 +81,11 @@ public final class Component {
 		if (this.name != null) {
 			for (final Component child : this.children) {
 				for (final String key : child.getNameMap().keySet()) {
-					map.putAll(this.name + "." + key, child.getNameMap().get(key));
+					if (key.startsWith("$"))
+						map.putAll(this.name + key, child.getNameMap().get(key));
+					else {
+						map.putAll(this.name + "." + key, child.getNameMap().get(key));
+					}
 				}
 			}
 		}
@@ -92,7 +99,7 @@ public final class Component {
 		for (final Entry<String, String> text : texts.getMap().entrySet()) {
 
 			/* search for the component and set the translation */
-			UIController<?> controller = this.getController(text.getKey(), UIController.class);
+			UIController<?> controller = this.controller(text.getKey(), UIController.class);
 			controller.setI18nText(text.getValue());
 		}
 	}
@@ -132,8 +139,18 @@ public final class Component {
 		this.control.getParent().layout();
 	}
 
+	public Component component(final String query) {
+		ImmutableCollection<Component> components = this.nameMap.get(query);
+
+		Preconditions.checkState(
+			components.size() == 1,
+			"found " + components.size() + " controls for '" + query + "'");
+
+		return components.iterator().next();
+	}
+
 	@SuppressWarnings("unchecked")
-	public <E extends Control> E get(final String query, final Class<E> clazz) {
+	public <E extends Control> E control(final String query, final Class<E> clazz) {
 
 		ImmutableCollection<Component> components = this.nameMap.get(query);
 
@@ -145,7 +162,7 @@ public final class Component {
 	}
 
 	@SuppressWarnings("unchecked")
-	public <E extends UIController<?>> E getController(final String query, final Class<E> clazz) {
+	public <E extends UIController<?>> E controller(final String query, final Class<E> clazz) {
 
 		ImmutableCollection<Component> components = this.nameMap.get(query);
 
@@ -170,10 +187,14 @@ public final class Component {
 
 		/* create children */
 		Composite comp = (Composite) this.control;
-		comp.setLayout(new GridLayout(-1, false));
 		for (final Component child : this.children) {
 			child.initialize(comp);
-			child.getControl().setLayoutData(this.genGridData(child.getOptions()));
+
+			/* create GridData for positioning */
+			GridData gd = this.genGridData(child);
+			child.getControl().setLayoutData(gd);
+
+			L.debug(child.toString() + ", " + gd);
 		}
 
 		/* layout columns */
@@ -185,40 +206,55 @@ public final class Component {
 		}
 	}
 
-	private GridData genGridData(final Options options) {
+	private GridData genGridData(Component child) {
+
+		Options cOptions = child.getOptions();
 
 		GridData gd = new GridData();
 
-		gd.grabExcessHorizontalSpace     = options.get("grow", "").contains("-");
-		gd.horizontalIndent				 = options.get("hindent", 0);
-		gd.horizontalSpan				 = options.get("hspan", 1);
+		gd.grabExcessHorizontalSpace     = cOptions.get("grow", "").contains("-");
+		gd.horizontalIndent				 = cOptions.get("h-indent", 0);
+		gd.horizontalSpan				 = cOptions.get("h-span", 1);
 
-		String hAlign					 = options.get("halign", "");
+		String hAlign					 = cOptions.get("h-align", "");
 		if (hAlign.contains("center")) {
 			gd.horizontalAlignment = SWT.CENTER;
 		} else if (hAlign.contains("left")) {
 			gd.horizontalAlignment = SWT.LEFT;
 		} else if (hAlign.contains("right")) {
 			gd.horizontalAlignment = SWT.RIGHT;
+		} else if (hAlign.contains("fill")) {
+			gd.horizontalAlignment = SWT.FILL;
 		} else {
-			gd.horizontalAlignment = (this.controller.fillHorizByDefault() ? SWT.FILL : SWT.NONE);
+			gd.horizontalAlignment = (child.getController().fillHorizByDefault() ? SWT.FILL : SWT.NONE);
 		}
 
-		gd.grabExcessVerticalSpace     = options.get("grow", "").contains("|");
-		gd.verticalIndent			   = options.get("vspan", 0);
-		gd.verticalSpan				   = options.get("vspan", 1);
+		gd.grabExcessVerticalSpace     = cOptions.get("grow", "").contains("|");
+		gd.verticalIndent			   = cOptions.get("v-indent", 0);
+		gd.verticalSpan				   = cOptions.get("v-span", 1);
 
-		String vAlign				   = options.get("valign", "");
+		String vAlign				   = cOptions.get("v-align", "");
 		if (vAlign.contains("center")) {
 			gd.verticalAlignment = SWT.CENTER;
 		} else if (vAlign.contains("top")) {
 			gd.verticalAlignment = SWT.TOP;
 		} else if (vAlign.contains("bottom")) {
 			gd.verticalAlignment = SWT.BOTTOM;
+		} else if (vAlign.contains("fill")) {
+			gd.verticalAlignment = SWT.FILL;
 		} else {
-			gd.verticalAlignment = (this.controller.fillVertByDefault() ? SWT.FILL : SWT.NONE);
+			gd.verticalAlignment = (child.getController().fillVertByDefault() ? SWT.FILL : SWT.NONE);
 		}
 
 		return gd;
+	}
+
+	@Override
+	public String toString() {
+		String s = "(" + this.type + ")";
+		if (name != null)
+			s += " '" + name + "' ";
+
+		return s;
 	}
 }

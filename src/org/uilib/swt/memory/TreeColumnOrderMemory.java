@@ -36,14 +36,14 @@ public final class TreeColumnOrderMemory {
 	//~ Constructors ---------------------------------------------------------------------------------------------------
 
 	private TreeColumnOrderMemory(final PrefStore prefStore, final Throttler throttler, final Tree tree,
-								  final String memoryKey) {
+								  final String key) {
 		this.prefStore										 = prefStore;
 		this.throttler										 = throttler;
 		this.tree											 = tree;
-		this.memoryKey										 = memoryKey + ".columnorder";
+		this.memoryKey										 = key + ".columnorder";
 
 		/* reorder columns */
-		String orderString     = this.prefStore.get(memoryKey, "");
+		String orderString     = this.prefStore.get(this.memoryKey, "");
 		List<String> orderList = Lists.newArrayList(Splitter.on(",").split(orderString));
 		if (orderList.size() == this.tree.getColumnCount()) {
 			try {

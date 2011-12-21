@@ -20,11 +20,11 @@ import org.uilib.swt.SWTSyncedRunnable;
 import org.uilib.util.PrefStore;
 import org.uilib.util.Throttler;
 
+// FIXME: table utils, shell utils, widget utils?
 public final class TableColumnSizeMemory {
 
 	//~ Static fields/initializers -------------------------------------------------------------------------------------
 
-	@SuppressWarnings("unused")
 	private static final Logger L							 = Logger.getLogger(TableColumnSizeMemory.class);
 
 	//~ Instance fields ------------------------------------------------------------------------------------------------
@@ -38,11 +38,11 @@ public final class TableColumnSizeMemory {
 	//~ Constructors ---------------------------------------------------------------------------------------------------
 
 	private TableColumnSizeMemory(final PrefStore prefStore, final Throttler throttler, final Table table,
-								  final String memoryKey, final int defaultSize) {
+								  final String key, final int defaultSize) {
 		this.prefStore										 = prefStore;
 		this.throttler										 = throttler;
 		this.table											 = table;
-		this.memoryKey										 = memoryKey + ".columnsizes";
+		this.memoryKey										 = key + ".columnsizes";
 		this.defaultSize									 = defaultSize;
 
 		/* install layout into parentComposite of Table */
@@ -50,11 +50,12 @@ public final class TableColumnSizeMemory {
 		table.getParent().setLayout(layout);
 
 		/* size all the columns */
-		String widthString  = this.prefStore.get(memoryKey, "");
+		String widthString  = this.prefStore.get(this.memoryKey, "");
+		L.debug("widthString: " + widthString);
 		List<String> widths = Lists.newArrayList(Splitter.on(",").split(widthString));
 		if (widths.size() == table.getColumnCount()) {
+			L.debug("found width '" + widths + "' -> sizing columns");
 			for (int i = 0; i < table.getColumnCount(); i++) {
-
 				int wData = defaultSize;
 				try {
 					wData = Integer.valueOf(widths.get(i));
@@ -63,6 +64,7 @@ public final class TableColumnSizeMemory {
 				layout.setColumnData(table.getColumn(i), new ColumnWeightData(wData));
 			}
 		} else {
+			L.debug("setting default widths");
 
 			/* default size */
 			for (final TableColumn column : table.getColumns()) {

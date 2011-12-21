@@ -13,6 +13,7 @@ public class ButtonUI implements UIController<State> {
 	//~ Instance fields ------------------------------------------------------------------------------------------------
 
 	private Button btn;
+	private String i18nText;
 
 	//~ Methods --------------------------------------------------------------------------------------------------------
 
@@ -22,6 +23,7 @@ public class ButtonUI implements UIController<State> {
 		int style = SWT.NONE;
 
 		this.btn = new Button(parent, style);
+		this.btn.setText(this.i18nText);
 
 		return this.btn;
 	}
@@ -43,6 +45,6 @@ public class ButtonUI implements UIController<State> {
 
 	@Override
 	public void setI18nText(final String text) {
-		this.btn.setText(text);
+		this.i18nText = text;
 	}
 }

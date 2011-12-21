@@ -35,15 +35,15 @@ public final class SashFormWeightMemory {
 	//~ Constructors ---------------------------------------------------------------------------------------------------
 
 	private SashFormWeightMemory(final PrefStore prefStore, final Throttler throttler, final SashForm sashForm,
-								 final String memoryKey, final int defaultWeights[]) {
+								 final String key, final int defaultWeights[]) {
 		this.prefStore										 = prefStore;
 		this.throttler										 = throttler;
 		this.sashForm										 = sashForm;
-		this.memoryKey										 = memoryKey + ".sashsizes";
+		this.memoryKey										 = key + ".sashsizes";
 		this.defaultWeights									 = defaultWeights;
 
 		/* position shell */
-		String weightString     = this.prefStore.get(memoryKey, "");
+		String weightString     = this.prefStore.get(this.memoryKey, "");
 		List<String> weightList = Lists.newArrayList(Splitter.on(",").split(weightString));
 		if (weightList.size() == this.sashForm.getChildren().length) {
 			try {

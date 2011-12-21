@@ -38,7 +38,7 @@ public class SearchForm extends Composite {
 
 		Label label = new Label(this, SWT.NONE);
 		label.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false));
-		label.setText(" x ");
+		label.setText(this.texts.get("misc_search"));
 
 		if (delButtonNeeded) {
 

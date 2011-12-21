@@ -1,6 +1,7 @@
 package org.uilib.swt.components;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 
 import org.uilib.swt.states.State;
@@ -14,9 +15,18 @@ public class ComponentUI implements UIController<State> {
 	public Composite initialize(final Composite parent, final Options options) {
 
 		int style = SWT.NONE;
-		style |= (options.get("border", true) ? SWT.BORDER : SWT.NONE);
+		style |= (options.get("border", false) ? SWT.BORDER : SWT.NONE);
 
-		return new Composite(parent, style);
+		GridLayout gl = new GridLayout(-1, false);
+		gl.marginHeight = options.get("margin-height", gl.marginHeight);
+		gl.marginWidth = options.get("margin-width", gl.marginWidth);
+		gl.verticalSpacing = options.get("v-spacing", gl.verticalSpacing);
+		gl.horizontalSpacing = options.get("h-spacing", gl.horizontalSpacing);
+
+		Composite comp = new Composite(parent, style);
+		comp.setLayout(gl);
+
+		return comp;
 	}
 
 	@Override
@@ -26,12 +36,12 @@ public class ComponentUI implements UIController<State> {
 
 	@Override
 	public boolean fillVertByDefault() {
-		return false;
+		return true;
 	}
 
 	@Override
 	public boolean fillHorizByDefault() {
-		return false;
+		return true;
 	}
 
 	@Override

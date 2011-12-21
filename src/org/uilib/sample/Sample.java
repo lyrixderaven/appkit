@@ -15,7 +15,6 @@ import org.eclipse.swt.widgets.Shell;
 
 import org.uilib.swt.templating.Component;
 import org.uilib.swt.templating.Templating;
-import org.uilib.util.Texts;
 
 public final class Sample {
 
@@ -33,9 +32,7 @@ public final class Sample {
 		shell.setLayout(new FillLayout());
 
 		Templating tl    = Templating.create();
-
 		Component orders = tl.create("orderview");
-		orders.i18nTranslate(Texts.forComponent("orderview"));
 
 		List<String> keys = Lists.newArrayList(orders.getNameMap().keySet());
 		Collections.sort(keys, Ordering.natural());
@@ -49,7 +46,7 @@ public final class Sample {
 
 		shell.open();
 
-		while (! shell.getDisplay().isDisposed()) {
+		while (! shell.isDisposed()) {
 			if (! shell.getDisplay().readAndDispatch()) {
 				shell.getDisplay().sleep();
 			}

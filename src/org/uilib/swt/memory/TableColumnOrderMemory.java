@@ -36,14 +36,14 @@ public final class TableColumnOrderMemory {
 	//~ Constructors ---------------------------------------------------------------------------------------------------
 
 	private TableColumnOrderMemory(final PrefStore prefStore, final Throttler throttler, final Table table,
-								   final String memoryKey) {
+								   final String key) {
 		this.prefStore										 = prefStore;
 		this.throttler										 = throttler;
 		this.table											 = table;
-		this.memoryKey										 = memoryKey + ".columnorder";
+		this.memoryKey										 = key + ".columnorder";
 
 		/* reorder columns */
-		String orderString     = this.prefStore.get(memoryKey, "");
+		String orderString     = this.prefStore.get(this.memoryKey, "");
 		List<String> orderList = Lists.newArrayList(Splitter.on(",").split(orderString));
 		if (orderList.size() == this.table.getColumnCount()) {
 			try {

@@ -12,7 +12,6 @@ public interface UIController<T extends Serializable> {
 
 	//~ Methods --------------------------------------------------------------------------------------------------------
 
-	/* FIXME: Controller: welches control zurückgeben? */
 	public Control initialize(final Composite parent, final Options options);
 
 	public void setI18nText(final String text);

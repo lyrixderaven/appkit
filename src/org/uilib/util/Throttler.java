@@ -2,7 +2,6 @@ package org.uilib.util;
 
 import java.util.concurrent.TimeUnit;
 
-// FIXME: zeiten da raus?
 public interface Throttler {
 
 	//~ Methods --------------------------------------------------------------------------------------------------------
