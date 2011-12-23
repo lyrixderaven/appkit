@@ -54,11 +54,12 @@ public class Texts {
 		return new Texts(new ResourceToStringSupplier(), "i18n/" + lang + ".properties");
 	}
 
-	public static Texts forComponent(final String componentType, String lang) {
+	public static Texts forComponent(final String componentType, final String lang) {
 		return new Texts(new ResourceToStringSupplier(), "components/" + componentType + "." + lang + ".properties");
 	}
 
 	public String get(final String identifier, final Object... values) {
+
 		String text = this.texts.get(identifier);
 
 		if (text == null) {

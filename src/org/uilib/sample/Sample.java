@@ -13,8 +13,8 @@ import org.apache.log4j.PropertyConfigurator;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Shell;
 
-import org.uilib.swt.templating.Component;
-import org.uilib.swt.templating.Templating;
+import org.uilib.templating.Component;
+import org.uilib.templating.Templating;
 
 public final class Sample {
 
@@ -31,8 +31,8 @@ public final class Sample {
 		Shell shell = new Shell();
 		shell.setLayout(new FillLayout());
 
-		Templating tl    = Templating.create();
-		Component orders = tl.create("orderview");
+		Templating tl     = Templating.create();
+		Component orders  = tl.create("orderview");
 
 		List<String> keys = Lists.newArrayList(orders.getNameMap().keySet());
 		Collections.sort(keys, Ordering.natural());
