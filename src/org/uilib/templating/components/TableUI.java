@@ -8,15 +8,21 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Table;
 
+import org.uilib.AppContext;
 import org.uilib.templating.Component;
 import org.uilib.templating.Options;
 
 public class TableUI implements ComponentUI {
 
+	//~ Instance fields ------------------------------------------------------------------------------------------------
+
+	private Table table = null;
+
 	//~ Methods --------------------------------------------------------------------------------------------------------
 
 	@Override
-	public Control initialize(final Composite parent, final List<Component> children, final Options options) {
+	public Control initialize(final AppContext app, final Composite parent, final List<Component> children,
+							  final Options options) {
 
 		/* table is only child so that ColumnWeightLayout works */
 		Composite comp = new Composite(parent, SWT.NONE);
@@ -28,9 +34,13 @@ public class TableUI implements ComponentUI {
 		style |= (options.get("fullselect", true) ? SWT.FULL_SELECTION : SWT.NONE);
 		style |= (options.get("check", false) ? SWT.CHECK : SWT.NONE);
 
-		Table table = new Table(comp, style);
-		table.setLinesVisible((options.get("lines", true)));
+		this.table = new Table(comp, style);
+		this.table.setLinesVisible((options.get("lines", true)));
 
 		return comp;
+	}
+
+	public Table getTable() {
+		return this.table;
 	}
 }

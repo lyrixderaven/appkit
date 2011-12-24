@@ -7,6 +7,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 
+import org.uilib.AppContext;
 import org.uilib.templating.Component;
 import org.uilib.templating.Options;
 import org.uilib.util.Fonts;
@@ -16,14 +17,15 @@ public class LabelUI implements ComponentUI {
 	//~ Methods --------------------------------------------------------------------------------------------------------
 
 	@Override
-	public Control initialize(final Composite parent, final List<Component> children, final Options options) {
+	public Control initialize(final AppContext app, final Composite parent, final List<Component> children,
+							  final Options options) {
 
 		Label label			  = new Label(parent, SWT.NONE);
 
 		List<String> fontInfo = options.get("font");
 		if (! fontInfo.isEmpty()) {
 			if (fontInfo.contains("bold")) {
-				// FIXME: this need disposal?
+				// FIXME: FontCache in Application oder so?
 				label.setFont((new Fonts()).create(Fonts.Style.BOLD, 0));
 			}
 		}

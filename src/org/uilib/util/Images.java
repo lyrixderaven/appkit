@@ -13,7 +13,6 @@ import org.apache.log4j.Logger;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
 
-// TODO: images -> kind of a global object (memory leak beim new Images().load in rsystem)
 public final class Images {
 
 	//~ Static fields/initializers -------------------------------------------------------------------------------------

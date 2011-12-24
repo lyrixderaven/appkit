@@ -27,9 +27,9 @@ import org.uilib.templating.components.ComponentGridUI;
 import org.uilib.templating.components.ComponentUI;
 import org.uilib.templating.components.DatepickerUI;
 import org.uilib.templating.components.LabelUI;
-import org.uilib.templating.components.PlaceholderUI;
 import org.uilib.templating.components.RadioSetUI;
 import org.uilib.templating.components.SpacerUI;
+import org.uilib.templating.components.StackUI;
 import org.uilib.templating.components.TableUI;
 import org.uilib.templating.components.TextUI;
 import org.uilib.util.ResourceToStringSupplier;
@@ -37,7 +37,7 @@ import org.uilib.util.StringSupplier;
 
 import sun.reflect.generics.reflectiveObjects.ParameterizedTypeImpl;
 
-// TODO: Texts: getSystemDefault Lang
+// FIXME: Texts: getSystemDefault Lang
 public final class Templating {
 
 	//~ Static fields/initializers -------------------------------------------------------------------------------------
@@ -65,7 +65,7 @@ public final class Templating {
 
 	//~ Methods --------------------------------------------------------------------------------------------------------
 
-	public static Templating create() {
+	public static Templating fromResources() {
 		return new Templating(new ResourceToStringSupplier());
 	}
 
@@ -104,7 +104,7 @@ public final class Templating {
 			map.put("button", ButtonUI.class);
 			map.put("datepicker", DatepickerUI.class);
 			map.put("label", LabelUI.class);
-			map.put("placeholder", PlaceholderUI.class);
+			map.put("stack", StackUI.class);
 			map.put("radioset", RadioSetUI.class);
 			map.put("table", TableUI.class);
 			map.put("componentgrid", ComponentGridUI.class);
@@ -115,6 +115,7 @@ public final class Templating {
 		}
 
 		private ComponentUI instantiateController(final String type) {
+			Preconditions.checkArgument(this.controllers.containsKey(type), "no type '%s' registered", type);
 			try {
 				return this.controllers.get(type).newInstance();
 			} catch (final InstantiationException e) {
@@ -160,12 +161,13 @@ public final class Templating {
 					continue;
 				}
 
-				// TODO: force that this is a string, boolean or integer
+				// FIXME: force that this is a string, boolean or integer
 				map.put(key, entry.getValue().getAsString());
 			}
 
 			Options options = Options.of(map);
 
+			// FIXME: preconditions, no subcomponent if type was found
 			/* 5. try to load component which is called like this type (subcomponent) */
 			Component subComp = Templating.this.create(componentType);
 
@@ -174,22 +176,22 @@ public final class Templating {
 				(subComp == null) || (jsonObject.get("children") == null),
 				"can either refer to a subcomponent or have children itself");
 
-			ComponentUI controller			  = null;
+			ComponentUI compUI				  = null;
 			ImmutableList<Component> children = null;
 
 			/* 7. if a sub-component was found, we "inline" parts of it in this component by copying it's properties */
 			if (subComp != null) {
 				/* copy type, controller and children */
-				controller     = subComp.getController();
-				children	   = subComp.getChildren();
+				compUI		 = subComp.getUI();
+				children     = subComp.getChildren();
 
-				options		   = options.withDefaults(subComp.getOptions());
+				options		 = options.withDefaults(subComp.getOptions());
 			} else {
 				/* 7b. if it wasn't a reference to a sub-component, we try the registered controllers */
-				controller = this.instantiateController(componentType);
+				compUI = this.instantiateController(componentType);
 
 				/* deserialize children */
-				// TODO: force this to be an array
+				// FIXME: force this to be an array
 				if (jsonObject.has("children")) {
 					children = context.deserialize(jsonObject.get("children").getAsJsonArray(), this.immutableListType);
 				} else {
@@ -197,7 +199,7 @@ public final class Templating {
 				}
 			}
 
-			return new Component(name, componentType, children, controller, options);
+			return new Component(name, componentType, children, compUI, options);
 		}
 	}
 

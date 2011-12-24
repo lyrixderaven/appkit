@@ -1,8 +1,8 @@
 package org.uilib;
 
-public interface Controller {
+public interface BackgroundWorker {
 
 	//~ Methods --------------------------------------------------------------------------------------------------------
 
-	public void init(final AppContext app);
+	public Object request(final Object object);
 }

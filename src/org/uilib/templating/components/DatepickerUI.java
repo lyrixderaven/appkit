@@ -1,8 +1,12 @@
 package org.uilib.templating.components;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -11,6 +15,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.DateTime;
 import org.eclipse.swt.widgets.Label;
 
+import org.uilib.AppContext;
 import org.uilib.templating.Component;
 import org.uilib.templating.Options;
 
@@ -18,6 +23,7 @@ public final class DatepickerUI implements ComponentUI {
 
 	//~ Instance fields ------------------------------------------------------------------------------------------------
 
+	private AppContext app     = null;
 	private DateTime dt		   = null;
 	private DateTime dtFrom    = null;
 	private DateTime dtTo	   = null;
@@ -29,7 +35,9 @@ public final class DatepickerUI implements ComponentUI {
 	//~ Methods --------------------------------------------------------------------------------------------------------
 
 	@Override
-	public Control initialize(final Composite parent, final List<Component> children, final Options options) {
+	public Control initialize(final AppContext app, final Composite parent, final List<Component> children,
+							  final Options options) {
+		this.app = app;
 
 		Composite comp     = new Composite(parent, SWT.NONE);
 		GridLayout gl	   = new GridLayout(3, false);
@@ -46,48 +54,110 @@ public final class DatepickerUI implements ComponentUI {
 			this.labelFrom.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
 			this.dtFrom = new DateTime(comp, SWT.DATE | SWT.BORDER | SWT.DROP_DOWN);
 			this.dtFrom.setLayoutData(new GridData(SWT.NONE, SWT.CENTER, false, false));
+			this.dtFrom.addSelectionListener(
+				new SelectionAdapter() {
+						@Override
+						public void widgetSelected(final SelectionEvent event) {
+							fireChange();
+						}
+					});
 
 			this.bEnableFrom = new Button(comp, SWT.CHECK);
 			this.bEnableFrom.setLayoutData(new GridData(SWT.NONE, SWT.FILL, false, false));
 			this.bEnableFrom.setSelection(true);
+			this.bEnableFrom.addSelectionListener(
+				new SelectionAdapter() {
+						@Override
+						public void widgetSelected(final SelectionEvent event) {
+							dtFrom.setEnabled(bEnableFrom.getSelection());
+							fireChange();
+						}
+					});
 
 			this.labelTo = new Label(comp, SWT.NONE);
 			this.labelTo.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
 			this.dtTo = new DateTime(comp, SWT.DATE | SWT.BORDER | SWT.DROP_DOWN);
 			this.dtTo.setLayoutData(new GridData(SWT.NONE, SWT.CENTER, false, false));
+			this.dtTo.addSelectionListener(
+				new SelectionAdapter() {
+						@Override
+						public void widgetSelected(final SelectionEvent event) {
+							fireChange();
+						}
+					});
 			this.bEnableTo = new Button(comp, SWT.CHECK);
 			this.bEnableTo.setLayoutData(new GridData(SWT.NONE, SWT.FILL, false, false));
 			this.bEnableTo.setSelection(true);
+			this.bEnableTo.addSelectionListener(
+				new SelectionAdapter() {
+						@Override
+						public void widgetSelected(final SelectionEvent event) {
+							dtTo.setEnabled(bEnableTo.getSelection());
+							fireChange();
+						}
+					});
 		}
 
 		return comp;
 	}
 
-	public DateTime getDt() {
-		return dt;
+	private void fireChange() {
+
+		Date dateFrom = null;
+		Date dateTo   = null;
+
+		if (this.dtFrom.getEnabled()) {
+			dateFrom = this.constructDate(this.dtFrom);
+		}
+
+		if (this.dtTo.getEnabled()) {
+			dateTo = this.constructDate(this.dtTo);
+		}
+
+		this.app.postEvent(new DateRange(dateFrom, dateTo));
 	}
 
-	public DateTime getDtFrom() {
-		return dtFrom;
+	private Date constructDate(final DateTime dt) {
+
+		Calendar cal = Calendar.getInstance();
+		cal.clear();
+		cal.set(Calendar.DAY_OF_MONTH, dt.getDay());
+		cal.set(Calendar.MONTH, dt.getMonth());
+		cal.set(Calendar.YEAR, dt.getYear());
+
+		return cal.getTime();
 	}
 
-	public DateTime getDtTo() {
-		return dtTo;
-	}
+	//~ Inner Classes --------------------------------------------------------------------------------------------------
 
-	public Label getLabelFrom() {
-		return labelFrom;
-	}
+	public static final class DateRange {
 
-	public Label getLabelTo() {
-		return labelTo;
-	}
+		private final Date fromDate;
+		private final Date toDate;
 
-	public Button getbEnableFrom() {
-		return bEnableFrom;
-	}
+		public DateRange(final Date fromDate, final Date toDate) {
 
-	public Button getbEnableTo() {
-		return bEnableTo;
+			/* swap dates if necessary */
+			if ((fromDate != null) && (toDate != null)) {
+				if (fromDate.compareTo(toDate) <= 0) {
+					this.fromDate     = fromDate;
+					this.toDate		  = toDate;
+				} else {
+					this.fromDate     = toDate;
+					this.toDate		  = fromDate;
+				}
+			} else {
+				this.fromDate     = toDate;
+				this.toDate		  = fromDate;
+			}
+		}
+
+		public Date getFromDate() {
+			return fromDate;
+		}
+
+		public Date getToDate() {
+			return toDate;
+		}
 	}
 }

@@ -13,6 +13,7 @@ import org.apache.log4j.Logger;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
+import org.uilib.AppContext;
 import org.uilib.templating.components.ComponentUI;
 
 public final class Component {
@@ -28,7 +29,7 @@ public final class Component {
 	private final String type;
 	private final ImmutableList<Component> children;
 	private final ImmutableMultimap<String, Component> nameMap;
-	private final ComponentUI controller;
+	private final ComponentUI compUI;
 	private final Options options;
 	private Control control;
 
@@ -50,10 +51,10 @@ public final class Component {
 		Preconditions.checkNotNull(options);
 
 		/* initialize */
-		this.type		    = type;
-		this.children	    = ImmutableList.copyOf(children);
-		this.controller     = controller;
-		this.options	    = options;
+		this.type		  = type;
+		this.children     = ImmutableList.copyOf(children);
+		this.compUI		  = controller;
+		this.options	  = options;
 
 		/* build name-map for this component */
 		ImmutableMultimap.Builder<String, Component> map = ImmutableMultimap.builder();
@@ -98,8 +99,8 @@ public final class Component {
 		return this.control;
 	}
 
-	public ComponentUI getController() {
-		return this.controller;
+	public ComponentUI getUI() {
+		return this.compUI;
 	}
 
 	public String getType() {
@@ -131,6 +132,7 @@ public final class Component {
 
 	@SuppressWarnings("unchecked")
 	public <E extends Control> E select(final String query, final Class<E> clazz) {
+		Preconditions.checkState(this.control != null, "control wasn't initialized yet");
 
 		ImmutableCollection<Component> components = this.nameMap.get(query);
 
@@ -141,9 +143,40 @@ public final class Component {
 		return (E) components.iterator().next().getControl();
 	}
 
+	public Component select(final String query) {
+		Preconditions.checkState(this.control != null, "control wasn't initialized yet");
+
+		ImmutableCollection<Component> components = this.nameMap.get(query);
+
+		Preconditions.checkState(
+			components.size() == 1,
+			"found " + components.size() + " controls for '" + query + "'");
+
+		return components.iterator().next();
+	}
+
+	@SuppressWarnings("unchecked")
+	public <E extends ComponentUI> E selectUI(final String query, final Class<E> clazz) {
+		Preconditions.checkState(this.control != null, "control wasn't initialized yet");
+
+		ImmutableCollection<Component> components = this.nameMap.get(query);
+
+		Preconditions.checkState(
+			components.size() == 1,
+			"found " + components.size() + " controls for '" + query + "'");
+
+		return (E) components.iterator().next().getUI();
+	}
+
 	public void initialize(final Composite parent) {
 		Preconditions.checkArgument(this.control == null, "control wasn't null -> double initialization");
 
-		this.control = this.controller.initialize(parent, this.children, this.options);
+		this.control = this.compUI.initialize(AppContext.FAKE, parent, this.children, this.options);
+	}
+
+	public void initialize(final AppContext app, final Composite parent) {
+		Preconditions.checkArgument(this.control == null, "control wasn't null -> double initialization");
+
+		this.control = this.compUI.initialize(app, parent, this.children, this.options);
 	}
 }

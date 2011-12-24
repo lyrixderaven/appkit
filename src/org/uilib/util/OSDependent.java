@@ -26,7 +26,7 @@ public class OSDependent {
 
 	//~ Methods --------------------------------------------------------------------------------------------------------
 
-	public static String userDataFolder() {
+	public static String userDataFolder(final String applicationName) {
 
 		// default
 		String folder = "." + File.separator;
@@ -52,8 +52,7 @@ public class OSDependent {
 			}
 		}
 
-		// TODO: OSDependant: this has to leave
-		folder = folder + File.separator + "Busta rSystem" + File.separator;
+		folder = folder + File.separator + applicationName + File.separator;
 
 		return folder;
 	}

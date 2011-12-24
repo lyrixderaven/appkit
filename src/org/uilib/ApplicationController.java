@@ -1,8 +1,8 @@
 package org.uilib;
 
-public interface Controller {
+public interface ApplicationController {
 
 	//~ Methods --------------------------------------------------------------------------------------------------------
 
-	public void init(final AppContext app);
+	public void init(final Application app);
 }

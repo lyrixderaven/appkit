@@ -7,7 +7,6 @@ import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 
-// FIXME: table utils, shell utils, widget utils?
 public final class FillTableLayout {
 
 	//~ Static fields/initializers -------------------------------------------------------------------------------------

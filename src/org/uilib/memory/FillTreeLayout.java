@@ -7,7 +7,6 @@ import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
 
-// FIXME: table utils, shell utils, widget utils?
 public final class FillTreeLayout {
 
 	//~ Static fields/initializers -------------------------------------------------------------------------------------

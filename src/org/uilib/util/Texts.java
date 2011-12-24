@@ -7,9 +7,17 @@ import java.io.StringReader;
 
 import java.text.MessageFormat;
 
+import java.util.Map.Entry;
 import java.util.Properties;
 
 import org.apache.log4j.Logger;
+
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Text;
+
+import org.uilib.templating.Component;
 
 public class Texts {
 
@@ -23,7 +31,7 @@ public class Texts {
 
 	//~ Constructors ---------------------------------------------------------------------------------------------------
 
-	private Texts(final StringSupplier supplier, final String resourceName) {
+	public Texts(final StringSupplier supplier, final String resourceName) {
 
 		ImmutableMap.Builder<String, String> map = ImmutableMap.builder();
 
@@ -49,8 +57,7 @@ public class Texts {
 
 	//~ Methods --------------------------------------------------------------------------------------------------------
 
-	// TODO: Performance: darf nicht immer dasselbe zurückgeben, andere statics
-	public static Texts defaults(final String lang) {
+	public static Texts fromResources(final String lang) {
 		return new Texts(new ResourceToStringSupplier(), "i18n/" + lang + ".properties");
 	}
 
@@ -70,7 +77,36 @@ public class Texts {
 		return MessageFormat.format(text, values);
 	}
 
-	public ImmutableMap<String, String> getMap() {
-		return this.texts;
+	public void translateComponent(final Component component) {
+		for (final Entry<String, String> msg : this.texts.entrySet()) {
+
+			Component sub = component.select(msg.getKey());
+
+			if (sub.getUI() instanceof CustomTranslator) {
+
+				/* custom translation */
+				((CustomTranslator) sub.getUI()).translate(msg.getValue());
+
+			} else {
+
+				/* standard widgets */
+				Control c = sub.getControl();
+				if (c instanceof Button) {
+					((Button) c).setText(msg.getValue());
+				} else if (c instanceof Label) {
+					((Label) c).setText(msg.getValue());
+				} else if (c instanceof Text) {
+					((Text) c).setText(msg.getValue());
+				} else {
+					L.error("don't know how to translate widget: " + sub);
+				}
+			}
+		}
+	}
+
+	//~ Inner Interfaces -----------------------------------------------------------------------------------------------
+
+	public static interface CustomTranslator {
+		public void translate(final String text);
 	}
 }

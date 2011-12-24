@@ -16,7 +16,6 @@ public final class MeasureData {
 		this(description, data, start, 0);
 	}
 
-	// TODO: array is mutable
 	public MeasureData(final String description[], final Object data, final long start, final long duration) {
 		this.description     = description;
 		this.data			 = data;

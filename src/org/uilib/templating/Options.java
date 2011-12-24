@@ -15,7 +15,6 @@ import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 
-// TODO: Idee: OptionsBuilder .get("sd").withDefault(false)
 public class Options {
 
 	//~ Static fields/initializers -------------------------------------------------------------------------------------
@@ -51,9 +50,8 @@ public class Options {
 
 			String key = entry.getKey();
 
-			// FIXME: this doesn't find range=yes options=range
 			Preconditions.checkArgument(nameFilter.matchesAllOf(key), "only a-z, '-' and '?' allowed in name");
-			Preconditions.checkArgument(entry.getValue().size() == 1, "specify option '%s' only once", key);
+			Preconditions.checkArgument(entry.getValue().size() == 1, "specify option '%s' contradicts itself", key);
 			map.put(key, entry.getValue().iterator().next());
 		}
 

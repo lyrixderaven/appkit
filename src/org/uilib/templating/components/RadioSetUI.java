@@ -6,11 +6,14 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
+import org.uilib.AppContext;
 import org.uilib.templating.Component;
 import org.uilib.templating.Options;
 
@@ -23,7 +26,8 @@ public class RadioSetUI implements ComponentUI {
 	//~ Methods --------------------------------------------------------------------------------------------------------
 
 	@Override
-	public Control initialize(final Composite parent, final List<Component> children, final Options options) {
+	public Control initialize(final AppContext app, final Composite parent, final List<Component> children,
+							  final Options options) {
 
 		Composite comp		 = new Composite(parent, SWT.NONE);
 		GridLayout gl		 = new GridLayout(1, false);
@@ -34,10 +38,17 @@ public class RadioSetUI implements ComponentUI {
 		comp.setLayout(gl);
 
 		int i = 0;
-		for (final String opt : options.get("choices")) {
+		for (final String choice : options.get("choices")) {
 
 			Button btn = new Button(comp, SWT.RADIO);
-			this.choices.put(opt, btn);
+			this.choices.put(choice, btn);
+			btn.addSelectionListener(
+				new SelectionAdapter() {
+						@Override
+						public void widgetSelected(final SelectionEvent event) {
+							app.postEvent(choice);
+						}
+					});
 
 			/* if it's the first, select it */
 			if (i == 0) {

@@ -20,7 +20,7 @@ import org.uilib.util.PrefStore;
 import org.uilib.util.SWTSyncedRunnable;
 import org.uilib.util.Throttler;
 
-// FIXME: table utils, shell utils, widget utils?
+// FIXME: rename: table utils, shell utils, widget utils?
 public final class TableColumnSizeMemory {
 
 	//~ Static fields/initializers -------------------------------------------------------------------------------------

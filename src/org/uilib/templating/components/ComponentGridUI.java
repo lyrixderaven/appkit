@@ -9,6 +9,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 
+import org.uilib.AppContext;
 import org.uilib.templating.Component;
 import org.uilib.templating.Options;
 
@@ -21,7 +22,8 @@ public class ComponentGridUI implements ComponentUI {
 	//~ Methods --------------------------------------------------------------------------------------------------------
 
 	@Override
-	public Composite initialize(final Composite parent, final List<Component> children, final Options options) {
+	public Composite initialize(final AppContext app, final Composite parent, final List<Component> children,
+								final Options options) {
 
 		int style = SWT.NONE;
 		style |= (options.get("border", false) ? SWT.BORDER : SWT.NONE);
