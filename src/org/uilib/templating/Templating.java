@@ -2,7 +2,6 @@ package org.uilib.templating;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -37,7 +36,6 @@ import org.uilib.util.StringSupplier;
 
 import sun.reflect.generics.reflectiveObjects.ParameterizedTypeImpl;
 
-// FIXME: Texts: getSystemDefault Lang
 public final class Templating {
 
 	//~ Static fields/initializers -------------------------------------------------------------------------------------
@@ -49,10 +47,24 @@ public final class Templating {
 	private final StringSupplier supplier;
 	private final Gson gson;
 
+	/* mutable */
+	private final Map<String, Class<?extends ComponentUI>> types = Maps.newHashMap();
+
 	//~ Constructors ---------------------------------------------------------------------------------------------------
 
 	public Templating(final StringSupplier supplier) {
-		this.supplier			  = supplier;
+		this.supplier = supplier;
+
+		/* built in types */
+		this.registerType(ButtonUI.class, "button");
+		this.registerType(DatepickerUI.class, "datepicker");
+		this.registerType(LabelUI.class, "label");
+		this.registerType(StackUI.class, "stack");
+		this.registerType(RadioSetUI.class, "radioset");
+		this.registerType(TableUI.class, "table");
+		this.registerType(ComponentGridUI.class, "grid");
+		this.registerType(SpacerUI.class, "spacer");
+		this.registerType(TextUI.class, "text");
 
 		/* configure Gson */
 		GsonBuilder gBuilder = new GsonBuilder();
@@ -67,6 +79,12 @@ public final class Templating {
 
 	public static Templating fromResources() {
 		return new Templating(new ResourceToStringSupplier());
+	}
+
+	public void registerType(final Class<?extends ComponentUI> ui, final String typeName) {
+		Preconditions.checkState(! this.types.containsKey(ui), "type %s already registered", typeName);
+
+		this.types.put(typeName, ui);
 	}
 
 	public Component create(final String componentType) {
@@ -94,38 +112,8 @@ public final class Templating {
 
 	private final class ComponentDeserializer implements JsonDeserializer<Component> {
 
-		private final ImmutableMap<String, Class<?extends ComponentUI>> controllers;
 		private final Type immutableListType = new TypeToken<ImmutableList<Component>>() {}
 			.getType();
-
-		public ComponentDeserializer() {
-
-			ImmutableMap.Builder<String, Class<?extends ComponentUI>> map = ImmutableMap.builder();
-			map.put("button", ButtonUI.class);
-			map.put("datepicker", DatepickerUI.class);
-			map.put("label", LabelUI.class);
-			map.put("stack", StackUI.class);
-			map.put("radioset", RadioSetUI.class);
-			map.put("table", TableUI.class);
-			map.put("componentgrid", ComponentGridUI.class);
-			map.put("spacer", SpacerUI.class);
-			map.put("text", TextUI.class);
-
-			this.controllers = map.build();
-		}
-
-		private ComponentUI instantiateController(final String type) {
-			Preconditions.checkArgument(this.controllers.containsKey(type), "no type '%s' registered", type);
-			try {
-				return this.controllers.get(type).newInstance();
-			} catch (final InstantiationException e) {
-				L.error(e.getMessage(), e);
-				throw new IllegalArgumentException(e.getMessage(), e);
-			} catch (final IllegalAccessException e) {
-				L.error(e.getMessage(), e);
-				throw new IllegalArgumentException(e.getMessage(), e);
-			}
-		}
 
 		@Override
 		public Component deserialize(final JsonElement json, final Type type, final JsonDeserializationContext context) {
@@ -142,64 +130,60 @@ public final class Templating {
 					Options.empty());
 			}
 
-			/* 2. read name (if existent) */
+			/* 2. name (if existent) */
 			JsonElement jsonName = jsonObject.get("name");
 			String name			 = ((jsonName != null) ? jsonName.getAsString() : null);
 
-			/* 3. read type, default to 'component' if non-existant */
+			/* 3. type, default to 'component' if non-existant */
 			JsonElement jsonType = jsonObject.get("type");
-			String componentType = ((jsonType != null) ? jsonType.getAsString() : "componentgrid");
+			String componentType = ((jsonType != null) ? jsonType.getAsString() : "grid");
 
 			L.debug("deserializing: " + componentType);
 
-			/* 4. read all other parameters (no name, children or type)  into options */
+			/* 4. options = all other parameters (no name, children or type) */
 			Map<String, String> map = Maps.newHashMap();
 			for (final Entry<String, JsonElement> entry : jsonObject.entrySet()) {
 
-				String key = entry.getKey();
+				String key		   = entry.getKey();
+				JsonElement option = entry.getValue();
+
 				if (key.equals("name") || key.equals("children") || key.equals("type")) {
 					continue;
 				}
 
-				// FIXME: force that this is a string, boolean or integer
-				map.put(key, entry.getValue().getAsString());
+				Preconditions.checkState(option.isJsonPrimitive(), "option %s is no json-primitive", option);
+				map.put(key, option.getAsString());
 			}
 
-			Options options = Options.of(map);
+			Options options					  = Options.of(map);
 
-			// FIXME: preconditions, no subcomponent if type was found
-			/* 5. try to load component which is called like this type (subcomponent) */
-			Component subComp = Templating.this.create(componentType);
-
-			/* 6. Check: if a sub-component was found this component isn't allowed to have children */
-			Preconditions.checkState(
-				(subComp == null) || (jsonObject.get("children") == null),
-				"can either refer to a subcomponent or have children itself");
-
-			ComponentUI compUI				  = null;
+			/* 5. deserialize children */
 			ImmutableList<Component> children = null;
-
-			/* 7. if a sub-component was found, we "inline" parts of it in this component by copying it's properties */
-			if (subComp != null) {
-				/* copy type, controller and children */
-				compUI		 = subComp.getUI();
-				children     = subComp.getChildren();
-
-				options		 = options.withDefaults(subComp.getOptions());
+			if (jsonObject.has("children")) {
+				Preconditions.checkState(jsonObject.get("children").isJsonArray(), "children is not array");
+				children = context.deserialize(jsonObject.get("children").getAsJsonArray(), this.immutableListType);
 			} else {
-				/* 7b. if it wasn't a reference to a sub-component, we try the registered controllers */
-				compUI = this.instantiateController(componentType);
-
-				/* deserialize children */
-				// FIXME: force this to be an array
-				if (jsonObject.has("children")) {
-					children = context.deserialize(jsonObject.get("children").getAsJsonArray(), this.immutableListType);
-				} else {
-					children = ImmutableList.of();
-				}
+				children = ImmutableList.of();
 			}
+
+			/* 6. ui instantiation */
+			ComponentUI compUI = this.instantiateController(componentType);
+			;
 
 			return new Component(name, componentType, children, compUI, options);
+		}
+
+		private ComponentUI instantiateController(final String type) {
+			Preconditions.checkArgument(types.containsKey(type), "no type '%s' registered", type);
+			try {
+				return types.get(type).newInstance();
+			} catch (final InstantiationException e) {
+				L.error(e.getMessage(), e);
+				throw new IllegalArgumentException(e.getMessage(), e);
+			} catch (final IllegalAccessException e) {
+				L.error(e.getMessage(), e);
+				throw new IllegalArgumentException(e.getMessage(), e);
+			}
 		}
 	}
 

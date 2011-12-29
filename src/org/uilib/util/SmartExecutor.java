@@ -11,6 +11,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 
+// FIXME: executor: throttle call raus, swt Sync Runnable weg? Zeiten aus Throttler
 public final class SmartExecutor implements Throttler {
 
 	//~ Static fields/initializers -------------------------------------------------------------------------------------
@@ -56,7 +57,7 @@ public final class SmartExecutor implements Throttler {
 	@Override
 	public void throttle(final String throttleName, final long delay, final TimeUnit timeUnit, final Runnable runnable) {
 
-		// FIXME: TASKQUEUE is not THREADSAFE!
+		// FIXME: executor: TASKQUEUE is not THREADSAFE!
 		final ThrottledRunnable thrRunnable = new ThrottledRunnable(runnable, throttleName, delay, timeUnit);
 		this.throttledTasks.put(throttleName, thrRunnable);
 		this.taskQueue.put(thrRunnable);

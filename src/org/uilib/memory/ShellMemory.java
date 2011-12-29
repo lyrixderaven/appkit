@@ -130,7 +130,6 @@ public final class ShellMemory {
 
 	//~ Inner Classes --------------------------------------------------------------------------------------------------
 
-	// FIXME: throttle call raus, swt Sync Runnable weg? Zeiten aus Throttler
 	private class ShellChanged implements ControlListener {
 		@Override
 		public void controlMoved(final ControlEvent event) {

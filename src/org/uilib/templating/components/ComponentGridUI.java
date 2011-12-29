@@ -1,28 +1,31 @@
 package org.uilib.templating.components;
 
-import java.util.List;
-
 import org.apache.log4j.Logger;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 
-import org.uilib.AppContext;
-import org.uilib.templating.Component;
+import org.uilib.EventContext;
 import org.uilib.templating.Options;
 
-public class ComponentGridUI implements ComponentUI {
+public class ComponentGridUI implements LayoutUI {
 
 	//~ Static fields/initializers -------------------------------------------------------------------------------------
 
 	private static final Logger L = Logger.getLogger(ComponentGridUI.class);
 
+	//~ Instance fields ------------------------------------------------------------------------------------------------
+
+	private Composite comp		    = null;
+	private boolean variableColumns = false;
+
 	//~ Methods --------------------------------------------------------------------------------------------------------
 
 	@Override
-	public Composite initialize(final AppContext app, final Composite parent, final List<Component> children,
+	public Composite initialize(final EventContext app, final Composite parent, final String name, final String type,
 								final Options options) {
 
 		int style = SWT.NONE;
@@ -35,42 +38,51 @@ public class ComponentGridUI implements ComponentUI {
 		gl.verticalSpacing		 = options.get("v-spacing", gl.verticalSpacing);
 		gl.horizontalSpacing     = options.get("h-spacing", gl.horizontalSpacing);
 
-		Composite comp			 = new Composite(parent, style);
-		comp.setLayout(gl);
-
-		/* create children */
-		for (final Component child : children) {
-			child.initialize(comp);
-
-			/* create GridData for positioning */
-			GridData gd = this.genGridData(child);
-			child.getControl().setLayoutData(gd);
-
-			L.debug(child.toString() + ", " + gd);
-		}
-
 		/* layout columns */
 		String columns = options.get("columns", "1");
-		if (columns.equals("variable")) {
-			((GridLayout) comp.getLayout()).numColumns = children.size();
+		if (! columns.equals("variable")) {
+			this.variableColumns = true;
 		} else {
-			((GridLayout) comp.getLayout()).numColumns = Integer.valueOf(columns);
+			gl.numColumns = Integer.valueOf(columns);
 		}
 
-		return comp;
+		this.comp = new Composite(parent, style);
+		this.comp.setLayout(gl);
+
+		return this.comp;
 	}
 
-	private GridData genGridData(final Component child) {
+	@Override
+	public void layoutChild(final Control child, final Options options) {
 
-		Options cOptions			 = child.getOptions();
+		/* create GridData for positioning */
+		GridData gd = this.genGridData(options);
+		child.setLayoutData(gd);
 
-		GridData gd					 = new GridData();
+		L.debug(child.toString() + ", " + gd);
 
-		gd.grabExcessHorizontalSpace = cOptions.get("grow", "").contains("-");
-		gd.horizontalIndent			 = cOptions.get("h-indent", 0);
-		gd.horizontalSpan			 = cOptions.get("h-span", 1);
+		if (this.variableColumns) {
 
-		String hAlign				 = cOptions.get("h-align", "");
+			int columns = ((GridLayout) this.comp.getLayout()).numColumns;
+			((GridLayout) this.comp.getLayout()).numColumns = columns + 1;
+		}
+	}
+
+	@Override
+	public void setVisible(final Control child, final boolean visible) {
+		child.setVisible(visible);
+		((GridData) child.getLayoutData()).exclude = ! visible;
+	}
+
+	private GridData genGridData(final Options options) {
+
+		GridData gd = new GridData();
+
+		gd.grabExcessHorizontalSpace     = options.get("grow", "").contains("-");
+		gd.horizontalIndent				 = options.get("h-indent", 0);
+		gd.horizontalSpan				 = options.get("h-span", 1);
+
+		String hAlign					 = options.get("h-align", "");
 		if (hAlign.contains("center")) {
 			gd.horizontalAlignment = SWT.CENTER;
 		} else if (hAlign.contains("left")) {
@@ -83,11 +95,11 @@ public class ComponentGridUI implements ComponentUI {
 			gd.horizontalAlignment = SWT.NONE;
 		}
 
-		gd.grabExcessVerticalSpace     = cOptions.get("grow", "").contains("|");
-		gd.verticalIndent			   = cOptions.get("v-indent", 0);
-		gd.verticalSpan				   = cOptions.get("v-span", 1);
+		gd.grabExcessVerticalSpace     = options.get("grow", "").contains("|");
+		gd.verticalIndent			   = options.get("v-indent", 0);
+		gd.verticalSpan				   = options.get("v-span", 1);
 
-		String vAlign				   = cOptions.get("v-align", "");
+		String vAlign				   = options.get("v-align", "");
 		if (vAlign.contains("center")) {
 			gd.verticalAlignment = SWT.CENTER;
 		} else if (vAlign.contains("top")) {

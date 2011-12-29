@@ -19,6 +19,7 @@ import org.eclipse.swt.widgets.Text;
 
 import org.uilib.templating.Component;
 
+//FIXME: Texts: getSystemDefault Lang
 public class Texts {
 
 	//~ Static fields/initializers -------------------------------------------------------------------------------------

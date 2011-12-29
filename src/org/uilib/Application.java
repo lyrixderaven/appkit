@@ -39,9 +39,9 @@ public final class Application {
 
 	//~ Methods --------------------------------------------------------------------------------------------------------
 
-	public static void start(final ApplicationController controller) {
+	public static void start(final ApplicationController controller, final BackgroundWorker bgController) {
 
-		Application application = new Application("", "", controller, null);
+		Application application = new Application("", "", controller, bgController);
 		application.start();
 	}
 
@@ -71,7 +71,7 @@ public final class Application {
 
 	public void initController(final Controller subController) {
 
-		AppContext subContext = new RealAppContext(this, subController, this.localBus);
+		EventContext subContext = new RealAppContext(this, subController, this.localBus);
 		subController.init(subContext);
 	}
 

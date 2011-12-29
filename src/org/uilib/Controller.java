@@ -4,5 +4,5 @@ public interface Controller {
 
 	//~ Methods --------------------------------------------------------------------------------------------------------
 
-	public void init(final AppContext app);
+	public void init(final EventContext app);
 }

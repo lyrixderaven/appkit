@@ -7,8 +7,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 
-import org.uilib.AppContext;
-import org.uilib.templating.Component;
+import org.uilib.EventContext;
 import org.uilib.templating.Options;
 import org.uilib.util.Fonts;
 
@@ -17,7 +16,7 @@ public class LabelUI implements ComponentUI {
 	//~ Methods --------------------------------------------------------------------------------------------------------
 
 	@Override
-	public Control initialize(final AppContext app, final Composite parent, final List<Component> children,
+	public Control initialize(final EventContext app, final Composite parent, final String name, final String type,
 							  final Options options) {
 
 		Label label			  = new Label(parent, SWT.NONE);

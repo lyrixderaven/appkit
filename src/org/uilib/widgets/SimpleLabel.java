@@ -8,6 +8,7 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 
+// FIXME: use global fonts
 public class SimpleLabel extends Composite {
 
 	//~ Enumerations ---------------------------------------------------------------------------------------------------

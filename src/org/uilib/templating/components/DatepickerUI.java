@@ -2,7 +2,6 @@ package org.uilib.templating.components;
 
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -15,35 +14,40 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.DateTime;
 import org.eclipse.swt.widgets.Label;
 
-import org.uilib.AppContext;
-import org.uilib.templating.Component;
+import org.uilib.EventContext;
 import org.uilib.templating.Options;
 
 public final class DatepickerUI implements ComponentUI {
 
 	//~ Instance fields ------------------------------------------------------------------------------------------------
 
-	private AppContext app     = null;
-	private DateTime dt		   = null;
-	private DateTime dtFrom    = null;
-	private DateTime dtTo	   = null;
-	private Label labelFrom    = null;
-	private Label labelTo	   = null;
-	private Button bEnableFrom = null;
-	private Button bEnableTo   = null;
+	private EventContext app    = null;
+	private DateTime dt		    = null;
+	private DateTime dtFrom     = null;
+	private DateTime dtTo	    = null;
+	private Label labelFrom     = null;
+	private Label labelTo	    = null;
+	private Button bEnableFrom  = null;
+	private Button bEnableTo    = null;
+	private DateRange daterange;
 
 	//~ Methods --------------------------------------------------------------------------------------------------------
 
-	@Override
-	public Control initialize(final AppContext app, final Composite parent, final List<Component> children,
-							  final Options options) {
-		this.app = app;
+	/* convenince function for using DatePicker directly */
+	public Control initialize(final EventContext app, final Composite parent, final Options options) {
+		return this.initialize(app, parent, null, null, options);
+	}
 
-		Composite comp     = new Composite(parent, SWT.NONE);
-		GridLayout gl	   = new GridLayout(3, false);
-		gl.marginHeight    = 0;
-		gl.marginWidth     = 0;
-		gl.verticalSpacing = 2;
+	@Override
+	public Control initialize(final EventContext app, final Composite parent, final String name, final String type,
+							  final Options options) {
+		this.app			    = app;
+
+		Composite comp		    = new Composite(parent, SWT.NONE);
+		GridLayout gl		    = new GridLayout(3, false);
+		gl.marginHeight		    = 0;
+		gl.marginWidth		    = 0;
+		gl.verticalSpacing	    = 2;
 		comp.setLayout(gl);
 
 		if (! options.get("range", true)) {
@@ -101,6 +105,10 @@ public final class DatepickerUI implements ComponentUI {
 		return comp;
 	}
 
+	public DateRange getDateRange() {
+		return this.daterange;
+	}
+
 	private void fireChange() {
 
 		Date dateFrom = null;
@@ -114,7 +122,8 @@ public final class DatepickerUI implements ComponentUI {
 			dateTo = this.constructDate(this.dtTo);
 		}
 
-		this.app.postEvent(new DateRange(dateFrom, dateTo));
+		this.daterange = new DateRange(dateFrom, dateTo);
+		this.app.postEvent(this.daterange);
 	}
 
 	private Date constructDate(final DateTime dt) {

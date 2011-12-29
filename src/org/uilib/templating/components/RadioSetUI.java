@@ -2,7 +2,6 @@ package org.uilib.templating.components;
 
 import com.google.common.collect.Maps;
 
-import java.util.List;
 import java.util.Map;
 
 import org.eclipse.swt.SWT;
@@ -13,8 +12,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
-import org.uilib.AppContext;
-import org.uilib.templating.Component;
+import org.uilib.EventContext;
 import org.uilib.templating.Options;
 
 public class RadioSetUI implements ComponentUI {
@@ -22,11 +20,17 @@ public class RadioSetUI implements ComponentUI {
 	//~ Instance fields ------------------------------------------------------------------------------------------------
 
 	private Map<String, Button> choices = Maps.newHashMap();
+	private String selection		    = "";
 
 	//~ Methods --------------------------------------------------------------------------------------------------------
 
+	/* convenince function for using DatePicker directly */
+	public Control initialize(final EventContext app, final Composite parent, final Options options) {
+		return this.initialize(app, parent, null, null, options);
+	}
+
 	@Override
-	public Control initialize(final AppContext app, final Composite parent, final List<Component> children,
+	public Control initialize(final EventContext app, final Composite parent, final String name, final String type,
 							  final Options options) {
 
 		Composite comp		 = new Composite(parent, SWT.NONE);
@@ -46,7 +50,8 @@ public class RadioSetUI implements ComponentUI {
 				new SelectionAdapter() {
 						@Override
 						public void widgetSelected(final SelectionEvent event) {
-							app.postEvent(choice);
+							selection = choice;
+							app.postEvent(selection);
 						}
 					});
 
@@ -60,7 +65,7 @@ public class RadioSetUI implements ComponentUI {
 		return comp;
 	}
 
-	public Map<String, Button> getChoices() {
-		return this.choices;
+	public String getSelection() {
+		return this.selection;
 	}
 }

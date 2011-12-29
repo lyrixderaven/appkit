@@ -13,8 +13,9 @@ import org.apache.log4j.Logger;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
-import org.uilib.AppContext;
+import org.uilib.EventContext;
 import org.uilib.templating.components.ComponentUI;
+import org.uilib.templating.components.LayoutUI;
 
 public final class Component {
 
@@ -29,7 +30,7 @@ public final class Component {
 	private final String type;
 	private final ImmutableList<Component> children;
 	private final ImmutableMultimap<String, Component> nameMap;
-	private final ComponentUI compUI;
+	private final ComponentUI ui;
 	private final Options options;
 	private Control control;
 
@@ -49,14 +50,17 @@ public final class Component {
 		Preconditions.checkNotNull(children);
 		Preconditions.checkNotNull(controller);
 		Preconditions.checkNotNull(options);
+		Preconditions.checkArgument(
+			children.isEmpty() || controller instanceof LayoutUI,
+			"need a LayoutUI since component has children");
 
 		/* initialize */
 		this.type		  = type;
 		this.children     = ImmutableList.copyOf(children);
-		this.compUI		  = controller;
+		this.ui			  = controller;
 		this.options	  = options;
 
-		/* build name-map for this component */
+		/* *** build name-map for this component */
 		ImmutableMultimap.Builder<String, Component> map = ImmutableMultimap.builder();
 
 		/* 1. we are definitely addressable as $<type> */
@@ -85,7 +89,7 @@ public final class Component {
 				}
 			}
 		}
-
+		/* *** build name-map for this component */
 		this.nameMap = map.build();
 	}
 
@@ -100,7 +104,7 @@ public final class Component {
 	}
 
 	public ComponentUI getUI() {
-		return this.compUI;
+		return this.ui;
 	}
 
 	public String getType() {
@@ -109,10 +113,6 @@ public final class Component {
 
 	public String getName() {
 		return this.name;
-	}
-
-	public ImmutableList<Component> getChildren() {
-		return this.children;
 	}
 
 	public Options getOptions() {
@@ -169,14 +169,51 @@ public final class Component {
 	}
 
 	public void initialize(final Composite parent) {
-		Preconditions.checkArgument(this.control == null, "control wasn't null -> double initialization");
-
-		this.control = this.compUI.initialize(AppContext.FAKE, parent, this.children, this.options);
+		this.initialize(EventContext.FAKE, parent);
 	}
 
-	public void initialize(final AppContext app, final Composite parent) {
+	public void initialize(final EventContext app, final Composite parent) {
 		Preconditions.checkArgument(this.control == null, "control wasn't null -> double initialization");
 
-		this.control = this.compUI.initialize(app, parent, this.children, this.options);
+		this.control = this.ui.initialize(app, parent, this.name, this.type, this.options);
+
+		Preconditions.checkArgument(this.control != null, "control wasn't initialized, it's still null");
+
+		if (this.children.isEmpty()) {
+			return;
+		}
+
+		Preconditions.checkState(
+			this.control instanceof Composite,
+			"initializer returned %s instead of a composite",
+			this.control);
+
+		/* initialize children */
+		for (final Component child : this.children) {
+			child.initialize(app, (Composite) this.control);
+		}
+
+		/* layout children */
+		for (final Component child : this.children) {
+			((LayoutUI) this.ui).layoutChild(child.getControl(), child.getOptions());
+		}
+	}
+
+	public void show(final String query) {
+		Preconditions.checkArgument(
+			this.ui instanceof LayoutUI,
+			"can't call show(), underlying ui doesn't implement layout functions");
+
+		Control child = this.select(query, Control.class);
+		((LayoutUI) this.ui).setVisible(child, true);
+	}
+
+	public void hide(final String query) {
+		Preconditions.checkArgument(
+			this.ui instanceof LayoutUI,
+			"can't call show(), underlying ui doesn't implement layout functions");
+
+		Control child = this.select(query, Control.class);
+		((LayoutUI) this.ui).setVisible(child, false);
 	}
 }

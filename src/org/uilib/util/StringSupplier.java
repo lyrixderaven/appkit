@@ -1,6 +1,6 @@
 package org.uilib.util;
 
-public abstract interface StringSupplier {
+public interface StringSupplier {
 
 	//~ Methods --------------------------------------------------------------------------------------------------------
 

@@ -2,7 +2,7 @@ package org.uilib;
 
 import com.google.common.eventbus.EventBus;
 
-public final class RealAppContext implements AppContext {
+public final class RealAppContext implements EventContext {
 
 	//~ Instance fields ------------------------------------------------------------------------------------------------
 
@@ -33,7 +33,7 @@ public final class RealAppContext implements AppContext {
 	@Override
 	public void initController(final Controller subController) {
 
-		AppContext subContext = new RealAppContext(this.application, subController, localBus);
+		EventContext subContext = new RealAppContext(this.application, subController, localBus);
 		subController.init(subContext);
 	}
 

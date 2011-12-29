@@ -1,10 +1,10 @@
 package org.uilib;
 
-public interface AppContext {
+public interface EventContext {
 
 	//~ Static fields/initializers -------------------------------------------------------------------------------------
 
-	public static final AppContext FAKE = new FakeAppContext();
+	public static final EventContext FAKE = new FakeEventContext();
 
 	//~ Methods --------------------------------------------------------------------------------------------------------
 

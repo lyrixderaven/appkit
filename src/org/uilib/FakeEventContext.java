@@ -1,6 +1,6 @@
 package org.uilib;
 
-public final class FakeAppContext implements AppContext {
+public final class FakeEventContext implements EventContext {
 
 	//~ Methods --------------------------------------------------------------------------------------------------------
 
