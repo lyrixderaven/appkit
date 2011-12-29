@@ -144,6 +144,7 @@ public final class Component {
 	}
 
 	public Component select(final String query) {
+		// FIXME: does it make sense to select before initialization?
 		Preconditions.checkState(this.control != null, "control wasn't initialized yet");
 
 		ImmutableCollection<Component> components = this.nameMap.get(query);

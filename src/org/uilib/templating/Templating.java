@@ -82,7 +82,7 @@ public final class Templating {
 	}
 
 	public void registerType(final Class<?extends ComponentUI> ui, final String typeName) {
-		Preconditions.checkState(! this.types.containsKey(ui), "type %s already registered", typeName);
+		Preconditions.checkState(! this.types.containsKey(typeName), "type %s already registered", typeName);
 
 		this.types.put(typeName, ui);
 	}

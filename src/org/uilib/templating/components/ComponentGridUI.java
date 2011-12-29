@@ -40,7 +40,7 @@ public class ComponentGridUI implements LayoutUI {
 
 		/* layout columns */
 		String columns = options.get("columns", "1");
-		if (! columns.equals("variable")) {
+		if (columns.equals("variable")) {
 			this.variableColumns = true;
 		} else {
 			gl.numColumns = Integer.valueOf(columns);

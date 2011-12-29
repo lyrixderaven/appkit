@@ -33,8 +33,10 @@ public final class Sample {
 		shell.setLayout(new FillLayout());
 
 		Templating tl    = Templating.fromResources();
-		Component orders = tl.create("loginwindow");
-		Texts.forComponent("loginwindow", "de").translateComponent(orders);
+		Component orders = tl.create("orderview");
+		orders.initialize(shell);
+
+		Texts.forComponent("orderview", "de").translateComponent(orders);
 
 		List<String> keys = Lists.newArrayList(orders.getNameMap().keySet());
 		Collections.sort(keys, Ordering.natural());
@@ -44,7 +46,6 @@ public final class Sample {
 				L.debug("\t" + c.getType());
 			}
 		}
-		orders.initialize(shell);
 
 		shell.open();
 

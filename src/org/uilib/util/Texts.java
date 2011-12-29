@@ -20,6 +20,7 @@ import org.eclipse.swt.widgets.Text;
 import org.uilib.templating.Component;
 
 //FIXME: Texts: getSystemDefault Lang
+// FIXME: Texts: Globals.texts.forComponent("search", "de").translateComponent(search) ist komisch, translateComponent(comp). besser
 public class Texts {
 
 	//~ Static fields/initializers -------------------------------------------------------------------------------------

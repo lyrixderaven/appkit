@@ -10,6 +10,6 @@ public interface ComponentUI {
 
 	//~ Methods --------------------------------------------------------------------------------------------------------
 
-	public Control initialize(final EventContext app, final Composite parent, final String name, final String type,
-							  final Options options);
+	Control initialize(final EventContext app, final Composite parent, final String name, final String type,
+					   final Options options);
 }

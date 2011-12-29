@@ -58,6 +58,7 @@ public class RadioSetUI implements ComponentUI {
 			/* if it's the first, select it */
 			if (i == 0) {
 				btn.setSelection(true);
+				this.selection = choice;
 			}
 			i++;
 		}

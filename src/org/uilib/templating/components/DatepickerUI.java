@@ -17,11 +17,11 @@ import org.eclipse.swt.widgets.Label;
 import org.uilib.EventContext;
 import org.uilib.templating.Options;
 
+// TODO: Datepicker: bei abhakerl Text auf weiß setzen
 public final class DatepickerUI implements ComponentUI {
 
 	//~ Instance fields ------------------------------------------------------------------------------------------------
 
-	private EventContext app    = null;
 	private DateTime dt		    = null;
 	private DateTime dtFrom     = null;
 	private DateTime dtTo	    = null;
@@ -41,7 +41,6 @@ public final class DatepickerUI implements ComponentUI {
 	@Override
 	public Control initialize(final EventContext app, final Composite parent, final String name, final String type,
 							  final Options options) {
-		this.app			    = app;
 
 		Composite comp		    = new Composite(parent, SWT.NONE);
 		GridLayout gl		    = new GridLayout(3, false);
@@ -62,7 +61,8 @@ public final class DatepickerUI implements ComponentUI {
 				new SelectionAdapter() {
 						@Override
 						public void widgetSelected(final SelectionEvent event) {
-							fireChange();
+							setInternalDateRange();
+							app.postEvent(daterange);
 						}
 					});
 
@@ -74,7 +74,8 @@ public final class DatepickerUI implements ComponentUI {
 						@Override
 						public void widgetSelected(final SelectionEvent event) {
 							dtFrom.setEnabled(bEnableFrom.getSelection());
-							fireChange();
+							setInternalDateRange();
+							app.postEvent(daterange);
 						}
 					});
 
@@ -86,7 +87,8 @@ public final class DatepickerUI implements ComponentUI {
 				new SelectionAdapter() {
 						@Override
 						public void widgetSelected(final SelectionEvent event) {
-							fireChange();
+							setInternalDateRange();
+							app.postEvent(daterange);
 						}
 					});
 			this.bEnableTo = new Button(comp, SWT.CHECK);
@@ -97,10 +99,13 @@ public final class DatepickerUI implements ComponentUI {
 						@Override
 						public void widgetSelected(final SelectionEvent event) {
 							dtTo.setEnabled(bEnableTo.getSelection());
-							fireChange();
+							setInternalDateRange();
+							app.postEvent(daterange);
 						}
 					});
 		}
+
+		this.setInternalDateRange();
 
 		return comp;
 	}
@@ -109,7 +114,7 @@ public final class DatepickerUI implements ComponentUI {
 		return this.daterange;
 	}
 
-	private void fireChange() {
+	private void setInternalDateRange() {
 
 		Date dateFrom = null;
 		Date dateTo   = null;
@@ -123,7 +128,6 @@ public final class DatepickerUI implements ComponentUI {
 		}
 
 		this.daterange = new DateRange(dateFrom, dateTo);
-		this.app.postEvent(this.daterange);
 	}
 
 	private Date constructDate(final DateTime dt) {
