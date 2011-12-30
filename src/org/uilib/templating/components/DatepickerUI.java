@@ -166,8 +166,8 @@ public final class DatepickerUI implements ComponentUI {
 					this.toDate		  = fromDate;
 				}
 			} else {
-				this.fromDate     = toDate;
-				this.toDate		  = fromDate;
+				this.fromDate     = fromDate;
+				this.toDate		  = toDate;
 			}
 		}
 
@@ -177,6 +177,12 @@ public final class DatepickerUI implements ComponentUI {
 
 		public Date getToDate() {
 			return toDate;
+		}
+
+		@Override
+		public String toString() {
+			return "[" + ((this.fromDate != null) ? this.fromDate : "") + ".."
+				   + ((this.toDate != null) ? this.toDate : "") + "]";
 		}
 	}
 }

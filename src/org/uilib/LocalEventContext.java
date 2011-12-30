@@ -31,6 +31,7 @@ public final class LocalEventContext implements EventContext {
 		L.debug("local event: " + event);
 	}
 
+	// FIXME: that makes no sense since we catch Object
 	@Subscribe
 	public void deadLocalEvent(final DeadEvent event) {
 		L.debug("dead local event: " + event);

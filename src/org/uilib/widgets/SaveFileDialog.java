@@ -19,8 +19,8 @@ public class SaveFileDialog {
 
 	//~ Constructors ---------------------------------------------------------------------------------------------------
 
-	public SaveFileDialog(final Shell shell, final Texts texts) {
-		this.dlg	   = new FileDialog(shell, SWT.SAVE);
+	public SaveFileDialog(final Shell parentShell, final Texts texts) {
+		this.dlg	   = new FileDialog(parentShell, SWT.SAVE);
 		this.texts     = texts;
 	}
 
