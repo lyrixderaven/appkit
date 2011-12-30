@@ -11,7 +11,6 @@ public final class FillTableLayout {
 
 	//~ Static fields/initializers -------------------------------------------------------------------------------------
 
-	@SuppressWarnings("unused")
 	private static final Logger L = Logger.getLogger(FillTableLayout.class);
 
 	//~ Constructors ---------------------------------------------------------------------------------------------------
@@ -24,6 +23,8 @@ public final class FillTableLayout {
 
 		/* size all the columns */
 		int weight = 100 / table.getColumnCount();
+		L.debug("setting weight to " + weight + " for " + table.getColumnCount() + " columns");
+
 		for (final TableColumn c : table.getColumns()) {
 			layout.setColumnData(c, new ColumnWeightData(weight));
 		}
