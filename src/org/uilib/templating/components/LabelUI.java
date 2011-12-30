@@ -19,7 +19,8 @@ public class LabelUI implements ComponentUI {
 	public Control initialize(final EventContext app, final Composite parent, final String name, final String type,
 							  final Options options) {
 
-		Label label			  = new Label(parent, SWT.NONE);
+		Label label = new Label(parent, SWT.NONE);
+		label.setText("< empty >");
 
 		List<String> fontInfo = options.get("font");
 		if (! fontInfo.isEmpty()) {

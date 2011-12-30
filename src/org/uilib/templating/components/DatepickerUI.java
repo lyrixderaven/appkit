@@ -16,6 +16,7 @@ import org.eclipse.swt.widgets.Label;
 
 import org.uilib.EventContext;
 import org.uilib.templating.Options;
+import org.uilib.util.Texts;
 
 // TODO: Datepicker: bei abhakerl Text auf weiß setzen
 public final class DatepickerUI implements ComponentUI {
@@ -58,6 +59,7 @@ public final class DatepickerUI implements ComponentUI {
 		} else {
 			this.labelFrom = new Label(comp, SWT.NONE);
 			this.labelFrom.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
+			this.labelFrom.setText(Texts.forComponent("datepicker", "de").get("from"));
 			this.dtFrom = new DateTime(comp, SWT.DATE | SWT.BORDER | SWT.DROP_DOWN);
 			this.dtFrom.setLayoutData(new GridData(SWT.NONE, SWT.CENTER, false, false));
 			this.dtFrom.addSelectionListener(
@@ -84,6 +86,7 @@ public final class DatepickerUI implements ComponentUI {
 
 			this.labelTo = new Label(comp, SWT.NONE);
 			this.labelTo.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
+			this.labelTo.setText(Texts.forComponent("datepicker", "de").get("to"));
 			this.dtTo = new DateTime(comp, SWT.DATE | SWT.BORDER | SWT.DROP_DOWN);
 			this.dtTo.setLayoutData(new GridData(SWT.NONE, SWT.CENTER, false, false));
 			this.dtTo.addSelectionListener(

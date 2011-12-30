@@ -19,8 +19,8 @@ import org.eclipse.swt.widgets.Text;
 
 import org.uilib.templating.Component;
 
-//FIXME: Texts: getSystemDefault Lang
-// FIXME: Texts: Globals.texts.forComponent("search", "de").translateComponent(search) ist komisch, translateComponent(comp). besser
+// FIXME: Texts: getSystemDefault Lang
+// FIXME: Texts werden z.B. mit jedem DatePicker angelegt, globals Caching irgendwie? Interface?
 public class Texts {
 
 	//~ Static fields/initializers -------------------------------------------------------------------------------------
@@ -67,27 +67,15 @@ public class Texts {
 		return new Texts(new ResourceToStringSupplier(), "components/" + componentType + "." + lang + ".properties");
 	}
 
-	public String get(final String identifier, final Object... values) {
-
-		String text = this.texts.get(identifier);
-
-		if (text == null) {
-			text = "<missing identifier>";
-			L.error("missing identifier: " + identifier);
-		}
-
-		return MessageFormat.format(text, values);
-	}
-
 	public void translateComponent(final Component component) {
 		for (final Entry<String, String> msg : this.texts.entrySet()) {
 
 			Component sub = component.select(msg.getKey());
 
-			if (sub.getUI() instanceof CustomTranslator) {
+			if (sub.getUI() instanceof CustomI18N) {
 
 				/* custom translation */
-				((CustomTranslator) sub.getUI()).translate(msg.getValue());
+				((CustomI18N) sub.getUI()).translate(msg.getValue());
 
 			} else {
 
@@ -108,9 +96,21 @@ public class Texts {
 		}
 	}
 
+	public String get(final String identifier, final Object... values) {
+
+		String text = this.texts.get(identifier);
+
+		if (text == null) {
+			text = "<missing identifier>";
+			L.error("missing identifier: " + identifier);
+		}
+
+		return MessageFormat.format(text, values);
+	}
+
 	//~ Inner Interfaces -----------------------------------------------------------------------------------------------
 
-	public static interface CustomTranslator {
-		public void translate(final String text);
+	public static interface CustomI18N {
+		public void translate(final String i18nInfo);
 	}
 }

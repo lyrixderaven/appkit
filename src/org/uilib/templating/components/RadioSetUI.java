@@ -1,8 +1,12 @@
 package org.uilib.templating.components;
 
+import com.google.common.base.Splitter;
 import com.google.common.collect.Maps;
 
+import java.util.Iterator;
 import java.util.Map;
+
+import org.apache.log4j.Logger;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -14,12 +18,18 @@ import org.eclipse.swt.widgets.Control;
 
 import org.uilib.EventContext;
 import org.uilib.templating.Options;
+import org.uilib.util.Texts.CustomI18N;
 
-public class RadioSetUI implements ComponentUI {
+public class RadioSetUI implements ComponentUI, CustomI18N {
+
+	//~ Static fields/initializers -------------------------------------------------------------------------------------
+
+	private static final Logger L = Logger.getLogger(RadioSetUI.class);
 
 	//~ Instance fields ------------------------------------------------------------------------------------------------
 
 	private Map<String, Button> choices = Maps.newHashMap();
+	private Composite comp			    = null;
 	private String selection		    = "";
 
 	//~ Methods --------------------------------------------------------------------------------------------------------
@@ -36,18 +46,19 @@ public class RadioSetUI implements ComponentUI {
 		int style = SWT.NONE;
 		style |= (options.get("border", false) ? SWT.BORDER : SWT.NONE);
 
-		Composite comp		 = new Composite(parent, style);
-		GridLayout gl		 = new GridLayout(1, false);
-		gl.marginHeight		 = 0;
-		gl.marginWidth		 = 0;
-		gl.horizontalSpacing = 0;
-		gl.verticalSpacing   = 0;
-		comp.setLayout(gl);
+		this.comp = new Composite(parent, style);
+
+		GridLayout gl = new GridLayout(1, false);
+		gl.marginHeight			 = 0;
+		gl.marginWidth			 = 0;
+		gl.horizontalSpacing     = 0;
+		gl.verticalSpacing		 = 0;
+		this.comp.setLayout(gl);
 
 		int i = 0;
 		for (final String choice : options.get("choices")) {
 
-			Button btn = new Button(comp, SWT.RADIO);
+			Button btn = new Button(this.comp, SWT.RADIO);
 			this.choices.put(choice, btn);
 			btn.addSelectionListener(
 				new SelectionAdapter() {
@@ -71,5 +82,19 @@ public class RadioSetUI implements ComponentUI {
 
 	public String getSelection() {
 		return this.selection;
+	}
+
+	@Override
+	public void translate(final String i18nInfo) {
+		for (final String choice : Splitter.on("/").split(i18nInfo)) {
+
+			Iterator<String> i = Splitter.on(":").trimResults().split(choice).iterator();
+			String code		   = i.next();
+			String text		   = i.next();
+			L.debug("i18n text for option '" + code + "' is '" + text + "'");
+			this.choices.get(code).setText(text);
+		}
+
+		this.comp.layout();
 	}
 }
