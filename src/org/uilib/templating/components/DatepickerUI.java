@@ -42,7 +42,7 @@ public final class DatepickerUI implements ComponentUI {
 	public Control initialize(final EventContext app, final Composite parent, final String name, final String type,
 							  final Options options) {
 
-		Composite comp		    = new Composite(parent, SWT.NONE);
+		Composite comp		    = new Composite(parent, SWT.BORDER);
 		GridLayout gl		    = new GridLayout(3, false);
 		gl.marginHeight		    = 0;
 		gl.marginWidth		    = 0;
@@ -160,8 +160,8 @@ public final class DatepickerUI implements ComponentUI {
 					this.toDate		  = fromDate;
 				}
 			} else {
-				this.fromDate     = toDate;
-				this.toDate		  = fromDate;
+				this.fromDate     = fromDate;
+				this.toDate		  = toDate;
 			}
 		}
 
@@ -171,6 +171,11 @@ public final class DatepickerUI implements ComponentUI {
 
 		public Date getToDate() {
 			return toDate;
+		}
+		
+		@Override
+		public String toString() {
+			return "[" + (this.fromDate != null ? this.fromDate : "") + ".." + (this.toDate != null ? this.toDate : "") + "]";
 		}
 	}
 }

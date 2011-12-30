@@ -160,7 +160,7 @@ public final class Templating {
 			/* 5. deserialize children */
 			ImmutableList<Component> children = null;
 			if (jsonObject.has("children")) {
-				Preconditions.checkState(jsonObject.get("children").isJsonArray(), "children is not array");
+				Preconditions.checkState(jsonObject.get("children").isJsonArray(), "children is not an array");
 				children = context.deserialize(jsonObject.get("children").getAsJsonArray(), this.immutableListType);
 			} else {
 				children = ImmutableList.of();
@@ -168,7 +168,6 @@ public final class Templating {
 
 			/* 6. ui instantiation */
 			ComponentUI compUI = this.instantiateController(componentType);
-			;
 
 			return new Component(name, componentType, children, compUI, options);
 		}

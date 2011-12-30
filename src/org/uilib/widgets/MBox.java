@@ -34,8 +34,8 @@ public final class MBox {
 
 	//~ Constructors ---------------------------------------------------------------------------------------------------
 
-	public MBox(final Shell parent, final Icon icon, final String title, final String message, final String... options) {
-		this.shell = new Shell(parent, SWT.APPLICATION_MODAL | SWT.DIALOG_TRIM | SWT.SHEET);
+	public MBox(final Shell parentShell, final Icon icon, final String title, final String message, final String... options) {
+		this.shell = new Shell(parentShell, SWT.APPLICATION_MODAL | SWT.DIALOG_TRIM | SWT.SHEET);
 		this.shell.setLayout(new GridLayout(2, false));
 
 		Composite compIcon = new Composite(this.shell, SWT.NONE);

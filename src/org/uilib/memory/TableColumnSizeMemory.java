@@ -33,17 +33,17 @@ public final class TableColumnSizeMemory {
 	private final Throttler throttler;
 	private final Table table;
 	private final String memoryKey;
-	private final int defaultSize;
+	private final int defaultWeight;
 
 	//~ Constructors ---------------------------------------------------------------------------------------------------
 
 	private TableColumnSizeMemory(final PrefStore prefStore, final Throttler throttler, final Table table,
-								  final String key, final int defaultSize) {
+								  final String key, final int defaultWeight) {
 		this.prefStore			  = prefStore;
 		this.throttler			  = throttler;
 		this.table				  = table;
 		this.memoryKey			  = key + ".columnsizes";
-		this.defaultSize		  = defaultSize;
+		this.defaultWeight		  = defaultWeight;
 
 		/* install layout into parentComposite of Table */
 		TableColumnLayout layout = new TableColumnLayout();
@@ -55,10 +55,10 @@ public final class TableColumnSizeMemory {
 
 		List<String> widths = Lists.newArrayList(Splitter.on(",").split(widthString));
 		if (widths.size() == table.getColumnCount()) {
-			L.debug("found width '" + widths + "' -> sizing columns");
+			L.debug("valid width " + widths + " -> sizing columns");
 			for (int i = 0; i < table.getColumnCount(); i++) {
 
-				int wData = defaultSize;
+				int wData = defaultWeight;
 				try {
 					wData = Integer.valueOf(widths.get(i));
 				} catch (final NumberFormatException e) {}
@@ -70,7 +70,7 @@ public final class TableColumnSizeMemory {
 
 			/* default size */
 			for (final TableColumn column : table.getColumns()) {
-				layout.setColumnData(column, new ColumnWeightData(this.defaultSize));
+				layout.setColumnData(column, new ColumnWeightData(this.defaultWeight));
 			}
 		}
 

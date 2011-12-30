@@ -23,7 +23,6 @@ public final class TableColumnOrderMemory {
 
 	//~ Static fields/initializers -------------------------------------------------------------------------------------
 
-	@SuppressWarnings("unused")
 	private static final Logger L							 = Logger.getLogger(TableColumnOrderMemory.class);
 
 	//~ Instance fields ------------------------------------------------------------------------------------------------
@@ -44,8 +43,11 @@ public final class TableColumnOrderMemory {
 
 		/* reorder columns */
 		String orderString     = this.prefStore.get(this.memoryKey, "");
+		L.debug("orderString: " + orderString);
+		
 		List<String> orderList = Lists.newArrayList(Splitter.on(",").split(orderString));
 		if (orderList.size() == this.table.getColumnCount()) {
+			L.debug("valid order " + orderList + " -> reordering columns");
 			try {
 
 				int order[] = new int[this.table.getColumnCount()];
