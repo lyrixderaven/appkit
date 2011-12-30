@@ -42,11 +42,14 @@ public final class DatepickerUI implements ComponentUI {
 	public Control initialize(final EventContext app, final Composite parent, final String name, final String type,
 							  final Options options) {
 
-		Composite comp		    = new Composite(parent, SWT.NONE);
-		GridLayout gl		    = new GridLayout(3, false);
-		gl.marginHeight		    = 0;
-		gl.marginWidth		    = 0;
-		gl.verticalSpacing	    = 2;
+		int style			    = SWT.NONE;
+		style |= (options.get("border", false) ? SWT.BORDER : SWT.NONE);
+
+		Composite comp     = new Composite(parent, style);
+		GridLayout gl	   = new GridLayout(3, false);
+		gl.marginHeight    = 0;
+		gl.marginWidth     = 0;
+		gl.verticalSpacing = 2;
 		comp.setLayout(gl);
 
 		if (! options.get("range", true)) {

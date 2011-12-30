@@ -33,7 +33,10 @@ public class RadioSetUI implements ComponentUI {
 	public Control initialize(final EventContext app, final Composite parent, final String name, final String type,
 							  final Options options) {
 
-		Composite comp		 = new Composite(parent, SWT.NONE);
+		int style = SWT.NONE;
+		style |= (options.get("border", false) ? SWT.BORDER : SWT.NONE);
+
+		Composite comp		 = new Composite(parent, style);
 		GridLayout gl		 = new GridLayout(1, false);
 		gl.marginHeight		 = 0;
 		gl.marginWidth		 = 0;

@@ -41,7 +41,8 @@ public class ComponentGridUI implements LayoutUI {
 		/* layout columns */
 		String columns = options.get("columns", "1");
 		if (columns.equals("variable")) {
-			this.variableColumns = true;
+			this.variableColumns     = true;
+			gl.numColumns			 = 0;
 		} else {
 			gl.numColumns = Integer.valueOf(columns);
 		}
@@ -72,6 +73,7 @@ public class ComponentGridUI implements LayoutUI {
 	public void setVisible(final Control child, final boolean visible) {
 		child.setVisible(visible);
 		((GridData) child.getLayoutData()).exclude = ! visible;
+		this.comp.layout();
 	}
 
 	private GridData genGridData(final Options options) {
@@ -81,6 +83,10 @@ public class ComponentGridUI implements LayoutUI {
 		gd.grabExcessHorizontalSpace     = options.get("grow", "").contains("-");
 		gd.horizontalIndent				 = options.get("h-indent", 0);
 		gd.horizontalSpan				 = options.get("h-span", 1);
+
+		// FIXME: layout preconditions
+		gd.widthHint					 = options.get("width", SWT.DEFAULT);
+		gd.heightHint					 = options.get("height", SWT.DEFAULT);
 
 		String hAlign					 = options.get("h-align", "");
 		if (hAlign.contains("center")) {

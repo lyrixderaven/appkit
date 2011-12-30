@@ -200,21 +200,25 @@ public final class Component {
 		}
 	}
 
-	public void show(final String query) {
+	public void setVisible(final String query, final boolean visible) {
 		Preconditions.checkArgument(
 			this.ui instanceof LayoutUI,
 			"can't call show(), underlying ui doesn't implement layout functions");
 
 		Control child = this.select(query, Control.class);
-		((LayoutUI) this.ui).setVisible(child, true);
+
+		Preconditions.checkArgument(
+			child.getParent() == this.control,
+			"you have to call setVisible on the component of the layout containing the widget you want to change");
+
+		((LayoutUI) this.ui).setVisible(child, visible);
 	}
 
 	public void hide(final String query) {
-		Preconditions.checkArgument(
-			this.ui instanceof LayoutUI,
-			"can't call show(), underlying ui doesn't implement layout functions");
+		this.setVisible(query, false);
+	}
 
-		Control child = this.select(query, Control.class);
-		((LayoutUI) this.ui).setVisible(child, false);
+	public void show(final String query) {
+		this.setVisible(query, true);
 	}
 }

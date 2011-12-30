@@ -102,6 +102,8 @@ public class Texts {
 				} else {
 					L.error("don't know how to translate widget: " + sub);
 				}
+
+				c.getParent().layout();
 			}
 		}
 	}
