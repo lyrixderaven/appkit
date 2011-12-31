@@ -1,6 +1,7 @@
 package org.uilib.templating.components;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
@@ -15,7 +16,7 @@ public class ComponentGridUI implements LayoutUI {
 
 	//~ Static fields/initializers -------------------------------------------------------------------------------------
 
-	private static final Logger L = Logger.getLogger(ComponentGridUI.class);
+	private static final Logger L = LoggerFactory.getLogger(ComponentGridUI.class);
 
 	//~ Instance fields ------------------------------------------------------------------------------------------------
 

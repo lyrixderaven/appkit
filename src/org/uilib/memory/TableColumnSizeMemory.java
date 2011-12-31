@@ -7,7 +7,8 @@ import com.google.common.collect.Lists;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ColumnWeightData;
@@ -25,7 +26,7 @@ public final class TableColumnSizeMemory {
 
 	//~ Static fields/initializers -------------------------------------------------------------------------------------
 
-	private static final Logger L = Logger.getLogger(TableColumnSizeMemory.class);
+	private static final Logger L = LoggerFactory.getLogger(TableColumnSizeMemory.class);
 
 	//~ Instance fields ------------------------------------------------------------------------------------------------
 

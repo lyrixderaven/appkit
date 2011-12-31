@@ -10,7 +10,8 @@ import java.text.MessageFormat;
 import java.util.Map.Entry;
 import java.util.Properties;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Control;
@@ -25,7 +26,7 @@ public class Texts {
 
 	//~ Static fields/initializers -------------------------------------------------------------------------------------
 
-	private static final Logger L = Logger.getLogger(Texts.class);
+	private static final Logger L = LoggerFactory.getLogger(Texts.class);
 
 	//~ Instance fields ------------------------------------------------------------------------------------------------
 

@@ -1,6 +1,7 @@
 package org.uilib.util;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.eclipse.swt.widgets.Display;
 
@@ -8,7 +9,7 @@ public abstract class SWTSyncedRunnable implements Runnable {
 
 	//~ Instance fields ------------------------------------------------------------------------------------------------
 
-	protected final Logger logger = Logger.getLogger(this.getClass());
+	protected final Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	//~ Methods --------------------------------------------------------------------------------------------------------
 
@@ -18,7 +19,7 @@ public abstract class SWTSyncedRunnable implements Runnable {
 			try {
 				this.runChecked();
 			} catch (final RuntimeException e) {
-				this.logger.fatal(e.getMessage(), e);
+				this.logger.error(e.getMessage(), e);
 			}
 		} else {
 			Display.getDefault().syncExec(this);

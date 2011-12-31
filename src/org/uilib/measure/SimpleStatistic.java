@@ -5,13 +5,14 @@ import com.google.common.collect.Maps;
 
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class SimpleStatistic implements Measurement.Listener {
 
 	//~ Static fields/initializers -------------------------------------------------------------------------------------
 
-	private static final Logger L = Logger.getLogger(SimpleStatistic.class);
+	private static final Logger L = LoggerFactory.getLogger(SimpleStatistic.class);
 
 	//~ Instance fields ------------------------------------------------------------------------------------------------
 

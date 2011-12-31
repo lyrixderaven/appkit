@@ -7,7 +7,8 @@ import com.google.common.collect.Lists;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.ControlListener;
@@ -24,7 +25,7 @@ public final class ShellMemory {
 	//~ Static fields/initializers -------------------------------------------------------------------------------------
 
 	@SuppressWarnings("unused")
-	private static final Logger L							 = Logger.getLogger(ShellMemory.class);
+	private static final Logger L							 = LoggerFactory.getLogger(ShellMemory.class);
 
 	//~ Instance fields ------------------------------------------------------------------------------------------------
 

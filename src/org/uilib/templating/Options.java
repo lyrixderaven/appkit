@@ -13,13 +13,14 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Options {
 
 	//~ Static fields/initializers -------------------------------------------------------------------------------------
 
-	private static final Logger L								  = Logger.getLogger(Options.class);
+	private static final Logger L								  = LoggerFactory.getLogger(Options.class);
 	private static final ImmutableMap<String, Boolean> boolTransl =
 		ImmutableMap.of("true", Boolean.TRUE, "yes", Boolean.TRUE, "false", Boolean.FALSE, "no", Boolean.FALSE);
 	private static final CharMatcher nameFilter					  =

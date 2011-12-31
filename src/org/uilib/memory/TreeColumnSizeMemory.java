@@ -7,7 +7,8 @@ import com.google.common.collect.Lists;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.eclipse.jface.layout.TreeColumnLayout;
 import org.eclipse.jface.viewers.ColumnWeightData;
@@ -25,7 +26,7 @@ public final class TreeColumnSizeMemory {
 	//~ Static fields/initializers -------------------------------------------------------------------------------------
 
 	@SuppressWarnings("unused")
-	private static final Logger L							 = Logger.getLogger(TreeColumnSizeMemory.class);
+	private static final Logger L							 = LoggerFactory.getLogger(TreeColumnSizeMemory.class);
 
 	//~ Instance fields ------------------------------------------------------------------------------------------------
 

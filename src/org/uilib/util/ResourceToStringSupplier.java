@@ -11,14 +11,15 @@ import java.net.URL;
 import java.util.Map;
 import java.util.Scanner;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ResourceToStringSupplier implements StringSupplier {
 
 	//~ Static fields/initializers -------------------------------------------------------------------------------------
 
 	@SuppressWarnings("unused")
-	private static final Logger L							 = Logger.getLogger(ResourceToStringSupplier.class);
+	private static final Logger L							 = LoggerFactory.getLogger(ResourceToStringSupplier.class);
 
 	//~ Instance fields ------------------------------------------------------------------------------------------------
 

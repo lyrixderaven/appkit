@@ -7,7 +7,8 @@ import com.google.common.collect.Lists;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.events.ControlEvent;
@@ -22,7 +23,7 @@ public final class SashFormWeightMemory {
 	//~ Static fields/initializers -------------------------------------------------------------------------------------
 
 	@SuppressWarnings("unused")
-	private static final Logger L							 = Logger.getLogger(SashFormWeightMemory.class);
+	private static final Logger L							 = LoggerFactory.getLogger(SashFormWeightMemory.class);
 
 	//~ Instance fields ------------------------------------------------------------------------------------------------
 

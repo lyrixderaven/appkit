@@ -8,7 +8,8 @@ import java.io.InputStream;
 
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
@@ -17,7 +18,7 @@ public final class Images {
 
 	//~ Static fields/initializers -------------------------------------------------------------------------------------
 
-	private static final Logger L = Logger.getLogger(Images.class);
+	private static final Logger L = LoggerFactory.getLogger(Images.class);
 
 	//~ Instance fields ------------------------------------------------------------------------------------------------
 

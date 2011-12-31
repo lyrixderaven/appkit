@@ -1,6 +1,7 @@
 package org.uilib.util;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class LoggingRunnable implements Runnable {
 
@@ -15,13 +16,13 @@ public abstract class LoggingRunnable implements Runnable {
 		try {
 			this.runChecked();
 		} catch (final RuntimeException e) {
-			this.logger.fatal(e.getMessage(), e);
+			this.logger.error(e.getMessage(), e);
 		}
 	}
 
 	protected abstract void runChecked();
 
 	public Logger getLogger() {
-		return Logger.getLogger(this.getClass());
+		return LoggerFactory.getLogger(this.getClass());
 	}
 }

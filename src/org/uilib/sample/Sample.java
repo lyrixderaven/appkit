@@ -7,7 +7,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.log4j.PropertyConfigurator;
 
 import org.eclipse.swt.layout.FillLayout;
@@ -21,7 +22,7 @@ public final class Sample {
 
 	//~ Static fields/initializers -------------------------------------------------------------------------------------
 
-	private static final Logger L = Logger.getLogger(Sample.class);
+	private static final Logger L = LoggerFactory.getLogger(Sample.class);
 
 	//~ Methods --------------------------------------------------------------------------------------------------------
 

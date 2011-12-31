@@ -19,7 +19,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.uilib.templating.components.ButtonUI;
 import org.uilib.templating.components.ComponentGridUI;
@@ -40,7 +41,7 @@ public final class Templating {
 
 	//~ Static fields/initializers -------------------------------------------------------------------------------------
 
-	private static final Logger L = Logger.getLogger(Templating.class);
+	private static final Logger L = LoggerFactory.getLogger(Templating.class);
 
 	//~ Instance fields ------------------------------------------------------------------------------------------------
 

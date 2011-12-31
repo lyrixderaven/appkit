@@ -1,6 +1,7 @@
 package org.uilib.memory;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.eclipse.jface.layout.TreeColumnLayout;
 import org.eclipse.jface.viewers.ColumnWeightData;
@@ -12,7 +13,7 @@ public final class FillTreeLayout {
 	//~ Static fields/initializers -------------------------------------------------------------------------------------
 
 	@SuppressWarnings("unused")
-	private static final Logger L = Logger.getLogger(FillTreeLayout.class);
+	private static final Logger L = LoggerFactory.getLogger(FillTreeLayout.class);
 
 	//~ Constructors ---------------------------------------------------------------------------------------------------
 

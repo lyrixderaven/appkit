@@ -6,7 +6,8 @@ import com.google.common.collect.Maps;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -24,7 +25,7 @@ public class RadioSetUI implements ComponentUI, CustomI18N {
 
 	//~ Static fields/initializers -------------------------------------------------------------------------------------
 
-	private static final Logger L = Logger.getLogger(RadioSetUI.class);
+	private static final Logger L = LoggerFactory.getLogger(RadioSetUI.class);
 
 	//~ Instance fields ------------------------------------------------------------------------------------------------
 

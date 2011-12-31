@@ -9,14 +9,15 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 // FIXME: executor: throttle call raus, swt Sync Runnable weg? Zeiten aus Throttler
 public final class SmartExecutor implements Throttler {
 
 	//~ Static fields/initializers -------------------------------------------------------------------------------------
 
-	private static final Logger L = Logger.getLogger(SmartExecutor.class);
+	private static final Logger L = LoggerFactory.getLogger(SmartExecutor.class);
 
 	//~ Instance fields ------------------------------------------------------------------------------------------------
 

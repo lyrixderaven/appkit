@@ -1,6 +1,7 @@
 package org.uilib.widgets;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -25,7 +26,7 @@ public final class MBox {
 	//~ Static fields/initializers -------------------------------------------------------------------------------------
 
 	@SuppressWarnings("unused")
-	private static final Logger L							 = Logger.getLogger(MBox.class);
+	private static final Logger L							 = LoggerFactory.getLogger(MBox.class);
 
 	//~ Instance fields ------------------------------------------------------------------------------------------------
 

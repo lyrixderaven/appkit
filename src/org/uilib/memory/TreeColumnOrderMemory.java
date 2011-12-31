@@ -8,7 +8,8 @@ import com.google.common.primitives.Ints;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.ControlListener;
@@ -24,7 +25,7 @@ public final class TreeColumnOrderMemory {
 	//~ Static fields/initializers -------------------------------------------------------------------------------------
 
 	@SuppressWarnings("unused")
-	private static final Logger L							 = Logger.getLogger(TreeColumnOrderMemory.class);
+	private static final Logger L							 = LoggerFactory.getLogger(TreeColumnOrderMemory.class);
 
 	//~ Instance fields ------------------------------------------------------------------------------------------------
 

@@ -4,13 +4,14 @@ import com.google.common.eventbus.DeadEvent;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public final class LocalEventContext implements EventContext {
 
 	//~ Static fields/initializers -------------------------------------------------------------------------------------
 
-	private static final Logger L = Logger.getLogger(LocalEventContext.class);
+	private static final Logger L = LoggerFactory.getLogger(LocalEventContext.class);
 
 	//~ Instance fields ------------------------------------------------------------------------------------------------
 

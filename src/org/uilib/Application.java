@@ -5,7 +5,8 @@ import com.google.common.eventbus.EventBus;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.eclipse.swt.widgets.Display;
 
@@ -15,7 +16,7 @@ public final class Application {
 
 	//~ Static fields/initializers -------------------------------------------------------------------------------------
 
-	private static final Logger L = Logger.getLogger(Application.class);
+	private static final Logger L = LoggerFactory.getLogger(Application.class);
 
 	//~ Instance fields ------------------------------------------------------------------------------------------------
 
@@ -59,7 +60,7 @@ public final class Application {
 				}
 			}
 		} catch (final RuntimeException e) {
-			L.fatal(e.getMessage(), e);
+			L.error(e.getMessage(), e);
 			this.shutdown();
 		}
 	}

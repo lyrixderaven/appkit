@@ -8,7 +8,8 @@ import com.google.common.collect.ImmutableMultimap;
 
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -22,7 +23,7 @@ public final class Component {
 	//~ Static fields/initializers -------------------------------------------------------------------------------------
 
 	@SuppressWarnings("unused")
-	private static final Logger L							 = Logger.getLogger(Component.class);
+	private static final Logger L							 = LoggerFactory.getLogger(Component.class);
 
 	//~ Instance fields ------------------------------------------------------------------------------------------------
 
