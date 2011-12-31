@@ -1,9 +1,9 @@
 package org.uilib.util;
 
+import org.eclipse.swt.widgets.Display;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import org.eclipse.swt.widgets.Display;
 
 public abstract class SWTSyncedRunnable implements Runnable {
 

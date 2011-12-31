@@ -1,13 +1,13 @@
 package org.uilib.templating.components;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.uilib.EventContext;
 import org.uilib.templating.Options;

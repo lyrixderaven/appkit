@@ -8,11 +8,11 @@ import com.google.common.collect.ImmutableMultimap;
 
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.uilib.EventContext;
 import org.uilib.templating.components.ComponentUI;

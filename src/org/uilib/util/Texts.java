@@ -10,13 +10,13 @@ import java.text.MessageFormat;
 import java.util.Map.Entry;
 import java.util.Properties;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.uilib.templating.Component;
 

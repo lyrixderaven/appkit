@@ -8,11 +8,11 @@ import java.io.InputStream;
 
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public final class Images {
 

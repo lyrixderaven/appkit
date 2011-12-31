@@ -1,12 +1,12 @@
 package org.uilib.memory;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public final class FillTableLayout {
 

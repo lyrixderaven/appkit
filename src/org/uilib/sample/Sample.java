@@ -7,12 +7,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.apache.log4j.PropertyConfigurator;
 
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Shell;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.uilib.templating.Component;
 import org.uilib.templating.Templating;

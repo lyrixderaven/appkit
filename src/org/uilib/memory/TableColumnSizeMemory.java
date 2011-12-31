@@ -7,15 +7,15 @@ import com.google.common.collect.Lists;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.ControlListener;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.uilib.util.PrefStore;
 import org.uilib.util.SWTSyncedRunnable;

@@ -1,12 +1,12 @@
 package org.uilib.memory;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.eclipse.jface.layout.TreeColumnLayout;
 import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public final class FillTreeLayout {
 
