@@ -146,7 +146,7 @@ public final class ShellMemory {
 				TimeUnit.MILLISECONDS,
 				new SWTSyncedRunnable() {
 						@Override
-						protected void runChecked() {
+						public void runChecked() {
 							if (shell.isDisposed()) {
 								return;
 							}

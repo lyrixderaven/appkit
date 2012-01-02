@@ -7,7 +7,7 @@ public abstract class LoggingRunnable implements Runnable {
 
 	//~ Instance fields ------------------------------------------------------------------------------------------------
 
-	private final Logger logger = this.getLogger();
+	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	//~ Methods --------------------------------------------------------------------------------------------------------
 
@@ -20,9 +20,5 @@ public abstract class LoggingRunnable implements Runnable {
 		}
 	}
 
-	protected abstract void runChecked();
-
-	public Logger getLogger() {
-		return LoggerFactory.getLogger(this.getClass());
-	}
+	public abstract void runChecked();
 }

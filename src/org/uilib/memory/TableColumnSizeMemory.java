@@ -102,7 +102,7 @@ public final class TableColumnSizeMemory {
 				TimeUnit.MILLISECONDS,
 				new SWTSyncedRunnable() {
 						@Override
-						protected void runChecked() {
+						public void runChecked() {
 							if (table.isDisposed()) {
 								return;
 							}

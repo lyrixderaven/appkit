@@ -89,7 +89,7 @@ public final class TableColumnOrderMemory {
 				TimeUnit.MILLISECONDS,
 				new SWTSyncedRunnable() {
 						@Override
-						protected void runChecked() {
+						public void runChecked() {
 							if (table.isDisposed()) {
 								return;
 							}

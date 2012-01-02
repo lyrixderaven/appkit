@@ -89,7 +89,7 @@ public final class SashFormWeightMemory {
 				TimeUnit.MILLISECONDS,
 				new SWTSyncedRunnable() {
 						@Override
-						protected void runChecked() {
+						public void runChecked() {
 
 							int weights[] = sashForm.getWeights();
 							prefStore.store(memoryKey, Joiner.on(",").join(weights[0], weights[1]));

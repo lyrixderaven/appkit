@@ -9,12 +9,12 @@ public abstract class SWTSyncedRunnable implements Runnable {
 
 	//~ Instance fields ------------------------------------------------------------------------------------------------
 
-	protected final Logger logger = LoggerFactory.getLogger(this.getClass());
+	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	//~ Methods --------------------------------------------------------------------------------------------------------
 
 	@Override
-	public void run() {
+	public final void run() {
 		if (Display.getDefault().getThread() == Thread.currentThread()) {
 			try {
 				this.runChecked();
@@ -26,5 +26,5 @@ public abstract class SWTSyncedRunnable implements Runnable {
 		}
 	}
 
-	protected abstract void runChecked();
+	public abstract void runChecked();
 }

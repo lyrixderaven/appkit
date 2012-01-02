@@ -98,7 +98,7 @@ public final class TreeColumnSizeMemory {
 				TimeUnit.MILLISECONDS,
 				new SWTSyncedRunnable() {
 						@Override
-						protected void runChecked() {
+						public void runChecked() {
 							if (tree.isDisposed()) {
 								return;
 							}
