@@ -5,6 +5,7 @@ import com.google.common.collect.Maps;
 import java.util.Map;
 import java.util.concurrent.DelayQueue;
 import java.util.concurrent.Delayed;
+import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -12,8 +13,7 @@ import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-// FIXME: executor: throttle call raus, swt Sync Runnable weg? Zeiten aus Throttler
-public final class SmartExecutor implements Throttler {
+public final class SmartExecutor implements Throttle, Executor {
 
 	//~ Static fields/initializers -------------------------------------------------------------------------------------
 
@@ -36,6 +36,7 @@ public final class SmartExecutor implements Throttler {
 	//~ Methods --------------------------------------------------------------------------------------------------------
 
 	/* execute a Runnable once */
+	@Override
 	public void execute(final Runnable runnable) {
 		this.executor.execute(runnable);
 	}

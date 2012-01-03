@@ -15,10 +15,10 @@ import org.eclipse.swt.widgets.DateTime;
 import org.eclipse.swt.widgets.Label;
 
 import org.uilib.EventContext;
+import org.uilib.registry.Texts;
 import org.uilib.templating.Options;
-import org.uilib.util.Texts;
 
-// TODO: Datepicker: bei abhakerl Text auf weiß setzen
+// TODO: Datepicker: bei abhakerl LabelText auf weiß setzen
 public final class DatepickerUI implements ComponentUI {
 
 	//~ Instance fields ------------------------------------------------------------------------------------------------

@@ -1,9 +1,9 @@
-package org.uilib.util;
+package org.uilib.registry;
 
 import com.google.common.collect.ImmutableMap;
 
 import java.io.IOException;
-import java.io.StringReader;
+import java.io.InputStream;
 
 import java.text.MessageFormat;
 
@@ -19,9 +19,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.uilib.templating.Component;
+import org.uilib.util.ParamSupplier;
+import org.uilib.util.ResourceStreamSupplier;
 
 // FIXME: Texts: getSystemDefault Lang
-// FIXME: Texts werden z.B. mit jedem DatePicker angelegt, globals Caching irgendwie? Interface?
 public class Texts {
 
 	//~ Static fields/initializers -------------------------------------------------------------------------------------
@@ -34,7 +35,7 @@ public class Texts {
 
 	//~ Constructors ---------------------------------------------------------------------------------------------------
 
-	public Texts(final StringSupplier supplier, final String resourceName) {
+	public Texts(final ParamSupplier<String, InputStream> dataSupplier, final String resourceName) {
 
 		ImmutableMap.Builder<String, String> map = ImmutableMap.builder();
 
@@ -42,7 +43,10 @@ public class Texts {
 			L.debug("loading language out of ressource: " + resourceName);
 
 			Properties i18n = new Properties();
-			i18n.load(new StringReader(supplier.get(resourceName)));
+			InputStream in  = dataSupplier.get(resourceName);
+
+			i18n.load(in);
+			in.close();
 
 			for (final String property : i18n.stringPropertyNames()) {
 
@@ -61,11 +65,11 @@ public class Texts {
 	//~ Methods --------------------------------------------------------------------------------------------------------
 
 	public static Texts fromResources(final String lang) {
-		return new Texts(new ResourceToStringSupplier(), "i18n/" + lang + ".properties");
+		return new Texts(new ResourceStreamSupplier(), "i18n/" + lang + ".properties");
 	}
 
 	public static Texts forComponent(final String componentType, final String lang) {
-		return new Texts(new ResourceToStringSupplier(), "components/" + componentType + "." + lang + ".properties");
+		return new Texts(new ResourceStreamSupplier(), "components/" + componentType + "." + lang + ".properties");
 	}
 
 	public void translateComponent(final Component component) {

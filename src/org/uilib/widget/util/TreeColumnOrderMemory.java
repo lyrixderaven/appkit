@@ -1,4 +1,4 @@
-package org.uilib.memory;
+package org.uilib.widget.util;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
@@ -10,59 +10,56 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.ControlListener;
-import org.eclipse.swt.widgets.Table;
-import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.Tree;
+import org.eclipse.swt.widgets.TreeColumn;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.uilib.util.PrefStore;
 import org.uilib.util.SWTSyncedRunnable;
-import org.uilib.util.Throttler;
+import org.uilib.util.Throttle;
+import org.uilib.util.prefs.PrefStore;
 
-public final class TableColumnOrderMemory {
+public final class TreeColumnOrderMemory {
 
 	//~ Static fields/initializers -------------------------------------------------------------------------------------
 
-	private static final Logger L = LoggerFactory.getLogger(TableColumnOrderMemory.class);
+	@SuppressWarnings("unused")
+	private static final Logger L							 = LoggerFactory.getLogger(TreeColumnOrderMemory.class);
 
 	//~ Instance fields ------------------------------------------------------------------------------------------------
 
 	private final PrefStore prefStore;
-	private final Throttler throttler;
-	private final Table table;
+	private final Throttle throttler;
+	private final Tree tree;
 	private final String memoryKey;
 
 	//~ Constructors ---------------------------------------------------------------------------------------------------
 
-	private TableColumnOrderMemory(final PrefStore prefStore, final Throttler throttler, final Table table,
-								   final String key) {
-		this.prefStore			  = prefStore;
-		this.throttler			  = throttler;
-		this.table				  = table;
-		this.memoryKey			  = key + ".columnorder";
+	private TreeColumnOrderMemory(final PrefStore prefStore, final Throttle throttler, final Tree tree, final String key) {
+		this.prefStore										 = prefStore;
+		this.throttler										 = throttler;
+		this.tree											 = tree;
+		this.memoryKey										 = key + ".columnorder";
 
 		/* reorder columns */
-		String orderString = this.prefStore.get(this.memoryKey, "");
-		L.debug("orderString: " + orderString);
-
+		String orderString     = this.prefStore.get(this.memoryKey, "");
 		List<String> orderList = Lists.newArrayList(Splitter.on(",").split(orderString));
-		if (orderList.size() == this.table.getColumnCount()) {
-			L.debug("valid order " + orderList + " -> reordering columns");
+		if (orderList.size() == this.tree.getColumnCount()) {
 			try {
 
-				int order[] = new int[this.table.getColumnCount()];
+				int order[] = new int[this.tree.getColumnCount()];
 				int i	    = 0;
 				for (final String pos : orderList) {
 					order[i] = Integer.valueOf(pos);
 					i++;
 				}
 
-				this.table.setColumnOrder(order);
+				this.tree.setColumnOrder(order);
 			} catch (final NumberFormatException e) {}
 		}
 
-		for (final TableColumn column : table.getColumns()) {
+		for (final TreeColumn column : this.tree.getColumns()) {
 			/* set column movable */
 			column.setMoveable(true);
 
@@ -73,9 +70,9 @@ public final class TableColumnOrderMemory {
 
 	//~ Methods --------------------------------------------------------------------------------------------------------
 
-	public static void install(final PrefStore prefStore, final Throttler throttler, final Table table,
+	public static void install(final PrefStore prefStore, final Throttle throttler, final Tree tree,
 							   final String memoryKey) {
-		new TableColumnOrderMemory(prefStore, throttler, table, memoryKey);
+		new TreeColumnOrderMemory(prefStore, throttler, tree, memoryKey);
 	}
 
 	//~ Inner Classes --------------------------------------------------------------------------------------------------
@@ -90,11 +87,11 @@ public final class TableColumnOrderMemory {
 				new SWTSyncedRunnable() {
 						@Override
 						public void runChecked() {
-							if (table.isDisposed()) {
+							if (tree.isDisposed()) {
 								return;
 							}
 
-							List<Integer> order = Ints.asList(table.getColumnOrder());
+							List<Integer> order = Ints.asList(tree.getColumnOrder());
 							prefStore.store(memoryKey, Joiner.on(",").join(order));
 						}
 					});

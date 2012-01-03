@@ -8,8 +8,8 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 
 import org.uilib.EventContext;
+import org.uilib.registry.Fonts;
 import org.uilib.templating.Options;
-import org.uilib.util.Fonts;
 
 public class LabelUI implements ComponentUI {
 
@@ -25,8 +25,7 @@ public class LabelUI implements ComponentUI {
 		List<String> fontInfo = options.get("font");
 		if (! fontInfo.isEmpty()) {
 			if (fontInfo.contains("bold")) {
-				// FIXME: FontCache in Application oder so?
-				label.setFont((new Fonts()).create(Fonts.Style.BOLD, 0));
+				Fonts.set(label, Fonts.Style.BOLD);
 			}
 		}
 

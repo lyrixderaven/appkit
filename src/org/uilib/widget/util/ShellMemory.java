@@ -1,4 +1,4 @@
-package org.uilib.memory;
+package org.uilib.widget.util;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
@@ -15,9 +15,9 @@ import org.eclipse.swt.widgets.Shell;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.uilib.util.PrefStore;
 import org.uilib.util.SWTSyncedRunnable;
-import org.uilib.util.Throttler;
+import org.uilib.util.Throttle;
+import org.uilib.util.prefs.PrefStore;
 
 // FIXME: remember monitor position
 public final class ShellMemory {
@@ -30,7 +30,7 @@ public final class ShellMemory {
 	//~ Instance fields ------------------------------------------------------------------------------------------------
 
 	private final PrefStore prefStore;
-	private final Throttler throttler;
+	private final Throttle throttler;
 	private final Shell shell;
 	private final String memoryKey;
 	private final int defaultX;
@@ -42,15 +42,14 @@ public final class ShellMemory {
 
 	//~ Constructors ---------------------------------------------------------------------------------------------------
 
-	private ShellMemory(final PrefStore prefStore, final Throttler throttler, final Shell shell,
-						final String memoryKey, final int defaultWidth, final int defaultHeight, final int defaultX,
-						final int defaultY) {
+	private ShellMemory(final PrefStore prefStore, final Throttle throttler, final Shell shell, final String memoryKey,
+						final int defaultWidth, final int defaultHeight, final int defaultX, final int defaultY) {
 		this(prefStore, throttler, shell, memoryKey, defaultWidth, defaultHeight, defaultX, defaultY, false, false);
 	}
 
-	private ShellMemory(final PrefStore prefStore, final Throttler throttler, final Shell shell,
-						final String memoryKey, final int defaultWidth, final int defaultHeight, final int defaultX,
-						final int defaultY, final boolean defaultMaximized, final boolean sizeOnly) {
+	private ShellMemory(final PrefStore prefStore, final Throttle throttler, final Shell shell, final String memoryKey,
+						final int defaultWidth, final int defaultHeight, final int defaultX, final int defaultY,
+						final boolean defaultMaximized, final boolean sizeOnly) {
 		this.prefStore										 = prefStore;
 		this.throttler										 = throttler;
 		this.shell											 = shell;
@@ -109,7 +108,7 @@ public final class ShellMemory {
 
 	//~ Methods --------------------------------------------------------------------------------------------------------
 
-	public static void install(final PrefStore prefStore, final Throttler throttler, final Shell shell,
+	public static void install(final PrefStore prefStore, final Throttle throttler, final Shell shell,
 							   final String memoryKey, final int defaultWidth, final int defaultHeight,
 							   final int defaultX, final int defaultY) {
 		new ShellMemory(
@@ -125,7 +124,7 @@ public final class ShellMemory {
 			false);
 	}
 
-	public static void installSizeOnly(final PrefStore prefStore, final Throttler throttler, final Shell shell,
+	public static void installSizeOnly(final PrefStore prefStore, final Throttle throttler, final Shell shell,
 									   final String memoryKey, final int defaultWidth, final int defaultHeight) {
 		new ShellMemory(prefStore, throttler, shell, memoryKey, defaultWidth, defaultHeight, 0, 0, false, true);
 	}

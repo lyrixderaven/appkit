@@ -1,4 +1,4 @@
-package org.uilib.util;
+package org.uilib.util.prefs;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;

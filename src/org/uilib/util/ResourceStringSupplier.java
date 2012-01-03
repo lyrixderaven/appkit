@@ -2,11 +2,8 @@ package org.uilib.util;
 
 import com.google.common.collect.Maps;
 
-import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-
-import java.net.URL;
 
 import java.util.Map;
 import java.util.Scanner;
@@ -14,21 +11,26 @@ import java.util.Scanner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ResourceToStringSupplier implements StringSupplier {
+public class ResourceStringSupplier implements ParamSupplier<String, String> {
 
 	//~ Static fields/initializers -------------------------------------------------------------------------------------
 
 	@SuppressWarnings("unused")
-	private static final Logger L							 = LoggerFactory.getLogger(ResourceToStringSupplier.class);
+	private static final Logger L							 = LoggerFactory.getLogger(ResourceStringSupplier.class);
+	private static final ResourceStringSupplier INSTANCE     = new ResourceStringSupplier();
 
 	//~ Instance fields ------------------------------------------------------------------------------------------------
 
 	private final Map<String, String> cache = Maps.newHashMap();
 
+	//~ Constructors ---------------------------------------------------------------------------------------------------
+
+	private ResourceStringSupplier() {}
+
 	//~ Methods --------------------------------------------------------------------------------------------------------
 
-	public static ResourceToStringSupplier create() {
-		return new ResourceToStringSupplier();
+	public static ResourceStringSupplier instance() {
+		return INSTANCE;
 	}
 
 	@Override
@@ -40,32 +42,18 @@ public class ResourceToStringSupplier implements StringSupplier {
 			return this.cache.get(fullName);
 		}
 
-		InputStream in = null;
+		/* read string from stream */
+		InputStream in = ResourceStreamSupplier.create().get(resource);
+		String s	   = new Scanner(in, "UTF8").useDelimiter("\\A").next();
 		try {
-
-			URL url = ResourceToStringSupplier.class.getResource(fullName);
-			if (url == null) {
-				return null;
-			}
-			in = new BufferedInputStream(url.openStream());
-
-			/* convert to string */
-			String s = new Scanner(in, "UTF8").useDelimiter("\\A").next();
-
-			/* save in cache */
-			this.cache.put(fullName, s);
-
-			return s;
-
-		} catch (final IOException e) {}
-		finally {
-			try {
-				if (in != null) {
-					in.close();
-				}
-			} catch (final IOException e) {}
+			in.close();
+		} catch (final IOException e) {
+			throw new RuntimeException(e.getMessage(), e);
 		}
 
-		return null;
+		/* save in cache */
+		this.cache.put(fullName, s);
+
+		return s;
 	}
 }

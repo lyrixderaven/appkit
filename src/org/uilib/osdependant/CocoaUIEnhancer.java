@@ -1,4 +1,4 @@
-package org.uilib.util;
+package org.uilib.osdependant;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

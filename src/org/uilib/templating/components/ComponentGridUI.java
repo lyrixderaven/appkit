@@ -85,7 +85,7 @@ public class ComponentGridUI implements LayoutUI {
 		gd.horizontalIndent				 = options.get("h-indent", 0);
 		gd.horizontalSpan				 = options.get("h-span", 1);
 
-		// FIXME: layout preconditions
+		// FIXME: Preconditions what is allowed oder gleich MigLayout
 		gd.widthHint					 = options.get("width", SWT.DEFAULT);
 		gd.heightHint					 = options.get("height", SWT.DEFAULT);
 

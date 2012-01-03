@@ -10,7 +10,7 @@ import org.eclipse.swt.widgets.Display;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-// TODO: LoggingRunnable,Interrupt / CrashHandler / Executor / TaskQueue
+// TODO: LoggingRunnable / Interrupt / CrashHandler
 // TODO: Measurement (mutable Array)
 public final class Application {
 

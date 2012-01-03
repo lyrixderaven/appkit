@@ -1,10 +1,10 @@
-package org.uilib;
+package org.uilib.widget.util;
 
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Shell;
 
-public final class UIUtil {
+public final class ShellUtils {
 
 	//~ Methods --------------------------------------------------------------------------------------------------------
 

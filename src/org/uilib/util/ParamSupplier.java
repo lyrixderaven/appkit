@@ -1,8 +1,8 @@
 package org.uilib.util;
 
-public interface StringSupplier {
+public interface ParamSupplier<K, V> {
 
 	//~ Methods --------------------------------------------------------------------------------------------------------
 
-	public String get(final String name);
+	public V get(final K key);
 }

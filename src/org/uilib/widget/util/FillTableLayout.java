@@ -1,4 +1,4 @@
-package org.uilib.memory;
+package org.uilib.widget.util;
 
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ColumnWeightData;

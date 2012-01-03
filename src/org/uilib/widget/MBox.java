@@ -1,4 +1,4 @@
-package org.uilib.widgets;
+package org.uilib.widget;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;

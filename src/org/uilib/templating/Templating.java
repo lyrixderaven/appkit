@@ -32,8 +32,8 @@ import org.uilib.templating.components.SpacerUI;
 import org.uilib.templating.components.StackUI;
 import org.uilib.templating.components.TableUI;
 import org.uilib.templating.components.TextUI;
-import org.uilib.util.ResourceToStringSupplier;
-import org.uilib.util.StringSupplier;
+import org.uilib.util.ParamSupplier;
+import org.uilib.util.ResourceStringSupplier;
 
 import sun.reflect.generics.reflectiveObjects.ParameterizedTypeImpl;
 
@@ -45,7 +45,7 @@ public final class Templating {
 
 	//~ Instance fields ------------------------------------------------------------------------------------------------
 
-	private final StringSupplier supplier;
+	private final ParamSupplier<String, String> templateSupplier;
 	private final Gson gson;
 
 	/* mutable */
@@ -53,8 +53,8 @@ public final class Templating {
 
 	//~ Constructors ---------------------------------------------------------------------------------------------------
 
-	public Templating(final StringSupplier supplier) {
-		this.supplier = supplier;
+	public Templating(final ParamSupplier<String, String> templateSupplier) {
+		this.templateSupplier = templateSupplier;
 
 		/* built in types */
 		this.registerType(ButtonUI.class, "button");
@@ -79,7 +79,7 @@ public final class Templating {
 	//~ Methods --------------------------------------------------------------------------------------------------------
 
 	public static Templating fromResources() {
-		return new Templating(new ResourceToStringSupplier());
+		return new Templating(ResourceStringSupplier.instance());
 	}
 
 	public void registerType(final Class<?extends ComponentUI> ui, final String typeName) {
@@ -91,7 +91,7 @@ public final class Templating {
 	public Component create(final String componentType) {
 		L.debug("creating component: " + componentType);
 
-		String source = this.supplier.get("components/" + componentType + ".json");
+		String source = this.templateSupplier.get("components/" + componentType + ".json");
 		if (source == null) {
 			L.debug("none found for: " + componentType);
 			return null;

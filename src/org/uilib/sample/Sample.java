@@ -15,9 +15,9 @@ import org.eclipse.swt.widgets.Shell;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.uilib.registry.Texts;
 import org.uilib.templating.Component;
 import org.uilib.templating.Templating;
-import org.uilib.util.Texts;
 
 public final class Sample {
 

@@ -1,4 +1,4 @@
-package org.uilib.memory;
+package org.uilib.widget.util;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
@@ -7,85 +7,81 @@ import com.google.common.collect.Lists;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.jface.layout.TableColumnLayout;
+import org.eclipse.jface.layout.TreeColumnLayout;
 import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.ControlListener;
-import org.eclipse.swt.widgets.Table;
-import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.Tree;
+import org.eclipse.swt.widgets.TreeColumn;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.uilib.util.PrefStore;
 import org.uilib.util.SWTSyncedRunnable;
-import org.uilib.util.Throttler;
+import org.uilib.util.Throttle;
+import org.uilib.util.prefs.PrefStore;
 
-// FIXME: rename: table utils, shell utils, widget utils?
-public final class TableColumnSizeMemory {
+public final class TreeColumnSizeMemory {
 
 	//~ Static fields/initializers -------------------------------------------------------------------------------------
 
-	private static final Logger L = LoggerFactory.getLogger(TableColumnSizeMemory.class);
+	@SuppressWarnings("unused")
+	private static final Logger L							 = LoggerFactory.getLogger(TreeColumnSizeMemory.class);
 
 	//~ Instance fields ------------------------------------------------------------------------------------------------
 
 	private final PrefStore prefStore;
-	private final Throttler throttler;
-	private final Table table;
+	private final Throttle throttler;
+	private final Tree tree;
 	private final String memoryKey;
-	private final int defaultWeight;
+	private final int defaultSize;
 
 	//~ Constructors ---------------------------------------------------------------------------------------------------
 
-	private TableColumnSizeMemory(final PrefStore prefStore, final Throttler throttler, final Table table,
-								  final String key, final int defaultWeight) {
-		this.prefStore			  = prefStore;
-		this.throttler			  = throttler;
-		this.table				  = table;
-		this.memoryKey			  = key + ".columnsizes";
-		this.defaultWeight		  = defaultWeight;
+	private TreeColumnSizeMemory(final PrefStore prefStore, final Throttle throttler, final Tree tree,
+								 final String key, final int defaultSize) {
+		this.prefStore										 = prefStore;
+		this.throttler										 = throttler;
+		this.tree											 = tree;
+		this.memoryKey										 = key + ".columnsizes";
+		this.defaultSize									 = defaultSize;
 
 		/* install layout into parentComposite of Table */
-		TableColumnLayout layout = new TableColumnLayout();
-		table.getParent().setLayout(layout);
+		TreeColumnLayout layout = new TreeColumnLayout();
+		this.tree.getParent().setLayout(layout);
 
 		/* size all the columns */
-		String widthString = this.prefStore.get(this.memoryKey, "");
-		L.debug("widthString: " + widthString);
-
+		String widthString  = this.prefStore.get(memoryKey, "");
 		List<String> widths = Lists.newArrayList(Splitter.on(",").split(widthString));
-		if (widths.size() == table.getColumnCount()) {
-			L.debug("valid width " + widths + " -> sizing columns");
-			for (int i = 0; i < table.getColumnCount(); i++) {
+		if (widths.size() == this.tree.getColumnCount()) {
+			for (int i = 0; i < this.tree.getColumnCount(); i++) {
 
-				int wData = defaultWeight;
+				int wData = defaultSize;
 				try {
 					wData = Integer.valueOf(widths.get(i));
 				} catch (final NumberFormatException e) {}
 
-				layout.setColumnData(table.getColumn(i), new ColumnWeightData(wData));
+				layout.setColumnData(this.tree.getColumn(i), new ColumnWeightData(wData));
 			}
 		} else {
-			L.debug("setting default widths");
 
 			/* default size */
-			for (final TableColumn column : table.getColumns()) {
-				layout.setColumnData(column, new ColumnWeightData(this.defaultWeight));
+			for (final TreeColumn column : this.tree.getColumns()) {
+				layout.setColumnData(column, new ColumnWeightData(this.defaultSize));
 			}
 		}
 
 		/* add listeners */
-		for (final TableColumn column : table.getColumns()) {
+		for (final TreeColumn column : this.tree.getColumns()) {
 			column.addControlListener(new ColumnResizeListener());
 		}
 	}
 
 	//~ Methods --------------------------------------------------------------------------------------------------------
 
-	public static void install(final PrefStore prefStore, final Throttler throttler, final Table table,
+	public static void install(final PrefStore prefStore, final Throttle throttler, final Tree tree,
 							   final String memoryKey, final int defaultSize) {
-		new TableColumnSizeMemory(prefStore, throttler, table, memoryKey, defaultSize);
+		new TreeColumnSizeMemory(prefStore, throttler, tree, memoryKey, defaultSize);
 	}
 
 	//~ Inner Classes --------------------------------------------------------------------------------------------------
@@ -103,12 +99,12 @@ public final class TableColumnSizeMemory {
 				new SWTSyncedRunnable() {
 						@Override
 						public void runChecked() {
-							if (table.isDisposed()) {
+							if (tree.isDisposed()) {
 								return;
 							}
 
 							List<Integer> widths = Lists.newArrayList();
-							for (final TableColumn column : table.getColumns()) {
+							for (final TreeColumn column : tree.getColumns()) {
 								widths.add(column.getWidth());
 							}
 							prefStore.store(memoryKey, Joiner.on(",").join(widths));

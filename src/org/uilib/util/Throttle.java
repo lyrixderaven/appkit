@@ -2,7 +2,7 @@ package org.uilib.util;
 
 import java.util.concurrent.TimeUnit;
 
-public interface Throttler {
+public interface Throttle {
 
 	//~ Methods --------------------------------------------------------------------------------------------------------
 

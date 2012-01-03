@@ -1,4 +1,4 @@
-package org.uilib.memory;
+package org.uilib.widget.util;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
@@ -14,9 +14,9 @@ import org.eclipse.swt.events.ControlListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.uilib.util.PrefStore;
 import org.uilib.util.SWTSyncedRunnable;
-import org.uilib.util.Throttler;
+import org.uilib.util.Throttle;
+import org.uilib.util.prefs.PrefStore;
 
 public final class SashFormWeightMemory {
 
@@ -28,14 +28,14 @@ public final class SashFormWeightMemory {
 	//~ Instance fields ------------------------------------------------------------------------------------------------
 
 	private final PrefStore prefStore;
-	private final Throttler throttler;
+	private final Throttle throttler;
 	private final SashForm sashForm;
 	private final String memoryKey;
 	private final int defaultWeights[];
 
 	//~ Constructors ---------------------------------------------------------------------------------------------------
 
-	private SashFormWeightMemory(final PrefStore prefStore, final Throttler throttler, final SashForm sashForm,
+	private SashFormWeightMemory(final PrefStore prefStore, final Throttle throttler, final SashForm sashForm,
 								 final String key, final int defaultWeights[]) {
 		this.prefStore										 = prefStore;
 		this.throttler										 = throttler;
@@ -70,7 +70,7 @@ public final class SashFormWeightMemory {
 
 	//~ Methods --------------------------------------------------------------------------------------------------------
 
-	public static void install(final PrefStore prefStore, final Throttler throttler, final SashForm sashForm,
+	public static void install(final PrefStore prefStore, final Throttle throttler, final SashForm sashForm,
 							   final String memoryKey, final int defaultWeights[]) {
 		new SashFormWeightMemory(prefStore, throttler, sashForm, memoryKey, defaultWeights);
 	}

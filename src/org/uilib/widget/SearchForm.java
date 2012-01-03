@@ -1,4 +1,4 @@
-package org.uilib.widgets;
+package org.uilib.widget;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.FocusEvent;
@@ -12,7 +12,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
-import org.uilib.util.Texts;
+import org.uilib.registry.Texts;
 
 public class SearchForm extends Composite {
 

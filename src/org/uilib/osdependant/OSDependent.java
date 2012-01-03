@@ -1,4 +1,4 @@
-package org.uilib.util;
+package org.uilib.osdependant;
 
 import com.google.common.collect.Maps;
 

@@ -1,4 +1,4 @@
-package org.uilib.widgets;
+package org.uilib.widget;
 
 import java.io.File;
 
@@ -7,7 +7,7 @@ import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 
-import org.uilib.util.Texts;
+import org.uilib.registry.Texts;
 
 // TODO: convert widgets to components
 public class SaveFileDialog {
