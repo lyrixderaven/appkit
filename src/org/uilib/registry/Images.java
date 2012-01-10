@@ -17,6 +17,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Shell;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,12 +49,13 @@ public final class Images {
 			Display.getDefault().getThread() == Thread.currentThread(),
 			"Images is to be used from the display-thread exclusively!");
 		Preconditions.checkState(
-			control instanceof Label || control instanceof Button,
+			control instanceof Label || control instanceof Button || control instanceof Shell,
 			"don't know how to set image on {}",
 			control);
 
 		E key = keySupplier.get();
-		L.debug("setting image {} for label {}", key, control);
+
+		L.debug("loading image {} for {}", key, control);
 
 		/* get image out of cache or load it */
 		final Image image;
@@ -64,11 +66,12 @@ public final class Images {
 
 			InputStream in = dataSupplier.get(key);
 			if (in == null) {
-				L.debug("data supplier returned no InputStream for {}", key);
+				L.error("data supplier returned no InputStream for {}", key);
 				return;
 			}
 
 			image = new Image(Display.getDefault(), in);
+			L.debug("created image {}: {}", key, image);
 			try {
 				in.close();
 			} catch (final IOException e) {
@@ -87,6 +90,8 @@ public final class Images {
 			((Label) control).setImage(image);
 		} else if (control instanceof Button) {
 			((Button) control).setImage(image);
+		} else if (control instanceof Shell) {
+			((Shell) control).setImage(image);
 		} else {
 			throw new IllegalStateException();
 		}

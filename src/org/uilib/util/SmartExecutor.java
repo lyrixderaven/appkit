@@ -59,7 +59,6 @@ public final class SmartExecutor implements Throttle, Executor {
 	@Override
 	public void throttle(final String throttleName, final long delay, final TimeUnit timeUnit, final Runnable runnable) {
 
-		// FIXME: executor: TASKQUEUE is not THREADSAFE!
 		final ThrottledRunnable thrRunnable = new ThrottledRunnable(runnable, throttleName, delay, timeUnit);
 		this.throttledTasks.put(throttleName, thrRunnable);
 		this.taskQueue.put(thrRunnable);
