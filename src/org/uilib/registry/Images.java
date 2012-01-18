@@ -106,7 +106,7 @@ public final class Images {
 						L.debug("usage of {} now {}", image, usage.count(image));
 
 						if (! usage.contains(image)) {
-							L.debug("disposing image {}", image);
+							L.debug("disposing {}", image);
 
 							/* remove first, font appears to change identity after disposal, maybe image does the same */
 							registry.inverse().remove(image);

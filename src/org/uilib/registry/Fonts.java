@@ -91,7 +91,7 @@ public final class Fonts {
 						L.debug("usage of {} now {}", font, usage.count(font));
 
 						if (! usage.contains(font)) {
-							L.debug("disposing font {}", font);
+							L.debug("disposing {}", font);
 
 							/* remove first, font appears to change identity after disposal */
 							registry.inverse().remove(font);
