@@ -5,7 +5,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
-import org.uilib.EventContext;
+import org.uilib.application.EventContext;
 import org.uilib.templating.Options;
 
 public class ButtonUI implements ComponentUI {

@@ -9,7 +9,7 @@ import org.eclipse.swt.widgets.Control;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.uilib.EventContext;
+import org.uilib.application.EventContext;
 import org.uilib.templating.Options;
 
 public class ComponentGridUI implements LayoutUI {

@@ -1,4 +1,4 @@
-package org.uilib;
+package org.uilib.application;
 
 public interface BackgroundWorker {
 

@@ -1,8 +1,8 @@
-package org.uilib;
+package org.uilib.application;
 
-public interface Controller {
+public interface ApplicationController {
 
 	//~ Methods --------------------------------------------------------------------------------------------------------
 
-	public void init(final EventContext app);
+	public void init(final Application app);
 }

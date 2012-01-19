@@ -1,4 +1,4 @@
-package org.uilib;
+package org.uilib.application;
 
 import com.google.common.eventbus.EventBus;
 
