@@ -19,7 +19,7 @@ import org.uilib.util.SWTSyncedRunnable;
 import org.uilib.util.Throttle;
 import org.uilib.util.prefs.PrefStore;
 
-// FIXME: remember monitor position
+// FIXME: ShellUtils: remember monitor position
 public final class ShellMemory {
 
 	//~ Static fields/initializers -------------------------------------------------------------------------------------

@@ -16,7 +16,7 @@ public class ButtonUI implements ComponentUI {
 	public Control initialize(final EventContext app, final Composite parent, final String name, final String type,
 							  final Options options) {
 
-		int style  = SWT.PUSH;
+		int style = SWT.PUSH;
 
 		Button btn = new Button(parent, style);
 

@@ -22,7 +22,7 @@ import org.uilib.templating.Component;
 import org.uilib.util.ParamSupplier;
 import org.uilib.util.ResourceStreamSupplier;
 
-// FIXME: Texts: getSystemDefault Lang
+// TODO: Texts: getSystemDefault Lang
 public class Texts {
 
 	//~ Static fields/initializers -------------------------------------------------------------------------------------

@@ -18,6 +18,7 @@ import org.uilib.application.EventContext;
 import org.uilib.templating.components.ComponentUI;
 import org.uilib.templating.components.LayoutUI;
 
+// FIXME: Component: use Naming?
 public final class Component {
 
 	//~ Static fields/initializers -------------------------------------------------------------------------------------
@@ -145,7 +146,7 @@ public final class Component {
 	}
 
 	public Component select(final String query) {
-		// FIXME: does it make sense to select before initialization?
+		// FIXME: RFC: does it make sense to select before initialization?
 		Preconditions.checkState(this.control != null, "control wasn't initialized yet");
 
 		ImmutableCollection<Component> components = this.nameMap.get(query);

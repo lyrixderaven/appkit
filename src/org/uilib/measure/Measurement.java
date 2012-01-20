@@ -5,6 +5,7 @@ import com.google.common.collect.Lists;
 
 import java.util.Queue;
 
+//TODO: Measure: (mutable Array)
 public final class Measurement {
 
 	//~ Static fields/initializers -------------------------------------------------------------------------------------
@@ -17,7 +18,7 @@ public final class Measurement {
 			}
 		};
 
-	private static final ThreadLocal<Measurement.Listener> listener			 =
+	private static final ThreadLocal<Measurement.Listener> listener =
 		new ThreadLocal<Measurement.Listener>() {
 			@Override
 			protected Measurement.Listener initialValue() {
@@ -29,15 +30,15 @@ public final class Measurement {
 	//~ Instance fields ------------------------------------------------------------------------------------------------
 
 	private final String description[];
-	private final Stopwatch watch = new Stopwatch();
+	private final Stopwatch watch								    = new Stopwatch();
 	private final long start;
 	private final Object data;
 
 	//~ Constructors ---------------------------------------------------------------------------------------------------
 
 	private Measurement(final String description[], final Object data) {
-		this.start				  = System.currentTimeMillis();
-		this.description		  = description;
+		this.start												    = System.currentTimeMillis();
+		this.description										    = description;
 		this.watch.start();
 		this.data = data;
 	}

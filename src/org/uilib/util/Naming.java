@@ -2,6 +2,7 @@ package org.uilib.util;
 
 import com.google.common.base.CharMatcher;
 import com.google.common.base.Function;
+import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
 import com.google.common.collect.HashMultimap;
@@ -14,11 +15,19 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public final class Naming<E> {
+
+	//~ Static fields/initializers -------------------------------------------------------------------------------------
+
+	@SuppressWarnings("unused")
+	private static final Logger L							 = LoggerFactory.getLogger(Naming.class);
 
 	//~ Instance fields ------------------------------------------------------------------------------------------------
 
-	private final CharMatcher nameFilter    =
+	private final CharMatcher nameFilter =
 		CharMatcher.inRange('a', 'z').or(CharMatcher.inRange('0', '9')).or(CharMatcher.anyOf("#.?-"));
 	private final NamingFunction namingFunc = new NamingFunction();
 
@@ -27,7 +36,7 @@ public final class Naming<E> {
 	private final Multimap<String, E> prefixMap = HashMultimap.create();
 
 	/* cache, so that we don't have to check for the instances all the time */
-	private Map<Tuple<Class<?extends E>, String>, ImmutableSet<?extends E>> cache;
+	private Map<Integer, ImmutableSet<?extends E>> cache;
 
 	//~ Methods --------------------------------------------------------------------------------------------------------
 
@@ -109,29 +118,41 @@ public final class Naming<E> {
 			"search-namespace didn't satisfy filter %s",
 			this.nameFilter);
 
-		ImmutableSet.Builder<T> results = ImmutableSet.builder();
+		/* hash the request and check we have a cache entry */
+		int hash = Objects.hashCode(exactMatch, searchSpace, clazz);
+		if ((this.cache != null) && this.cache.containsKey(hash)) {
+			return (ImmutableSet<T>) this.cache.get(hash);
+		}
 
+		/* find results via exactName or prefixes */
 		Collection<E> objects;
 		if (exactMatch) {
-			objects					    = this.nameMap.get(searchSpace);
+			objects = this.nameMap.get(searchSpace);
 		} else {
 			objects = this.prefixMap.get(searchSpace);
 		}
 
+		/* check if type matches */
+		ImmutableSet.Builder<T> builder = ImmutableSet.builder();
 		for (final E object : objects) {
 			if (clazz.isAssignableFrom(object.getClass())) {
-				results.add((T) object);
+				builder.add((T) object);
 			}
 		}
 
-		return results.build();
+		/* save results in cache */
+		ImmutableSet<T> results = builder.build();
+		if (this.cache != null) {
+			this.cache.put(hash, results);
+		}
+
+		return results;
 	}
 
 	/** seals the naming, so queries are allowed to be cached */
 	public void seal() {
 		Preconditions.checkState(this.cache == null, "naming was already sealed");
 
-		// TODO: cache
 		this.cache = Maps.newHashMap();
 	}
 

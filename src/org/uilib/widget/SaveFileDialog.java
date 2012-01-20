@@ -9,7 +9,7 @@ import org.eclipse.swt.widgets.Shell;
 
 import org.uilib.registry.Texts;
 
-// TODO: convert widgets to components
+// TODO: Widgets: convert to components
 public class SaveFileDialog {
 
 	//~ Instance fields ------------------------------------------------------------------------------------------------

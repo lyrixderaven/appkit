@@ -10,8 +10,7 @@ import org.eclipse.swt.widgets.Display;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-// TODO: LoggingRunnable / Interrupt / CrashHandler
-// TODO: Measurement (mutable Array)
+// TODO: Application: LoggingRunnable / Interrupt / CrashHandler
 public final class Application {
 
 	//~ Static fields/initializers -------------------------------------------------------------------------------------

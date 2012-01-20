@@ -194,7 +194,7 @@ public final class Templating {
 									 throws JsonParseException
 		{
 
-			Type type2   =
+			Type type2 =
 				ParameterizedTypeImpl.make(List.class, ((ParameterizedType) type).getActualTypeArguments(), null);
 			List<?> list = context.deserialize(json, type2);
 
