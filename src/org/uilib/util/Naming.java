@@ -18,6 +18,7 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+// TODO: Naming, allow custom namespaces/namefilter
 public final class Naming<E> {
 
 	//~ Static fields/initializers -------------------------------------------------------------------------------------
@@ -28,7 +29,7 @@ public final class Naming<E> {
 	//~ Instance fields ------------------------------------------------------------------------------------------------
 
 	private final CharMatcher nameFilter =
-		CharMatcher.inRange('a', 'z').or(CharMatcher.inRange('0', '9')).or(CharMatcher.anyOf("#.?-"));
+		CharMatcher.inRange('a', 'z').or(CharMatcher.inRange('0', '9')).or(CharMatcher.anyOf("#.?-_"));
 	private final NamingFunction namingFunc = new NamingFunction();
 
 	/* dictionary */
