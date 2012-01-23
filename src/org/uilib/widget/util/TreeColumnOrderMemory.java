@@ -36,7 +36,8 @@ public final class TreeColumnOrderMemory {
 
 	//~ Constructors ---------------------------------------------------------------------------------------------------
 
-	private TreeColumnOrderMemory(final PrefStore prefStore, final Throttle throttler, final Tree tree, final String key) {
+	protected TreeColumnOrderMemory(final PrefStore prefStore, final Throttle throttler, final Tree tree,
+									final String key) {
 		this.prefStore										 = prefStore;
 		this.throttler										 = throttler;
 		this.tree											 = tree;
@@ -66,13 +67,6 @@ public final class TreeColumnOrderMemory {
 			/* add listener */
 			column.addControlListener(new ColumnMoveListener());
 		}
-	}
-
-	//~ Methods --------------------------------------------------------------------------------------------------------
-
-	public static void install(final PrefStore prefStore, final Throttle throttler, final Tree tree,
-							   final String memoryKey) {
-		new TreeColumnOrderMemory(prefStore, throttler, tree, memoryKey);
 	}
 
 	//~ Inner Classes --------------------------------------------------------------------------------------------------

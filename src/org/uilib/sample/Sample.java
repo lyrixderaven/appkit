@@ -1,10 +1,5 @@
 package org.uilib.sample;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Ordering;
-
-import java.util.Collections;
-import java.util.List;
 import java.util.Properties;
 
 import org.apache.log4j.PropertyConfigurator;
@@ -38,16 +33,9 @@ public final class Sample {
 		Component orders = tl.create("orderview");
 		orders.initialize(shell);
 
-		Texts.forComponent("orderview", "de").translateComponent(orders);
+		L.debug(orders.getNaming().toString());
 
-		List<String> keys = Lists.newArrayList(orders.getNameMap().keySet());
-		Collections.sort(keys, Ordering.natural());
-		for (final String k : keys) {
-			L.debug(k);
-			for (final Component c : orders.getNameMap().get(k)) {
-				L.debug("\t" + c.getType());
-			}
-		}
+		Texts.forComponent("orderview", "de").translateComponent(orders);
 
 		shell.open();
 

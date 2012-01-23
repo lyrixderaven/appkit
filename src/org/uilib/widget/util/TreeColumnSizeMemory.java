@@ -38,8 +38,8 @@ public final class TreeColumnSizeMemory {
 
 	//~ Constructors ---------------------------------------------------------------------------------------------------
 
-	private TreeColumnSizeMemory(final PrefStore prefStore, final Throttle throttler, final Tree tree,
-								 final String key, final int defaultSize) {
+	protected TreeColumnSizeMemory(final PrefStore prefStore, final Throttle throttler, final Tree tree,
+								   final String key, final int defaultSize) {
 		this.prefStore										 = prefStore;
 		this.throttler										 = throttler;
 		this.tree											 = tree;
@@ -75,13 +75,6 @@ public final class TreeColumnSizeMemory {
 		for (final TreeColumn column : this.tree.getColumns()) {
 			column.addControlListener(new ColumnResizeListener());
 		}
-	}
-
-	//~ Methods --------------------------------------------------------------------------------------------------------
-
-	public static void install(final PrefStore prefStore, final Throttle throttler, final Tree tree,
-							   final String memoryKey, final int defaultSize) {
-		new TreeColumnSizeMemory(prefStore, throttler, tree, memoryKey, defaultSize);
 	}
 
 	//~ Inner Classes --------------------------------------------------------------------------------------------------

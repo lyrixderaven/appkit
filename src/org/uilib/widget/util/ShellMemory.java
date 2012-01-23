@@ -19,7 +19,7 @@ import org.uilib.util.SWTSyncedRunnable;
 import org.uilib.util.Throttle;
 import org.uilib.util.prefs.PrefStore;
 
-// FIXME: ShellUtils: remember monitor position
+// FIXME: ShellMemory: remember monitor position
 public final class ShellMemory {
 
 	//~ Static fields/initializers -------------------------------------------------------------------------------------
@@ -42,14 +42,15 @@ public final class ShellMemory {
 
 	//~ Constructors ---------------------------------------------------------------------------------------------------
 
-	private ShellMemory(final PrefStore prefStore, final Throttle throttler, final Shell shell, final String memoryKey,
-						final int defaultWidth, final int defaultHeight, final int defaultX, final int defaultY) {
+	protected ShellMemory(final PrefStore prefStore, final Throttle throttler, final Shell shell,
+						  final String memoryKey, final int defaultWidth, final int defaultHeight, final int defaultX,
+						  final int defaultY) {
 		this(prefStore, throttler, shell, memoryKey, defaultWidth, defaultHeight, defaultX, defaultY, false, false);
 	}
 
-	private ShellMemory(final PrefStore prefStore, final Throttle throttler, final Shell shell, final String memoryKey,
-						final int defaultWidth, final int defaultHeight, final int defaultX, final int defaultY,
-						final boolean defaultMaximized, final boolean sizeOnly) {
+	protected ShellMemory(final PrefStore prefStore, final Throttle throttler, final Shell shell,
+						  final String memoryKey, final int defaultWidth, final int defaultHeight, final int defaultX,
+						  final int defaultY, final boolean defaultMaximized, final boolean sizeOnly) {
 		this.prefStore										 = prefStore;
 		this.throttler										 = throttler;
 		this.shell											 = shell;
@@ -104,29 +105,6 @@ public final class ShellMemory {
 
 		/* add listener */
 		this.shell.addControlListener(new ShellChanged());
-	}
-
-	//~ Methods --------------------------------------------------------------------------------------------------------
-
-	public static void install(final PrefStore prefStore, final Throttle throttler, final Shell shell,
-							   final String memoryKey, final int defaultWidth, final int defaultHeight,
-							   final int defaultX, final int defaultY) {
-		new ShellMemory(
-			prefStore,
-			throttler,
-			shell,
-			memoryKey,
-			defaultWidth,
-			defaultHeight,
-			defaultX,
-			defaultY,
-			false,
-			false);
-	}
-
-	public static void installSizeOnly(final PrefStore prefStore, final Throttle throttler, final Shell shell,
-									   final String memoryKey, final int defaultWidth, final int defaultHeight) {
-		new ShellMemory(prefStore, throttler, shell, memoryKey, defaultWidth, defaultHeight, 0, 0, false, true);
 	}
 
 	//~ Inner Classes --------------------------------------------------------------------------------------------------

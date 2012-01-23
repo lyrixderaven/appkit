@@ -29,7 +29,7 @@ public class SimpleStatistic implements Measurement.Listener {
 
 		String description = Joiner.on(".").join(data.getDescription());
 
-		Long max = this.maxMap.get(description);
+		Long max		   = this.maxMap.get(description);
 		if ((max == null) || (data.getDuration() > max)) {
 			max = data.getDuration();
 		}
@@ -53,7 +53,7 @@ public class SimpleStatistic implements Measurement.Listener {
 		}
 		this.sumMap.put(description, oldSum + data.getDuration());
 
-		Long avg = (oldSum + data.getDuration()) / (oldCount + 1);
+		Long avg		 = (oldSum + data.getDuration()) / (oldCount + 1);
 
 		StringBuilder sb = new StringBuilder();
 		sb.append("finished ");

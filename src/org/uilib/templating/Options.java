@@ -23,7 +23,8 @@ public class Options {
 	private static final Logger L								  = LoggerFactory.getLogger(Options.class);
 	private static final ImmutableMap<String, Boolean> boolTransl =
 		ImmutableMap.of("true", Boolean.TRUE, "yes", Boolean.TRUE, "false", Boolean.FALSE, "no", Boolean.FALSE);
-	private static final CharMatcher nameFilter = CharMatcher.inRange('a', 'z').or(CharMatcher.anyOf("?_-"));
+	private static final CharMatcher nameFilter					  =
+		CharMatcher.inRange('a', 'z').or(CharMatcher.anyOf("?_-"));
 
 	//~ Instance fields ------------------------------------------------------------------------------------------------
 
@@ -34,7 +35,7 @@ public class Options {
 	private Options(final Map<String, String> options) {
 
 		/* run through options */
-		Multimap<String, String> mmap		    = HashMultimap.create();
+		Multimap<String, String> mmap = HashMultimap.create();
 		for (final Map.Entry<String, String> opt : options.entrySet()) {
 			if (! opt.getKey().equals("options")) {
 				mmap.put(opt.getKey(), opt.getValue());

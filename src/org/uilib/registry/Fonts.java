@@ -27,10 +27,13 @@ public final class Fonts {
 
 	//~ Static fields/initializers -------------------------------------------------------------------------------------
 
-	private static final Logger L			    = LoggerFactory.getLogger(Fonts.class);
-	private static final String defaultFontName = Display.getDefault().getSystemFont().getFontData()[0].getName();
-	private static final int defaultFontStyle = Display.getDefault().getSystemFont().getFontData()[0].getStyle();
-	private static final int defaultFontHeight = Display.getDefault().getSystemFont().getFontData()[0].getHeight();
+	private static final Logger L					   = LoggerFactory.getLogger(Fonts.class);
+	private static final String defaultFontName		   =
+		Display.getDefault().getSystemFont().getFontData()[0].getName();
+	private static final int defaultFontStyle		   =
+		Display.getDefault().getSystemFont().getFontData()[0].getStyle();
+	private static final int defaultFontHeight		   =
+		Display.getDefault().getSystemFont().getFontData()[0].getHeight();
 	private static final BiMap<Integer, Font> registry = HashBiMap.create();
 	private static final Multiset<Font> usage		   = HashMultiset.create();
 

@@ -35,8 +35,8 @@ public final class TableColumnOrderMemory {
 
 	//~ Constructors ---------------------------------------------------------------------------------------------------
 
-	private TableColumnOrderMemory(final PrefStore prefStore, final Throttle throttler, final Table table,
-								   final String key) {
+	protected TableColumnOrderMemory(final PrefStore prefStore, final Throttle throttler, final Table table,
+									 final String key) {
 		this.prefStore			  = prefStore;
 		this.throttler			  = throttler;
 		this.table				  = table;
@@ -69,13 +69,6 @@ public final class TableColumnOrderMemory {
 			/* add listener */
 			column.addControlListener(new ColumnMoveListener());
 		}
-	}
-
-	//~ Methods --------------------------------------------------------------------------------------------------------
-
-	public static void install(final PrefStore prefStore, final Throttle throttler, final Table table,
-							   final String memoryKey) {
-		new TableColumnOrderMemory(prefStore, throttler, table, memoryKey);
 	}
 
 	//~ Inner Classes --------------------------------------------------------------------------------------------------

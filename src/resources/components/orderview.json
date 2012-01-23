@@ -1,0 +1,93 @@
+{
+    columns: 2,
+    children: 
+    [
+        {
+        },
+        {
+            name : "search",
+            type : "text",
+            h-align: "fill"
+        },
+        {
+            name : "sidebar",
+            width : 200,
+            children: 
+            [
+                {
+                    name : "stores",
+                    type : "label",
+                    font : "bold"
+                },
+                {
+                    name : "stores",
+                    type : "table",
+                    lines : false,
+                    check : true,
+                    h-align: "fill",
+                    grow : "-"
+                },
+                {
+                    v-indent : 15,
+                    name : "datefilter",
+                    type : "label",
+                    font : "bold"
+            	},
+                {
+                    name : "datefilter",
+                    type : "datepicker",
+                    options : "range"
+                },
+                {
+                    v-indent : 15,
+                    name : "status",
+                    type : "label",
+                    font : "bold"
+                },                
+                {
+                    name : "status",
+                    type : "radioset",
+                    h-align: "fill",
+                    choices : "requested ordered delivered"
+                }
+            ]
+        },
+        {
+            name : "orders",
+			margin-height: 0,
+			margin-width: 0,
+            grow : "|-",
+            v-align: "fill",
+            h-align: "fill",
+            children: 
+            [
+                {
+                    type : "table",
+ 		            grow : "|-",
+ 		            v-align: "fill",
+            		h-align: "fill"
+                },
+                {
+                    name : "actions",
+                   	columns: "variable",
+		            h-align : "fill",
+				    children: 
+				    [
+				        {
+				            name : "mark-ordered",
+				            type : "button"
+				        },
+				        {
+				            name : "cancel",
+				            type : "button"
+				        },
+				        {
+				            name : "book-in",
+				            type : "button"
+				        }
+				    ]
+                }
+            ]
+        }
+    ] 
+}

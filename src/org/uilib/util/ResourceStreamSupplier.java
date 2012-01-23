@@ -27,7 +27,7 @@ public class ResourceStreamSupplier implements ParamSupplier<String, InputStream
 
 		String fullName = "/resources/" + resource;
 
-		URL url = ResourceStreamSupplier.class.getResource(fullName);
+		URL url		    = ResourceStreamSupplier.class.getResource(fullName);
 		if (url == null) {
 			return null;
 		}

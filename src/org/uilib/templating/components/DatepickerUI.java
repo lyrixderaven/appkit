@@ -18,7 +18,7 @@ import org.uilib.application.EventContext;
 import org.uilib.registry.Texts;
 import org.uilib.templating.Options;
 
-// TODO: Widgets: Datepicker: bei abhakerl LabelText auf weiß setzen
+// TODO: Widgets: Datepicker: set LabelText to white when deselecting
 public final class DatepickerUI implements ComponentUI {
 
 	//~ Instance fields ------------------------------------------------------------------------------------------------

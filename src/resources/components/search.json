@@ -1,0 +1,23 @@
+{
+    columns: "variable",
+    h-spacing: 0,
+    children: 
+    [
+        {
+            type : "label",
+            v-align : "center"
+        },
+        {
+            name : "clear",
+            type : "button",
+		    h-indent: 7
+        },
+        {
+            type : "text",
+            grow: "-",
+            search: "true",
+            h-align: "fill",
+            v-align: "center"
+        }
+    ] 
+}

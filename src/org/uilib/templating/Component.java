@@ -2,9 +2,7 @@ package org.uilib.templating;
 
 import com.google.common.base.CharMatcher;
 import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMultimap;
 
 import java.util.List;
 
@@ -17,8 +15,8 @@ import org.slf4j.LoggerFactory;
 import org.uilib.application.EventContext;
 import org.uilib.templating.components.ComponentUI;
 import org.uilib.templating.components.LayoutUI;
+import org.uilib.util.Naming;
 
-// FIXME: Component: use Naming?
 public final class Component {
 
 	//~ Static fields/initializers -------------------------------------------------------------------------------------
@@ -28,77 +26,74 @@ public final class Component {
 
 	//~ Instance fields ------------------------------------------------------------------------------------------------
 
+	private final CharMatcher nameFilter =
+		CharMatcher.inRange('a', 'z').or(CharMatcher.inRange('0', '9')).or(CharMatcher.anyOf("?!-"));
+
+	/* data */
 	private final String name;
 	private final String type;
 	private final ImmutableList<Component> children;
-	private final ImmutableMultimap<String, Component> nameMap;
 	private final ComponentUI ui;
 	private final Options options;
+
+	/* naming */
+	private final Naming<Component> naming = Naming.create();
+
+	/* is set after initialization */
 	private Control control;
 
 	//~ Constructors ---------------------------------------------------------------------------------------------------
 
-	public Component(final String name, final String type, final List<Component> children,
-					 final ComponentUI controller, final Options options) {
-		this.name											 = name;
-
+	public Component(final String name, final String type, final List<Component> children, final ComponentUI ui,
+					 final Options options) {
 		/* check arguments */
-		if (this.name != null) {
-
-			CharMatcher nameFilter = CharMatcher.inRange('a', 'z').or(CharMatcher.anyOf("?-"));
-			Preconditions.checkArgument(nameFilter.matchesAllOf(name), "only a-z, '-' and '?' allowed in name");
-		}
+		Preconditions.checkNotNull(name);
 		Preconditions.checkNotNull(type);
 		Preconditions.checkNotNull(children);
-		Preconditions.checkNotNull(controller);
+		Preconditions.checkNotNull(ui);
 		Preconditions.checkNotNull(options);
+
 		Preconditions.checkArgument(
-			children.isEmpty() || controller instanceof LayoutUI,
-			"need a LayoutUI since component has children");
+			children.isEmpty() || ui instanceof LayoutUI,
+			"ui needs to implement LayoutUI since component has children");
+
+		Preconditions.checkArgument(
+			this.nameFilter.matchesAllOf(name),
+			"'%s' didn't satisfy name-filter (a-z 0-9 ?!-)",
+			name);
 
 		/* initialize */
-		this.type		  = type;
-		this.children     = ImmutableList.copyOf(children);
-		this.ui			  = controller;
-		this.options	  = options;
+		this.name						   = name;
+		this.type						   = type;
+		this.children					   = ImmutableList.copyOf(children);
+		this.ui							   = ui;
+		this.options					   = options;
 
-		/* *** build name-map for this component */
-		ImmutableMultimap.Builder<String, Component> map = ImmutableMultimap.builder();
+		/* note: this complicates Naming a bit, since we built another query-feature via $type here
+		 * naming is able to select via a java-type, so this could be changed to put Component, UI and Control
+		 * directly into this.naming
+		 */
 
-		/* 1. we are definitely addressable as $<type> */
-		map.put("$" + type, this);
+		/* reachable only via name, $type and name$type */
+		this.naming.register(this.name, this);
+		this.naming.register(this.name + "$" + this.type, this);
+		this.naming.register("$" + this.type, this);
 
-		/* 2. if we have a name we are also addressable as <name> and as <name>$<type> */
-		if (this.name != null) {
-			map.put(name, this);
-			map.put(name + "$" + type, this);
-		}
-
-		/* 3. put all name-mappings of children widgets into map */
+		/* same with children */
 		for (final Component child : this.children) {
-			map.putAll(child.getNameMap());
+			this.naming.attach(this.name, child.getNaming());
+			this.naming.attach(this.name + "$" + this.type, child.getNaming());
+			this.naming.attach("$" + this.type, child.getNaming());
 		}
 
-		/* 4. if we have a name, all naming in children are addressable as <this.name>.<naming> */
-		if (this.name != null) {
-			for (final Component child : this.children) {
-				for (final String key : child.getNameMap().keySet()) {
-					if (key.startsWith("$")) {
-						map.putAll(this.name + key, child.getNameMap().get(key));
-					} else {
-						map.putAll(this.name + "." + key, child.getNameMap().get(key));
-					}
-				}
-			}
-		}
-		/* *** build name-map for this component */
-		this.nameMap = map.build();
+		/* seal naming */
+		this.naming.seal();
 	}
 
 	//~ Methods --------------------------------------------------------------------------------------------------------
 
-	public ImmutableMultimap<String, Component> getNameMap() {
-		return this.nameMap;
+	public Naming<Component> getNaming() {
+		return this.naming;
 	}
 
 	public Control getControl() {
@@ -126,49 +121,26 @@ public final class Component {
 
 		String s = "(" + this.type + ")";
 		if (name != null) {
-			s += (" '" + name + "' ");
+			s += (" '" + name + "'");
 		}
 
 		return s;
 	}
 
-	@SuppressWarnings("unchecked")
-	public <E extends Control> E select(final String query, final Class<E> clazz) {
+	public Component select(final String query) {
 		Preconditions.checkState(this.control != null, "control wasn't initialized yet");
 
-		ImmutableCollection<Component> components = this.nameMap.get(query);
-
-		Preconditions.checkState(
-			components.size() == 1,
-			"found " + components.size() + " controls for '" + query + "'");
-
-		return (E) components.iterator().next().getControl();
+		return this.naming.select(query, Component.class);
 	}
 
-	public Component select(final String query) {
-		// FIXME: RFC: does it make sense to select before initialization?
-		Preconditions.checkState(this.control != null, "control wasn't initialized yet");
-
-		ImmutableCollection<Component> components = this.nameMap.get(query);
-
-		Preconditions.checkState(
-			components.size() == 1,
-			"found " + components.size() + " controls for '" + query + "'");
-
-		return components.iterator().next();
+	@SuppressWarnings("unchecked")
+	public <E extends Control> E select(final String query, final Class<E> clazz) {
+		return (E) this.select(query).getControl();
 	}
 
 	@SuppressWarnings("unchecked")
 	public <E extends ComponentUI> E selectUI(final String query, final Class<E> clazz) {
-		Preconditions.checkState(this.control != null, "control wasn't initialized yet");
-
-		ImmutableCollection<Component> components = this.nameMap.get(query);
-
-		Preconditions.checkState(
-			components.size() == 1,
-			"found " + components.size() + " controls for '" + query + "'");
-
-		return (E) components.iterator().next().getUI();
+		return (E) this.select(query).getUI();
 	}
 
 	public void initialize(final Composite parent) {
@@ -211,7 +183,7 @@ public final class Component {
 
 		Preconditions.checkArgument(
 			child.getParent() == this.control,
-			"you have to call setVisible on the component of the layout containing the widget you want to change");
+			"you have to call setVisible on layout-component containing the widget you want to change");
 
 		((LayoutUI) this.ui).setVisible(child, visible);
 	}

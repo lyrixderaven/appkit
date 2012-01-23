@@ -17,7 +17,7 @@ public final class FillTreeLayout {
 
 	//~ Constructors ---------------------------------------------------------------------------------------------------
 
-	private FillTreeLayout(final Tree tree) {
+	protected FillTreeLayout(final Tree tree) {
 
 		/* install layout into parentComposite of Table */
 		TreeColumnLayout layout = new TreeColumnLayout();
@@ -28,11 +28,5 @@ public final class FillTreeLayout {
 		for (final TreeColumn c : tree.getColumns()) {
 			layout.setColumnData(c, new ColumnWeightData(weight));
 		}
-	}
-
-	//~ Methods --------------------------------------------------------------------------------------------------------
-
-	public static void install(final Tree tree) {
-		new FillTreeLayout(tree);
 	}
 }

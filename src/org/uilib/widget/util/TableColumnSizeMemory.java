@@ -21,7 +21,6 @@ import org.uilib.util.SWTSyncedRunnable;
 import org.uilib.util.Throttle;
 import org.uilib.util.prefs.PrefStore;
 
-// FIXME: rename: table utils, shell utils, widget utils?
 public final class TableColumnSizeMemory {
 
 	//~ Static fields/initializers -------------------------------------------------------------------------------------
@@ -38,8 +37,8 @@ public final class TableColumnSizeMemory {
 
 	//~ Constructors ---------------------------------------------------------------------------------------------------
 
-	private TableColumnSizeMemory(final PrefStore prefStore, final Throttle throttler, final Table table,
-								  final String key, final int defaultWeight) {
+	protected TableColumnSizeMemory(final PrefStore prefStore, final Throttle throttler, final Table table,
+									final String key, final int defaultWeight) {
 		this.prefStore			  = prefStore;
 		this.throttler			  = throttler;
 		this.table				  = table;
@@ -79,13 +78,6 @@ public final class TableColumnSizeMemory {
 		for (final TableColumn column : table.getColumns()) {
 			column.addControlListener(new ColumnResizeListener());
 		}
-	}
-
-	//~ Methods --------------------------------------------------------------------------------------------------------
-
-	public static void install(final PrefStore prefStore, final Throttle throttler, final Table table,
-							   final String memoryKey, final int defaultSize) {
-		new TableColumnSizeMemory(prefStore, throttler, table, memoryKey, defaultSize);
 	}
 
 	//~ Inner Classes --------------------------------------------------------------------------------------------------

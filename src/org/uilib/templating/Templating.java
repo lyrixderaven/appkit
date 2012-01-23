@@ -124,7 +124,7 @@ public final class Templating {
 			/* 1. if component is empty, it's a spacer */
 			if (jsonObject.entrySet().isEmpty()) {
 				return new Component(
-					null,
+					"no-name",
 					"spacer",
 					ImmutableList.<Component>of(),
 					this.instantiateController("spacer"),
@@ -133,7 +133,7 @@ public final class Templating {
 
 			/* 2. name (if existent) */
 			JsonElement jsonName = jsonObject.get("name");
-			String name			 = ((jsonName != null) ? jsonName.getAsString() : null);
+			String name			 = ((jsonName != null) ? jsonName.getAsString() : "no-name");
 
 			/* 3. type, default to 'component' if non-existant */
 			JsonElement jsonType = jsonObject.get("type");
@@ -194,7 +194,7 @@ public final class Templating {
 									 throws JsonParseException
 		{
 
-			Type type2 =
+			Type type2   =
 				ParameterizedTypeImpl.make(List.class, ((ParameterizedType) type).getActualTypeArguments(), null);
 			List<?> list = context.deserialize(json, type2);
 

@@ -84,12 +84,10 @@ public class ComponentGridUI implements LayoutUI {
 		gd.grabExcessHorizontalSpace     = options.get("grow", "").contains("-");
 		gd.horizontalIndent				 = options.get("h-indent", 0);
 		gd.horizontalSpan				 = options.get("h-span", 1);
+		gd.widthHint					 = options.get("width", SWT.DEFAULT);
+		gd.heightHint					 = options.get("height", SWT.DEFAULT);
 
-		// FIXME: RFC: Preconditions which options are allowed? MigLayout instead?
-		gd.widthHint	  = options.get("width", SWT.DEFAULT);
-		gd.heightHint     = options.get("height", SWT.DEFAULT);
-
-		String hAlign     = options.get("h-align", "");
+		String hAlign					 = options.get("h-align", "");
 		if (hAlign.contains("center")) {
 			gd.horizontalAlignment = SWT.CENTER;
 		} else if (hAlign.contains("left")) {

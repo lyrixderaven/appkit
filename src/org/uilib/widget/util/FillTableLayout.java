@@ -16,7 +16,7 @@ public final class FillTableLayout {
 
 	//~ Constructors ---------------------------------------------------------------------------------------------------
 
-	private FillTableLayout(final Table table) {
+	protected FillTableLayout(final Table table) {
 
 		/* install layout into parentComposite of Table */
 		TableColumnLayout layout = new TableColumnLayout();
@@ -29,11 +29,5 @@ public final class FillTableLayout {
 		for (final TableColumn c : table.getColumns()) {
 			layout.setColumnData(c, new ColumnWeightData(weight));
 		}
-	}
-
-	//~ Methods --------------------------------------------------------------------------------------------------------
-
-	public static void install(final Table table) {
-		new FillTableLayout(table);
 	}
 }
