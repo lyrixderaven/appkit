@@ -9,5 +9,6 @@
 	<classpathentry kind="lib" path="lib/org.eclipse.jface_3.7.0.I20110522-1430.jar"/>
 	<classpathentry kind="lib" path="lib/slf4j-api-1.6.4.jar"/>
 	<classpathentry kind="lib" path="lib/log4j-1.2.16.jar"/>
+	<classpathentry kind="lib" path="lib/slf4j-log4j12-1.6.4.jar"/>
 	<classpathentry kind="output" path="build"/>
 </classpath>
