@@ -4,7 +4,6 @@ import java.io.File;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.FileDialog;
-import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 
 import org.uilib.registry.Texts;
@@ -51,12 +50,17 @@ public class SaveFileDialog {
 				if (file.exists()) {
 
 					// The file already exists; asks for confirmation
-					MessageBox mb = new MessageBox(dlg.getParent(), SWT.ICON_WARNING | SWT.YES | SWT.NO);
-					mb.setMessage(this.texts.get("dialog_filereplace", fileName));
+					String title   = this.texts.get("savefiledialog_q_replace_title");
+					String message = this.texts.get("savefiledialog_q_replace", fileName);
+					String option1 = this.texts.get("savefiledialog_q_replace_a_replace");
+					String option2 = this.texts.get("savefiledialog_q_replace_a_abort");
+
+					MBox mb		   = new MBox(dlg.getParent(), MBox.Icon.INFO, title, message, option1, option2);
 
 					// If they click Yes, we're done and we drop out. If
-					// they click No, we redisplay the File Dialog
-					done = mb.open() == SWT.YES;
+					if (mb.open() == 0) {
+						done = true;
+					}
 				} else {
 					// File does not exist, so drop out
 					done = true;
