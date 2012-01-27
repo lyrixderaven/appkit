@@ -1,14 +1,18 @@
 package org.uilib.registry;
 
+import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Supplier;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.HashMultiset;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Multiset;
 
 import java.io.IOException;
 import java.io.InputStream;
+
+import java.util.Map;
 
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
@@ -29,9 +33,12 @@ public final class Images {
 
 	//~ Static fields/initializers -------------------------------------------------------------------------------------
 
-	private static final Logger L					   = LoggerFactory.getLogger(Images.class);
-	private static final BiMap<Object, Image> registry = HashBiMap.create();
-	private static final Multiset<Image> usage		   = HashMultiset.create();
+	private static final Logger L = LoggerFactory.getLogger(Images.class);
+
+	/* cache / registry */
+	private static final BiMap<Integer, Image> imageCache			    = HashBiMap.create();
+	private static final Multiset<Image> usage						    = HashMultiset.create();
+	private static final Map<Control, DisposeListener> disposeListeners = Maps.newHashMap();
 
 	//~ Constructors ---------------------------------------------------------------------------------------------------
 
@@ -45,22 +52,28 @@ public final class Images {
 
 	public static <E> void set(final Control control, final Supplier<E> keySupplier,
 							   final ParamSupplier<E, InputStream> dataSupplier) {
+		/* check for UI-thread and if control is imageable */
 		Preconditions.checkState(
 			Display.getDefault().getThread() == Thread.currentThread(),
 			"Images is to be used from the display-thread exclusively!");
-		Preconditions.checkState(
+		Preconditions.checkArgument(
 			control instanceof Label || control instanceof Button || control instanceof Shell,
 			"don't know how to set image on {}",
 			control);
 
-		E key = keySupplier.get();
-
-		L.debug("loading image {} for {}", key, control);
+		/* if we already set an image on this control, remove it */
+		if (disposeListeners.containsKey(control)) {
+			putBack(control);
+		}
 
 		/* get image out of cache or load it */
+		final E key		  = keySupplier.get();
+		int hash		  = Objects.hashCode(key);
 		final Image image;
-		if (registry.containsKey(key)) {
-			image = registry.get(key);
+
+		L.debug("setting image {} on {}", key, control);
+		if (imageCache.containsKey(hash)) {
+			image		  = imageCache.get(hash);
 
 		} else {
 
@@ -71,21 +84,21 @@ public final class Images {
 			}
 
 			image = new Image(Display.getDefault(), in);
-			L.debug("created image {}: {}", key, image);
+			L.debug("created image: {}", image);
 			try {
 				in.close();
 			} catch (final IOException e) {
 				L.error(e.getMessage(), e);
 			}
 
-			registry.put(key, image);
+			imageCache.put(hash, image);
 		}
 
-		/* register usage */
+		/* increase usage-counter */
 		usage.setCount(image, usage.count(image) + 1);
 		L.debug("usage of {} now {}", image, usage.count(image));
 
-		/* set it */
+		/* set image */
 		if (control instanceof Label) {
 			((Label) control).setImage(image);
 		} else if (control instanceof Button) {
@@ -96,23 +109,48 @@ public final class Images {
 			throw new IllegalStateException();
 		}
 
-		/* and add the diposer */
-		control.addDisposeListener(
-			new DisposeListener() {
-					@Override
-					public void widgetDisposed(final DisposeEvent event) {
-						/* deregister usage */
-						usage.setCount(image, usage.count(image) - 1);
-						L.debug("usage of {} now {}", image, usage.count(image));
+		/* and add the disposer */
+		DisposeListener listener = new ImageDisposeListener();
+		disposeListeners.put(control, listener);
+		control.addDisposeListener(listener);
+	}
 
-						if (! usage.contains(image)) {
-							L.debug("disposing {}", image);
+	public static void putBack(final Control control) {
+		Preconditions.checkState(disposeListeners.containsKey(control), "control {} not registered", control);
 
-							/* remove first, font appears to change identity after disposal, maybe image does the same */
-							registry.inverse().remove(image);
-							image.dispose();
-						}
-					}
-				});
+		/* remove control out of registry and remove listener */
+		control.removeDisposeListener(disposeListeners.remove(control));
+
+		/* get the image */
+		Image image;
+		if (control instanceof Label) {
+			image = ((Label) control).getImage();
+		} else if (control instanceof Button) {
+			image = ((Button) control).getImage();
+		} else if (control instanceof Shell) {
+			image = ((Shell) control).getImage();
+		} else {
+			throw new IllegalStateException();
+		}
+
+		/* decrease usage-counter */
+		usage.setCount(image, usage.count(image) - 1);
+		L.debug("usage of {} now {}", image, usage.count(image));
+
+		/* if usage is 0 dispose it */
+		if (! usage.contains(image)) {
+			L.debug("disposing {}", image);
+			imageCache.inverse().remove(image);
+			image.dispose();
+		}
+	}
+
+	//~ Inner Classes --------------------------------------------------------------------------------------------------
+
+	private static final class ImageDisposeListener implements DisposeListener {
+		@Override
+		public void widgetDisposed(final DisposeEvent event) {
+			putBack((Control) event.widget);
+		}
 	}
 }
