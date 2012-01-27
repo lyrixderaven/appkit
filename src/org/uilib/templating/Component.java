@@ -60,7 +60,8 @@ public final class Component {
 		Preconditions.checkArgument(
 			this.nameFilter.matchesAllOf(name),
 			"'%s' didn't satisfy name-filter (%s)",
-			name, nameFilter);
+			name,
+			nameFilter);
 
 		/* initialize */
 		this.name						   = name;
