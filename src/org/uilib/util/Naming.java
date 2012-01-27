@@ -25,6 +25,11 @@ import org.slf4j.LoggerFactory;
 
 public final class Naming<E> {
 
+	//~ Enumerations ---------------------------------------------------------------------------------------------------
+
+	public enum MatchMode {EXACT, PREFIX;
+	}
+
 	//~ Static fields/initializers -------------------------------------------------------------------------------------
 
 	@SuppressWarnings("unused")
@@ -158,18 +163,18 @@ public final class Naming<E> {
 
 	/** selects the object matching a class and a name-query */
 	public <T extends E> T select(final String query, final Class<T> clazz) {
-		return this.select(query, clazz, false);
+		return this.select(query, clazz, MatchMode.PREFIX);
 	}
 
 	/** finds all objects matching a class and a name-query */
 	public <T extends E> ImmutableSet<T> find(final String query, final Class<T> clazz) {
-		return this.find(query, clazz, false);
+		return this.find(query, clazz, MatchMode.PREFIX);
 	}
 
 	/** selects the object matching a class and a query */
-	public <T extends E> T select(final String query, final Class<T> clazz, final boolean exactNameMatch) {
+	public <T extends E> T select(final String query, final Class<T> clazz, final MatchMode mode) {
 
-		ImmutableSet<T> results = this.find(query, clazz, exactNameMatch);
+		ImmutableSet<T> results = this.find(query, clazz, mode);
 
 		Preconditions.checkState(
 			results.size() == 1,
@@ -183,21 +188,25 @@ public final class Naming<E> {
 
 	/** finds all objects matching a class and a name-query */
 	@SuppressWarnings("unchecked")
-	private <T extends E> ImmutableSet<T> find(final String query, final Class<T> clazz, final boolean exactMatch) {
+	private <T extends E> ImmutableSet<T> find(final String query, final Class<T> clazz, final MatchMode mode) {
 
 		/* cache: hash the request and check if we have an entry */
-		int hash = Objects.hashCode(exactMatch, query, clazz);
+		int hash = Objects.hashCode(mode, query, clazz);
 		if ((this.cache != null) && this.cache.containsKey(hash)) {
 			return (ImmutableSet<T>) this.cache.get(hash);
 		}
 
 		/* find results */
 		Collection<E> objects;
-		if (exactMatch) {
-			objects = this.exactMap.get(query);
-		} else {
-			objects = this.prefixMap.get(query);
-			objects.addAll(this.postfixMap.get(query));
+		switch (mode) {
+			case EXACT:
+				objects = this.exactMap.get(query);
+				break;
+			case PREFIX:
+				objects = this.prefixMap.get(query);
+				break;
+			default:
+				throw new IllegalStateException();
 		}
 
 		/* of these, find results that match given type */
