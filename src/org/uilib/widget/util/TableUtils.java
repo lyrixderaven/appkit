@@ -4,6 +4,7 @@ import org.eclipse.swt.widgets.Table;
 
 import org.uilib.util.Throttle;
 import org.uilib.util.prefs.PrefStore;
+import org.uilib.widget.util.TableScrollDetector.ScrollListener;
 
 public final class TableUtils {
 
@@ -21,5 +22,9 @@ public final class TableUtils {
 
 	public static void setColumnsFillWidth(final Table table) {
 		new FillTableLayout(table);
+	}
+
+	public static void installScrollListener(final Table table, final ScrollListener listener) {
+		new TableScrollDetector(table, listener);
 	}
 }
