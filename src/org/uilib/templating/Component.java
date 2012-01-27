@@ -59,8 +59,8 @@ public final class Component {
 
 		Preconditions.checkArgument(
 			this.nameFilter.matchesAllOf(name),
-			"'%s' didn't satisfy name-filter (a-z 0-9 ?!-)",
-			name);
+			"'%s' didn't satisfy name-filter (%s)",
+			name, nameFilter);
 
 		/* initialize */
 		this.name						   = name;
