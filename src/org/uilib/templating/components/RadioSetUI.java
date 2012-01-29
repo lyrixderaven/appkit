@@ -59,14 +59,15 @@ public class RadioSetUI implements ComponentUI, CustomI18N {
 		int i = 0;
 		for (final String choice : options.get("choices")) {
 
-			Button btn = new Button(this.comp, SWT.RADIO);
+			final Button btn = new Button(this.comp, SWT.RADIO);
 			this.choices.put(choice, btn);
 			btn.addSelectionListener(
 				new SelectionAdapter() {
 						@Override
 						public void widgetSelected(final SelectionEvent event) {
-							selection = choice;
-							app.postEvent(selection);
+							if (btn.getSelection()) {
+								app.postEvent(choice);
+							}
 						}
 					});
 

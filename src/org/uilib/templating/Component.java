@@ -70,6 +70,9 @@ public final class Component {
 		this.ui							   = ui;
 		this.options					   = options;
 
+		/* 1. this is addressable via name */
+		this.naming.register(name, this);
+
 		/* 1. this is addressable as $<type> */
 		this.naming.register("$" + type, this);
 

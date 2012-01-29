@@ -7,6 +7,7 @@ import java.io.InputStream;
 
 import java.text.MessageFormat;
 
+import java.util.Locale;
 import java.util.Map.Entry;
 import java.util.Properties;
 
@@ -22,7 +23,6 @@ import org.uilib.templating.Component;
 import org.uilib.util.ParamSupplier;
 import org.uilib.util.ResourceStreamSupplier;
 
-// TODO: Texts: getSystemDefault Lang
 public class Texts {
 
 	//~ Static fields/initializers -------------------------------------------------------------------------------------
@@ -64,12 +64,22 @@ public class Texts {
 
 	//~ Methods --------------------------------------------------------------------------------------------------------
 
-	public static Texts fromResources(final String lang) {
-		return new Texts(new ResourceStreamSupplier(), "i18n/" + lang + ".properties");
+	public static Texts fromResources() {
+		return fromResources(Locale.getDefault());
 	}
 
-	public static Texts forComponent(final String componentType, final String lang) {
-		return new Texts(new ResourceStreamSupplier(), "components/" + componentType + "." + lang + ".properties");
+	public static Texts forComponent(final String componentType) {
+		return forComponent(componentType, Locale.getDefault());
+	}
+
+	public static Texts fromResources(final Locale locale) {
+		return new Texts(new ResourceStreamSupplier(), "i18n/" + locale.getLanguage() + ".properties");
+	}
+
+	public static Texts forComponent(final String componentType, final Locale locale) {
+		return new Texts(
+			new ResourceStreamSupplier(),
+			"components/" + componentType + "." + locale.getLanguage() + ".properties");
 	}
 
 	public void translateComponent(final Component component) {

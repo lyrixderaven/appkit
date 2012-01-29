@@ -1,5 +1,8 @@
 package org.uilib.sample;
 
+import com.google.common.eventbus.Subscribe;
+
+import java.util.Locale;
 import java.util.Properties;
 
 import org.apache.log4j.PropertyConfigurator;
@@ -10,9 +13,12 @@ import org.eclipse.swt.widgets.Shell;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.uilib.application.LocalEventContext;
 import org.uilib.registry.Texts;
 import org.uilib.templating.Component;
 import org.uilib.templating.Templating;
+import org.uilib.templating.components.DatepickerUI.DateRange;
+import org.uilib.templating.components.SearchUI;
 
 public final class Sample {
 
@@ -20,22 +26,31 @@ public final class Sample {
 
 	private static final Logger L = LoggerFactory.getLogger(Sample.class);
 
-	//~ Methods --------------------------------------------------------------------------------------------------------
+	//~ Constructors ---------------------------------------------------------------------------------------------------
 
-	public static void main(final String args[]) {
+	public Sample() {
 		/* Log4J Configuration */
 		PropertyConfigurator.configure(log4jProperties());
 
+		/* create a shell */
 		Shell shell = new Shell();
 		shell.setLayout(new FillLayout());
 
-		Templating tl    = Templating.fromResources();
-		Component orders = tl.create("orderview");
-		orders.initialize(shell);
+		/* create templating and load a template */
+		Templating templating = Templating.fromResources();
+		templating.registerType(SearchUI.class, "search");
 
+		/* instantiate a component with simple event-context */
+		LocalEventContext eventContext = new LocalEventContext(this);
+
+		Component orders			   = templating.create("orderview");
+		orders.initialize(eventContext, shell);
+
+		/* translate component */
+		Texts.forComponent("orderview", Locale.ENGLISH).translateComponent(orders);
+
+		/* output naming for debugging purposes */
 		L.debug(orders.getNaming().toString());
-
-		Texts.forComponent("orderview", "de").translateComponent(orders);
 
 		shell.open();
 
@@ -44,6 +59,22 @@ public final class Sample {
 				shell.getDisplay().sleep();
 			}
 		}
+	}
+
+	//~ Methods --------------------------------------------------------------------------------------------------------
+
+	public static void main(final String args[]) {
+		new Sample();
+	}
+
+	@Subscribe
+	public void localEvent(final Object object) {
+		L.debug("event: " + object);
+	}
+
+	@Subscribe
+	public void daterangeChange(final DateRange daterange) {
+		L.debug("we got a date-range: " + daterange);
 	}
 
 	public static Properties log4jProperties() {
@@ -55,13 +86,6 @@ public final class Sample {
 		props.setProperty("log4j.appender.console.Threshold", "DEBUG");
 		props.setProperty("log4j.appender.console.layout", "org.apache.log4j.PatternLayout");
 		props.setProperty("log4j.appender.console.layout.ConversionPattern", "%d [%t] %-5p %c - %m%n");
-		props.setProperty("log4j.appender.internal", "com.partner4media.tc.util.InternalLog$Logger");
-		props.setProperty("log4j.appender.internal.Threshold", "DEBUG");
-		props.setProperty("log4j.appender.file", "org.apache.log4j.FileAppender");
-		props.setProperty("log4j.appender.file.File", "${java.io.tmpdir}/p4m-crash.log");
-		props.setProperty("log4j.appender.file.layout", "org.apache.log4j.PatternLayout");
-		props.setProperty("log4j.appender.file.layout.ConversionPattern", "%d [%t] %-5p %c - %m%n");
-		props.setProperty("log4j.appender.file.Threshold", "ERROR");
 
 		return props;
 	}

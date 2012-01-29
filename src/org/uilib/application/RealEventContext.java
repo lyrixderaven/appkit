@@ -2,7 +2,7 @@ package org.uilib.application;
 
 import com.google.common.eventbus.EventBus;
 
-public final class RealAppContext implements EventContext {
+public final class RealEventContext implements EventContext {
 
 	//~ Instance fields ------------------------------------------------------------------------------------------------
 
@@ -12,7 +12,7 @@ public final class RealAppContext implements EventContext {
 
 	//~ Constructors ---------------------------------------------------------------------------------------------------
 
-	public RealAppContext(final Application application, final Controller controller, final EventBus parentBus) {
+	public RealEventContext(final Application application, final Controller controller, final EventBus parentBus) {
 		this.application     = application;
 
 		/* the parentBus is used so the parent can receive events */
@@ -33,7 +33,7 @@ public final class RealAppContext implements EventContext {
 	@Override
 	public void initController(final Controller subController) {
 
-		EventContext subContext = new RealAppContext(this.application, subController, localBus);
+		EventContext subContext = new RealEventContext(this.application, subController, localBus);
 		subController.init(subContext);
 	}
 

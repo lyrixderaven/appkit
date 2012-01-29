@@ -71,11 +71,11 @@ public final class Application {
 
 	public void initController(final Controller subController) {
 
-		EventContext subContext = new RealAppContext(this, subController, this.localBus);
+		EventContext subContext = new RealEventContext(this, subController, this.localBus);
 		subController.init(subContext);
 	}
 
-	public void backgroundTask(final Object task, final RealAppContext context) {
+	public void backgroundTask(final Object task, final RealEventContext context) {
 		this.executor.execute(
 			new Runnable() {
 					@Override

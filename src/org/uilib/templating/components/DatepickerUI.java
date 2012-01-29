@@ -2,6 +2,7 @@ package org.uilib.templating.components;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -59,7 +60,7 @@ public final class DatepickerUI implements ComponentUI {
 		} else {
 			this.labelFrom = new Label(comp, SWT.NONE);
 			this.labelFrom.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
-			this.labelFrom.setText(Texts.forComponent("datepicker", "de").get("from"));
+			this.labelFrom.setText(Texts.forComponent("datepicker", Locale.ENGLISH).get("from"));
 			this.dtFrom = new DateTime(comp, SWT.DATE | SWT.BORDER | SWT.DROP_DOWN);
 			this.dtFrom.setLayoutData(new GridData(SWT.NONE, SWT.CENTER, false, false));
 			this.dtFrom.addSelectionListener(
@@ -86,7 +87,7 @@ public final class DatepickerUI implements ComponentUI {
 
 			this.labelTo = new Label(comp, SWT.NONE);
 			this.labelTo.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
-			this.labelTo.setText(Texts.forComponent("datepicker", "de").get("to"));
+			this.labelTo.setText(Texts.forComponent("datepicker", Locale.ENGLISH).get("to"));
 			this.dtTo = new DateTime(comp, SWT.DATE | SWT.BORDER | SWT.DROP_DOWN);
 			this.dtTo.setLayoutData(new GridData(SWT.NONE, SWT.CENTER, false, false));
 			this.dtTo.addSelectionListener(

@@ -28,14 +28,8 @@ public final class LocalEventContext implements EventContext {
 	//~ Methods --------------------------------------------------------------------------------------------------------
 
 	@Subscribe
-	public void localEvent(final Object event) {
-		L.debug("local event: " + event);
-	}
-
-	// FIXME: Application: this makes no sense since we catch Object
-	@Subscribe
 	public void deadLocalEvent(final DeadEvent event) {
-		L.debug("dead local event: " + event);
+		L.debug("dead local event: " + event.getEvent());
 	}
 
 	@Override
