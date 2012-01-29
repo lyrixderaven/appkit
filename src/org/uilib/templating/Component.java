@@ -70,24 +70,23 @@ public final class Component {
 		this.ui							   = ui;
 		this.options					   = options;
 
-		/* note: this complicates Naming a bit, since we built another query-feature via $type here
-		 * naming is able to select via a java-type, so this could be changed to put Component, UI and Control
-		 * directly into this.naming
-		 */
+		/* 1. this is addressable as $<type> */
+		this.naming.register("$" + type, this);
 
-		/* reachable only via name, $type and name$type */
-		this.naming.register(this.name, this);
-		this.naming.register(this.name + "$" + this.type, this);
-		this.naming.register("$" + this.type, this);
+		/* 2. this is also addressable as <name>$<type> */
+		this.naming.register(name + "$" + type, this);
 
-		/* same with children */
+		/* 3. add all namings of children */
 		for (final Component child : this.children) {
-			this.naming.attach(this.name, child.getNaming());
-			this.naming.attach(this.name + "$" + this.type, child.getNaming());
-			this.naming.attach("$" + this.type, child.getNaming());
+			this.naming.register(child.getNaming());
 		}
 
-		/* seal naming */
+		/* 4. add all namings of children reachable via <name>.<children-naming> and <name>$<type> */
+		for (final Component child : this.children) {
+			this.naming.register(this.name + ".", child.getNaming());
+		}
+
+		/* *** build name-map for this component */
 		this.naming.seal();
 	}
 
