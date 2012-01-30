@@ -10,8 +10,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.ControlListener;
-import org.eclipse.swt.widgets.Table;
-import org.eclipse.swt.widgets.TableColumn;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,26 +18,29 @@ import org.uilib.util.SWTSyncedRunnable;
 import org.uilib.util.Throttle;
 import org.uilib.util.prefs.PrefStore;
 
-public final class TableColumnOrderMemory {
+public final class ColumnOrderMemory {
 
 	//~ Static fields/initializers -------------------------------------------------------------------------------------
 
-	private static final Logger L = LoggerFactory.getLogger(TableColumnOrderMemory.class);
+	private static final Logger L = LoggerFactory.getLogger(ColumnOrderMemory.class);
 
 	//~ Instance fields ------------------------------------------------------------------------------------------------
 
 	private final PrefStore prefStore;
 	private final Throttle throttler;
-	private final Table table;
+	private final ColumnController colController;
 	private final String memoryKey;
+
+	/* save order */
+	private List<Integer> lastOrder;
 
 	//~ Constructors ---------------------------------------------------------------------------------------------------
 
-	protected TableColumnOrderMemory(final PrefStore prefStore, final Throttle throttler, final Table table,
-									 final String key) {
+	protected ColumnOrderMemory(final ColumnController colController, final PrefStore prefStore,
+								final Throttle throttler, final String key) {
 		this.prefStore			  = prefStore;
 		this.throttler			  = throttler;
-		this.table				  = table;
+		this.colController		  = colController;
 		this.memoryKey			  = key + ".columnorder";
 
 		/* reorder columns */
@@ -47,28 +48,57 @@ public final class TableColumnOrderMemory {
 		L.debug("orderString: " + orderString);
 
 		List<String> orderList = Lists.newArrayList(Splitter.on(",").split(orderString));
-		if (orderList.size() == this.table.getColumnCount()) {
+		if (orderList.size() == this.colController.getColumnCount()) {
 			L.debug("valid order " + orderList + " -> reordering columns");
 			try {
 
-				int order[] = new int[this.table.getColumnCount()];
+				int order[] = new int[this.colController.getColumnCount()];
 				int i	    = 0;
 				for (final String pos : orderList) {
 					order[i] = Integer.valueOf(pos);
 					i++;
 				}
 
-				this.table.setColumnOrder(order);
+				this.colController.setColumnOrder(order);
+
 			} catch (final NumberFormatException e) {}
 		}
 
-		for (final TableColumn column : table.getColumns()) {
-			/* set column movable */
-			column.setMoveable(true);
+		/* save last order */
+		this.lastOrder = Ints.asList(colController.getColumnOrder());
 
-			/* add listener */
-			column.addControlListener(new ColumnMoveListener());
+		/* set columns movable */
+		this.colController.setColumnsMoveable();
+
+		/* add listeners */
+		for (int i = 0; i < this.colController.getColumnCount(); i++) {
+			this.colController.installColumnControlListener(i, new ColumnMoveListener());
 		}
+	}
+
+	//~ Methods --------------------------------------------------------------------------------------------------------
+
+	private void saveOrder() {
+
+		final List<Integer> order = Ints.asList(colController.getColumnOrder());
+		if (order.equals(lastOrder)) {
+			return;
+		}
+
+		this.lastOrder = order;
+
+		final String orderString = Joiner.on(",").join(order);
+		this.throttler.throttle(
+			memoryKey,
+			250,
+			TimeUnit.MILLISECONDS,
+			new SWTSyncedRunnable() {
+					@Override
+					public void runChecked() {
+						L.debug("writing out order {} to key", orderString, memoryKey);
+						prefStore.store(memoryKey, orderString);
+					}
+				});
 	}
 
 	//~ Inner Classes --------------------------------------------------------------------------------------------------
@@ -76,21 +106,7 @@ public final class TableColumnOrderMemory {
 	private class ColumnMoveListener implements ControlListener {
 		@Override
 		public void controlMoved(final ControlEvent event) {
-			throttler.throttle(
-				memoryKey,
-				50,
-				TimeUnit.MILLISECONDS,
-				new SWTSyncedRunnable() {
-						@Override
-						public void runChecked() {
-							if (table.isDisposed()) {
-								return;
-							}
-
-							List<Integer> order = Ints.asList(table.getColumnOrder());
-							prefStore.store(memoryKey, Joiner.on(",").join(order));
-						}
-					});
+			saveOrder();
 		}
 
 		@Override
