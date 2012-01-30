@@ -7,8 +7,12 @@ import java.util.Properties;
 
 import org.apache.log4j.PropertyConfigurator;
 
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.TableItem;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,6 +23,10 @@ import org.uilib.templating.Component;
 import org.uilib.templating.Templating;
 import org.uilib.templating.components.DatepickerUI.DateRange;
 import org.uilib.templating.components.SearchUI;
+import org.uilib.templating.components.TableUI;
+import org.uilib.util.SmartExecutor;
+import org.uilib.util.prefs.PrefStore;
+import org.uilib.widget.util.TableUtils;
 
 public final class Sample {
 
@@ -52,6 +60,29 @@ public final class Sample {
 		/* output naming for debugging purposes */
 		L.debug(orders.getNaming().toString());
 
+		/* test */
+		Table t = orders.selectUI("orders.$table", TableUI.class).getTable();
+		t.setHeaderVisible(true);
+
+		TableColumn c1 = new TableColumn(t, SWT.NONE);
+		c1.setText("eins");
+
+		TableColumn c2 = new TableColumn(t, SWT.NONE);
+		c2.setText("zwei");
+
+		TableColumn c3 = new TableColumn(t, SWT.NONE);
+		c3.setText("drei");
+
+		TableItem item = new TableItem(t, SWT.NONE);
+		item.setText("asdasdas");
+
+		TableUtils.autosizeColumns(t);
+
+		PrefStore prefStore    = PrefStore.createJavaPrefStore("org/uilib/sample");
+		SmartExecutor executor = SmartExecutor.create();
+		TableUtils.rememberColumnSizes(prefStore, executor, t, "test");
+		TableUtils.rememberColumnOrder(prefStore, executor, t, "test");
+
 		shell.open();
 
 		while (! shell.isDisposed()) {
@@ -59,6 +90,8 @@ public final class Sample {
 				shell.getDisplay().sleep();
 			}
 		}
+
+		executor.shutdown();
 	}
 
 	//~ Methods --------------------------------------------------------------------------------------------------------
