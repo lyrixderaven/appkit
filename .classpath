@@ -5,10 +5,9 @@
 	<classpathentry kind="lib" path="lib/guava-10.0.1.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="lib/jna-3.4.0.jar"/>
-	<classpathentry kind="lib" path="lib/org.eclipse.jface_3.7.0.I20110522-1430.jar"/>
 	<classpathentry kind="lib" path="lib/slf4j-api-1.6.4.jar"/>
 	<classpathentry kind="lib" path="lib/log4j-1.2.16.jar"/>
 	<classpathentry kind="lib" path="lib/slf4j-log4j12-1.6.4.jar"/>
-	<classpathentry kind="lib" path="lib/swt-3.7.1-win32.jar"/>
+	<classpathentry kind="lib" path="lib/swt-3.7.1-cocoa64.jar"/>
 	<classpathentry kind="output" path="build"/>
 </classpath>
