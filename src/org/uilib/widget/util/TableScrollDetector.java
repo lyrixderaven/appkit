@@ -1,24 +1,28 @@
 package org.uilib.widget.util;
 
+import com.google.common.base.Objects;
+
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Table;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Objects;
-
 public final class TableScrollDetector implements PaintListener {
 
-	//~ Instance fields ------------------------------------------------------------------------------------------------
+	//~ Static fields/initializers -------------------------------------------------------------------------------------
+
 	@SuppressWarnings("unused")
-	private final static Logger L = LoggerFactory.getLogger(TableScrollDetector.class);
-	
+	private static final Logger L							 = LoggerFactory.getLogger(TableScrollDetector.class);
+
+	//~ Instance fields ------------------------------------------------------------------------------------------------
+
 	private final Table table;
 	private final ScrollListener listener;
-	private int firstVisible = 0;
-	private int lastVisible  = 0;
+	private int firstVisible								 = 0;
+	private int lastVisible									 = 0;
 
 	//~ Constructors ---------------------------------------------------------------------------------------------------
 
@@ -44,10 +48,10 @@ public final class TableScrollDetector implements PaintListener {
 
 		/* -1 if no data in table */
 		if (totalRows == 0) {
-			newFirstVis = -1;
-			newLastVis = -1;
+			newFirstVis     = -1;
+			newLastVis	    = -1;
 		}
-		
+
 		if ((newFirstVis != firstVisible) || (newLastVis != lastVisible)) {
 			this.listener.scrolled(new ScrollEvent(totalRows, newFirstVis, newLastVis));
 		}
@@ -73,12 +77,13 @@ public final class TableScrollDetector implements PaintListener {
 		public ScrollEvent(final int totalRows, final int firstVisibleRow, final int lastVisibleRow) {
 			this.totalRows			 = totalRows;
 			this.firstVisibleRow     = firstVisibleRow;
-			
+
 			/* we want visible data-rows, not the blank one at the end */
-			if (lastVisibleRow >= totalRows)
+			if (lastVisibleRow >= totalRows) {
 				this.lastVisibleRow = totalRows - 1;
-			else
-				this.lastVisibleRow	= lastVisibleRow;
+			} else {
+				this.lastVisibleRow = lastVisibleRow;
+			}
 		}
 
 		public int getFirstVisibleRow() {
@@ -96,14 +101,15 @@ public final class TableScrollDetector implements PaintListener {
 		public boolean isLastRowVisible() {
 			return ((lastVisibleRow + 1) == totalRows);
 		}
-		
+
 		@Override
 		public String toString() {
+
 			Objects.ToStringHelper helper = Objects.toStringHelper(this);
 			helper.add("total", this.totalRows);
 			helper.add("first-vis", this.firstVisibleRow);
 			helper.add("last-vis", this.lastVisibleRow);
-			
+
 			return helper.toString();
 		}
 	}

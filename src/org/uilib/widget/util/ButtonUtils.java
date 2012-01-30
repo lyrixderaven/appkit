@@ -18,10 +18,11 @@ public final class ButtonUtils {
 					@Override
 					public void widgetSelected(final SelectionEvent event) {
 
-						Rectangle buttonBounds  = button.getBounds();
-						Point abs			    = button.getParent().toDisplay(new Point(buttonBounds.x, buttonBounds.y));
+						Rectangle buttonBounds = button.getBounds();
+						Point abs			   =
+							button.getParent().toDisplay(new Point(buttonBounds.x, buttonBounds.y));
 
-						menu.setLocation(abs.x, abs.y+buttonBounds.height);
+						menu.setLocation(abs.x, abs.y + buttonBounds.height);
 						menu.setVisible(true);
 					}
 				});
