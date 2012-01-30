@@ -10,9 +10,5 @@ public interface EventContext {
 
 	public void postEvent(final Object event);
 
-	public void initController(final Controller subController);
-
 	public void backgroundTask(final Object task);
-
-	public void postLocal(final Object response);
 }

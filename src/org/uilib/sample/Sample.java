@@ -18,12 +18,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.uilib.application.LocalEventContext;
+import org.uilib.overlay.Overlay;
 import org.uilib.registry.Texts;
 import org.uilib.templating.Component;
 import org.uilib.templating.Templating;
 import org.uilib.templating.components.DatepickerUI.DateRange;
 import org.uilib.templating.components.SearchUI;
 import org.uilib.templating.components.TableUI;
+import org.uilib.util.LoggingRunnable;
 import org.uilib.util.SmartExecutor;
 import org.uilib.util.prefs.PrefStore;
 import org.uilib.widget.util.TableUtils;
@@ -34,6 +36,12 @@ public final class Sample {
 
 	private static final Logger L = LoggerFactory.getLogger(Sample.class);
 
+	//~ Instance fields ------------------------------------------------------------------------------------------------
+
+	private Shell shell;
+	private Component orders;
+	private SmartExecutor executor;
+
 	//~ Constructors ---------------------------------------------------------------------------------------------------
 
 	public Sample() {
@@ -41,7 +49,7 @@ public final class Sample {
 		PropertyConfigurator.configure(log4jProperties());
 
 		/* create a shell */
-		Shell shell = new Shell();
+		shell					  = new Shell();
 		shell.setLayout(new FillLayout());
 
 		/* create templating and load a template */
@@ -51,7 +59,7 @@ public final class Sample {
 		/* instantiate a component with simple event-context */
 		LocalEventContext eventContext = new LocalEventContext(this);
 
-		Component orders			   = templating.create("orderview");
+		orders = templating.create("orderview");
 		orders.initialize(eventContext, shell);
 
 		/* translate component */
@@ -79,7 +87,7 @@ public final class Sample {
 		TableUtils.autosizeColumns(t);
 
 		PrefStore prefStore    = PrefStore.createJavaPrefStore("org/uilib/sample");
-		SmartExecutor executor = SmartExecutor.create();
+		executor = SmartExecutor.create();
 		TableUtils.rememberColumnSizes(prefStore, executor, t, "test");
 		TableUtils.rememberColumnOrder(prefStore, executor, t, "test");
 
@@ -103,6 +111,20 @@ public final class Sample {
 	@Subscribe
 	public void localEvent(final Object object) {
 		L.debug("event: " + object);
+
+		Table t    = orders.selectUI("orders.$table", TableUI.class).getTable();
+		final Overlay ov = new Overlay(t);
+
+		ov.show();
+		executor.execute(new LoggingRunnable() {
+
+			@Override
+			public void runChecked() {
+
+			}
+
+		});
+
 	}
 
 	@Subscribe
