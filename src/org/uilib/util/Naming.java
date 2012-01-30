@@ -17,6 +17,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+// FIXME: exists?
 public final class Naming<E> {
 
 	//~ Static fields/initializers -------------------------------------------------------------------------------------
