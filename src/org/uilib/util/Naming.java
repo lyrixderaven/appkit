@@ -17,7 +17,6 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-// FIXME: exists?
 public final class Naming<E> {
 
 	//~ Static fields/initializers -------------------------------------------------------------------------------------
@@ -99,6 +98,22 @@ public final class Naming<E> {
 	/** selects the object matching a class */
 	public <T extends E> T select(final Class<T> clazz) {
 		return this.select(null, clazz);
+	}
+
+	/** checks if select for object would work */
+	public <T extends E> boolean exists(final String name, final Class<T> clazz) {
+		try {
+			this.select(name, clazz);
+
+			return true;
+		} catch (final IllegalStateException e) {
+			return false;
+		}
+	}
+
+	/** checks if select for object would work */
+	public <T extends E> boolean exists(final Class<T> clazz) {
+		return this.exists(null, clazz);
 	}
 
 	/** finds all objects matching a class */
