@@ -21,19 +21,32 @@ public final class SmartExecutor implements Throttle, Executor {
 
 	//~ Instance fields ------------------------------------------------------------------------------------------------
 
-	private final ExecutorService executor					    = Executors.newCachedThreadPool();
-	private final DelayQueue<DelayedRunnable> taskQueue		    = new DelayQueue<DelayedRunnable>();
+	private final Executor executor;
+	private final ExecutorService executorService;
+	private final DelayQueue<DelayedRunnable> taskQueue = new DelayQueue<DelayedRunnable>();
 	private final Map<String, ThrottledRunnable> throttledTasks = Maps.newHashMap();
 
 	//~ Constructors ---------------------------------------------------------------------------------------------------
 
 	/* schedule a Runnable to be executed a fixed period of time after it was scheduled
 	 * if a new Runnable with the same throttleName is scheduled before this one was called, it will overwrite this */
-	public SmartExecutor() {
+	public SmartExecutor(final Executor executor) {
+		if (executor != null) {
+			this.executorService     = null;
+			this.executor			 = executor;
+		} else {
+			this.executorService     = Executors.newCachedThreadPool();
+			this.executor			 = this.executorService;
+
+		}
 		this.executor.execute(new Scheduler());
 	}
 
 	//~ Methods --------------------------------------------------------------------------------------------------------
+
+	public static SmartExecutor create() {
+		return new SmartExecutor(null);
+	}
 
 	/* execute a Runnable once */
 	@Override
@@ -53,7 +66,8 @@ public final class SmartExecutor implements Throttle, Executor {
 
 	/* shut the the executor down */
 	public void shutdown() {
-		this.executor.shutdownNow();
+		/* this throws NPE if executor wasn't created here-in */
+		this.executorService.shutdownNow();
 	}
 
 	@Override
