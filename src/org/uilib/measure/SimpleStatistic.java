@@ -8,7 +8,6 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-// TODO: Measure: output summary / only long-running tasks
 public class SimpleStatistic implements Measurement.Listener {
 
 	//~ Static fields/initializers -------------------------------------------------------------------------------------

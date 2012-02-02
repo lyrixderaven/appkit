@@ -19,13 +19,13 @@ import org.slf4j.LoggerFactory;
 
 import org.uilib.application.LocalEventContext;
 import org.uilib.overlay.Overlay;
+import org.uilib.overlay.SpinnerOverlay;
 import org.uilib.registry.Texts;
 import org.uilib.templating.Component;
 import org.uilib.templating.Templating;
 import org.uilib.templating.components.DatepickerUI.DateRange;
 import org.uilib.templating.components.SearchUI;
 import org.uilib.templating.components.TableUI;
-import org.uilib.util.LoggingRunnable;
 import org.uilib.util.SmartExecutor;
 import org.uilib.util.prefs.PrefStore;
 import org.uilib.widget.util.TableUtils;
@@ -86,7 +86,7 @@ public final class Sample {
 
 		TableUtils.autosizeColumns(t);
 
-		PrefStore prefStore    = PrefStore.createJavaPrefStore("org/uilib/sample");
+		PrefStore prefStore = PrefStore.createJavaPrefStore("org/uilib/sample");
 		executor = SmartExecutor.create();
 		TableUtils.rememberColumnSizes(prefStore, executor, t, "test");
 		TableUtils.rememberColumnOrder(prefStore, executor, t, "test");
@@ -112,19 +112,9 @@ public final class Sample {
 	public void localEvent(final Object object) {
 		L.debug("event: " + object);
 
-		Table t    = orders.selectUI("orders.$table", TableUI.class).getTable();
-		final Overlay ov = new Overlay(t);
-
+		Table t			 = orders.selectUI("orders.$table", TableUI.class).getTable();
+		final Overlay ov = new Overlay(t, new SpinnerOverlay(this.executor));
 		ov.show();
-		executor.execute(new LoggingRunnable() {
-
-			@Override
-			public void runChecked() {
-
-			}
-
-		});
-
 	}
 
 	@Subscribe

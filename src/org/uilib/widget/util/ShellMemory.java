@@ -10,22 +10,23 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.ControlListener;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.uilib.util.LoggingRunnable;
 import org.uilib.util.SWTSyncedRunnable;
 import org.uilib.util.Throttle;
 import org.uilib.util.prefs.PrefStore;
 
-// FIXME: ShellMemory: remember which Monitor
 public final class ShellMemory {
 
 	//~ Static fields/initializers -------------------------------------------------------------------------------------
 
-	@SuppressWarnings("unused")
-	private static final Logger L							 = LoggerFactory.getLogger(ShellMemory.class);
+	private static final Logger L		   = LoggerFactory.getLogger(ShellMemory.class);
+	private static final int THROTTLE_TIME = 250;
 
 	//~ Instance fields ------------------------------------------------------------------------------------------------
 
@@ -51,16 +52,16 @@ public final class ShellMemory {
 	protected ShellMemory(final PrefStore prefStore, final Throttle throttler, final Shell shell,
 						  final String memoryKey, final int defaultWidth, final int defaultHeight, final int defaultX,
 						  final int defaultY, final boolean defaultMaximized, final boolean sizeOnly) {
-		this.prefStore										 = prefStore;
-		this.throttler										 = throttler;
-		this.shell											 = shell;
-		this.memoryKey										 = memoryKey;
-		this.defaultX										 = defaultX;
-		this.defaultY										 = defaultY;
-		this.defaultWidth									 = defaultWidth;
-		this.defaultHeight									 = defaultHeight;
-		this.defaultMaximized								 = defaultMaximized;
-		this.sizeOnly										 = sizeOnly;
+		this.prefStore			  = prefStore;
+		this.throttler			  = throttler;
+		this.shell				  = shell;
+		this.memoryKey			  = memoryKey;
+		this.defaultX			  = defaultX;
+		this.defaultY			  = defaultY;
+		this.defaultWidth		  = defaultWidth;
+		this.defaultHeight		  = defaultHeight;
+		this.defaultMaximized     = defaultMaximized;
+		this.sizeOnly			  = sizeOnly;
 
 		if (! sizeOnly) {
 
@@ -117,35 +118,54 @@ public final class ShellMemory {
 
 		@Override
 		public void controlResized(final ControlEvent event) {
+
+			final String maximizedString = String.valueOf(shell.getMaximized());
+			final String positionString;
+			final String sizeString;
+
+			/* if shell was maximized don't store position and size */
+			if (shell.getMaximized()) {
+				positionString			 = null;
+				sizeString				 = null;
+			} else {
+
+				/* if size only, don't store position */
+				if (sizeOnly) {
+					positionString = null;
+				} else {
+
+					Point pos = shell.getLocation();
+					positionString = Joiner.on(",").join(pos.x, pos.y);
+				}
+
+				Point size = shell.getSize();
+				sizeString = Joiner.on(",").join(size.x, size.y);
+			}
+
+			Runnable runnable =
+				new LoggingRunnable() {
+					@Override
+					public void runChecked() {
+						L.debug("writing out maximized {} to key", maximizedString, memoryKey);
+						prefStore.store(memoryKey + ".maximized", maximizedString);
+
+						if (positionString != null) {
+							L.debug("writing out position {} to key", positionString, memoryKey);
+							prefStore.store(memoryKey + ".position", positionString);
+						}
+
+						if (sizeString != null) {
+							L.debug("writing out size {} to key", sizeString, memoryKey);
+							prefStore.store(memoryKey + ".size", sizeString);
+						}
+					}
+				};
+
 			throttler.throttle(
 				memoryKey,
-				50,
+				THROTTLE_TIME,
 				TimeUnit.MILLISECONDS,
-				new SWTSyncedRunnable() {
-						@Override
-						public void runChecked() {
-							if (shell.isDisposed()) {
-								return;
-							}
-
-							prefStore.store(memoryKey + ".maximized", String.valueOf(shell.getMaximized()));
-
-							/* if shell was maximized don't store position and size */
-							if (shell.getMaximized()) {
-								return;
-							}
-
-							/* if size only, don't store position */
-							if (! sizeOnly) {
-
-								Point pos = shell.getLocation();
-								prefStore.store(memoryKey + ".position", Joiner.on(",").join(pos.x, pos.y));
-							}
-
-							Point size = shell.getSize();
-							prefStore.store(memoryKey + ".size", Joiner.on(",").join(size.x, size.y));
-						}
-					});
+				new SWTSyncedRunnable(Display.getCurrent(), runnable));
 		}
 	}
 }

@@ -54,7 +54,7 @@ public final class Images {
 							   final ParamSupplier<E, InputStream> dataSupplier) {
 		/* check for UI-thread and if control is imageable */
 		Preconditions.checkState(
-			Display.getDefault().getThread() == Thread.currentThread(),
+			Display.getCurrent() != null,
 			"Images is to be used from the display-thread exclusively!");
 		Preconditions.checkArgument(
 			control instanceof Label || control instanceof Button || control instanceof Shell,
@@ -83,7 +83,7 @@ public final class Images {
 				return;
 			}
 
-			image = new Image(Display.getDefault(), in);
+			image = new Image(Display.getCurrent(), in);
 			L.debug("created image: {}", image);
 			try {
 				in.close();

@@ -1,9 +1,10 @@
 package org.uilib.application;
 
-import org.eclipse.swt.widgets.Display;
 import org.uilib.util.LoggingRunnable;
 
-public abstract class BackgroundTask extends LoggingRunnable{
+public abstract class BackgroundTask extends LoggingRunnable {
+
+	//~ Methods --------------------------------------------------------------------------------------------------------
 
 	@Override
 	public final void runChecked() {
@@ -13,24 +14,11 @@ public abstract class BackgroundTask extends LoggingRunnable{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		Display.getDefault().syncExec(
-				new LoggingRunnable() {
-					@Override
-					public void runChecked() {
-						//ov.dispose();
-					}
-				});
 	}
 
-	public void work() {
+	public void work() {}
 
-	}
+	public void enter() {}
 
-	public void enter() {
-
-	}
-
-	public void done() {
-
-	}
+	public void done() {}
 }

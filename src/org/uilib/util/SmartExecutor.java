@@ -1,8 +1,11 @@
 package org.uilib.util;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.DelayQueue;
 import java.util.concurrent.Delayed;
 import java.util.concurrent.Executor;
@@ -21,16 +24,16 @@ public final class SmartExecutor implements Throttle, Executor {
 
 	//~ Instance fields ------------------------------------------------------------------------------------------------
 
-	private final Executor executor;
+	/* can be null if executorService wasn't created here */
 	private final ExecutorService executorService;
+	private final Executor executor;
 	private final DelayQueue<DelayedRunnable> taskQueue = new DelayQueue<DelayedRunnable>();
 	private final Map<String, ThrottledRunnable> throttledTasks = Maps.newHashMap();
+	private final Set<Runnable> cancelledTasks = Sets.newHashSet();
 
 	//~ Constructors ---------------------------------------------------------------------------------------------------
 
-	/* schedule a Runnable to be executed a fixed period of time after it was scheduled
-	 * if a new Runnable with the same throttleName is scheduled before this one was called, it will overwrite this */
-	public SmartExecutor(final Executor executor) {
+	private SmartExecutor(final Executor executor) {
 		if (executor != null) {
 			this.executorService     = null;
 			this.executor			 = executor;
@@ -46,6 +49,18 @@ public final class SmartExecutor implements Throttle, Executor {
 
 	public static SmartExecutor create() {
 		return new SmartExecutor(null);
+	}
+
+	public static SmartExecutor create(final Executor executor) {
+		return new SmartExecutor(executor);
+	}
+
+	/* shut the the executor down */
+	public void shutdown() {
+		Preconditions.checkState(
+			this.executorService != null,
+			"executor-service wasn't created within this instance, dispose it yourself!");
+		this.executorService.shutdownNow();
 	}
 
 	/* execute a Runnable once */
@@ -64,22 +79,65 @@ public final class SmartExecutor implements Throttle, Executor {
 		this.taskQueue.put(new RepeatingRunnable(runnable, period, timeUnit));
 	}
 
-	/* shut the the executor down */
-	public void shutdown() {
-		/* this throws NPE if executor wasn't created here-in */
-		this.executorService.shutdownNow();
+	public void cancelRepeatingRunnable(final Runnable runnable) {
+		this.cancelledTasks.add(runnable);
 	}
 
+	/* schedule a Runnable to be executed a fixed period of time after it was scheduled
+	 * if a new Runnable with the same throttleName is scheduled before this one was called, it will overwrite this */
 	@Override
 	public void throttle(final String throttleName, final long delay, final TimeUnit timeUnit, final Runnable runnable) {
 
-		final ThrottledRunnable thrRunnable = new ThrottledRunnable(runnable, throttleName, delay, timeUnit);
-		this.throttledTasks.put(throttleName, thrRunnable);
-		this.taskQueue.put(thrRunnable);
+		ThrottledRunnable thrTask = new ThrottledRunnable(runnable, throttleName, delay, timeUnit);
+		this.throttledTasks.put(thrTask.getThrottleName(), thrTask);
+		this.taskQueue.put(thrTask);
 	}
 
 	//~ Inner Classes --------------------------------------------------------------------------------------------------
 
+	private final class Scheduler implements Runnable {
+		@Override
+		public void run() {
+			try {
+				while (true) {
+
+					/* wait for the next runnable to become available */
+					final DelayedRunnable task = SmartExecutor.this.taskQueue.take();
+
+					if (task instanceof RepeatingRunnable) {
+
+						/* if runnable wasn't cancelled tell executor to run the action and reschedule it afterwards */
+						if (! cancelledTasks.contains(task.getRunnable())) {
+							SmartExecutor.this.executor.execute(
+								new Runnable() {
+										@Override
+										public void run() {
+											task.run();
+											SmartExecutor.this.taskQueue.put(((RepeatingRunnable) task).reschedule());
+										}
+									});
+						}
+					} else if (task instanceof ThrottledRunnable) {
+
+						final ThrottledRunnable thrTask = (ThrottledRunnable) task;
+
+						/* run only if this is the latest task in given throttle, otherwise skip execution */
+						if (SmartExecutor.this.throttledTasks.get(thrTask.getThrottleName()) == thrTask) {
+							SmartExecutor.this.executor.execute(task);
+						}
+					} else {
+						/* tell the executor to just run the action */
+						SmartExecutor.this.executor.execute(task);
+					}
+				}
+			} catch (final InterruptedException e) {
+				SmartExecutor.L.debug("scheduler interrupted (shutting down)");
+				return;
+			}
+		}
+	}
+
+	/** delayed runnable */
 	private static class DelayedRunnable implements Delayed, Runnable {
 
 		protected final Runnable runnable;
@@ -104,12 +162,17 @@ public final class SmartExecutor implements Throttle, Executor {
 			return unit.convert(this.endOfDelay - System.currentTimeMillis(), TimeUnit.MILLISECONDS);
 		}
 
+		public Runnable getRunnable() {
+			return this.runnable;
+		}
+
 		@Override
 		public void run() {
 			this.runnable.run();
 		}
 	}
 
+	/** repeating runnable */
 	private static final class RepeatingRunnable extends DelayedRunnable {
 
 		private final long periodInMillis;
@@ -125,45 +188,7 @@ public final class SmartExecutor implements Throttle, Executor {
 		}
 	}
 
-	private final class Scheduler implements Runnable {
-		@Override
-		public void run() {
-			while (true) {
-				try {
-
-					/* wait for the next runnable to become available */
-					final DelayedRunnable task = SmartExecutor.this.taskQueue.take();
-
-					if (task instanceof RepeatingRunnable) {
-						/* tell executor to run the action and reschedule it afterwards */
-						SmartExecutor.this.executor.execute(
-							new Runnable() {
-									@Override
-									public void run() {
-										task.run();
-										SmartExecutor.this.taskQueue.put(((RepeatingRunnable) task).reschedule());
-									}
-								});
-					} else if (task instanceof ThrottledRunnable) {
-
-						final ThrottledRunnable thrTask = (ThrottledRunnable) task;
-
-						/* run only if this is the latest task in given throttle, otherwise skip execution */
-						if (SmartExecutor.this.throttledTasks.get(thrTask.getThrottleName()) == thrTask) {
-							SmartExecutor.this.executor.execute(task);
-						}
-					} else {
-						/* tell the executor to just run the action */
-						SmartExecutor.this.executor.execute(task);
-					}
-				} catch (final InterruptedException e) {
-					SmartExecutor.L.debug("scheduler interrupted (shutting down)");
-					return;
-				}
-			}
-		}
-	}
-
+	/** throttled runnable */
 	private static final class ThrottledRunnable extends DelayedRunnable {
 
 		private final String throttleName;

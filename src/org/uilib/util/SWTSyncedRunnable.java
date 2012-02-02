@@ -2,29 +2,32 @@ package org.uilib.util;
 
 import org.eclipse.swt.widgets.Display;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-public abstract class SWTSyncedRunnable implements Runnable {
+public final class SWTSyncedRunnable implements Runnable {
 
 	//~ Instance fields ------------------------------------------------------------------------------------------------
 
-	private final Logger logger = LoggerFactory.getLogger(this.getClass());
+	private final Display display;
+	private final Runnable runnable;
+
+	//~ Constructors ---------------------------------------------------------------------------------------------------
+
+	public SWTSyncedRunnable(final Display display, final Runnable runnable) {
+		this.display	  = display;
+		this.runnable     = runnable;
+	}
 
 	//~ Methods --------------------------------------------------------------------------------------------------------
 
 	@Override
 	public final void run() {
-		if (Display.getDefault().getThread() == Thread.currentThread()) {
-			try {
-				this.runChecked();
-			} catch (final RuntimeException e) {
-				this.logger.error(e.getMessage(), e);
-			}
+		if (this.display.isDisposed()) {
+			return;
+		}
+
+		if (this.display.getThread() == Thread.currentThread()) {
+			this.runnable.run();
 		} else {
-			Display.getDefault().syncExec(this);
+			this.display.syncExec(this);
 		}
 	}
-
-	public abstract void runChecked();
 }

@@ -9,84 +9,118 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
-// TODO: OverLay Region, so you can access parts of it
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public final class Overlay {
+
+	//~ Static fields/initializers -------------------------------------------------------------------------------------
+
+	@SuppressWarnings("unused")
+	private static final Logger L							 = LoggerFactory.getLogger(Overlay.class);
 
 	//~ Instance fields ------------------------------------------------------------------------------------------------
 
 	private final Composite comp;
+	private final OverlaySupplier supplier;
 	private Shell overlayShell;
 	private ControlListener compResizeListener;
 
 	//~ Constructors ---------------------------------------------------------------------------------------------------
 
-	public Overlay(final Composite comp) {
-		this.comp = comp;
+	public Overlay(final Composite comp, final OverlaySupplier supplier) {
+		this.comp											 = comp;
+		this.supplier										 = supplier;
 	}
 
 	//~ Methods --------------------------------------------------------------------------------------------------------
 
 	public void show() {
-		this.overlayShell		    = new Shell(comp.getShell(), SWT.NO_TRIM);
+		/* create overlay shell with canvas */
+		this.overlayShell = new Shell(comp.getShell(), SWT.NO_TRIM);
+		this.overlayShell.setLayout(new FillLayout());
 
+		final Canvas canvas = new Canvas(this.overlayShell, SWT.BORDER);
+
+		this.supplier.setCanvas(canvas);
+
+		/* add resize listener to comp */
 		this.compResizeListener =
 			new ControlListener() {
 					@Override
 					public void controlMoved(final ControlEvent event) {
-						cover();
-						overlayShell.redraw();
+						canvas.redraw();
+						adjustLocation();
+						canvas.redraw();
 					}
 
 					@Override
 					public void controlResized(final ControlEvent event) {
-						cover();
-						overlayShell.redraw();
+						canvas.redraw();
+						adjustSize();
+						canvas.redraw();
 					}
 				};
-
 		this.comp.addControlListener(compResizeListener);
 
-		this.overlayShell.addPaintListener(
+		canvas.addPaintListener(
 			new PaintListener() {
 					@Override
 					public void paintControl(final PaintEvent event) {
 
-						Image buffer = new Image(Display.getCurrent(), comp.getBounds());
+						int width    = comp.getBounds().width;
+						int height   = comp.getBounds().height;
+
+						Image buffer = new Image(Display.getCurrent(), width, height);
+						GC gcBuffer  = new GC(buffer);
 
 						/* take photo of composite into image */
-						GC gc = new GC(comp.getParent());
-						gc.copyArea(buffer, 0, 0);
-						gc.dispose();
+						GC gcHiddenComp = new GC(comp.getParent());
+						gcHiddenComp.copyArea(buffer, 0, 0);
+						gcHiddenComp.dispose();
 
-						/* draw a line */
-						GC gcBuffer = new GC(buffer);
-						gcBuffer.drawLine(0, 0, comp.getBounds().width, comp.getBounds().height);
+						/* get overlay image from supplier */
+						Image image = new Image(Display.getCurrent(), supplier.getImageData(width, height));
+						gcBuffer.drawImage(image, 0, 0);
 						gcBuffer.dispose();
+						image.dispose();
 
 						event.gc.drawImage(buffer, 0, 0);
 						buffer.dispose();
 					}
 				});
 
-		cover();
+		/* set initial size and locatio and open */
+		adjustLocation();
+		adjustSize();
 		overlayShell.open();
 	}
 
+	/** dispose the overlay */
 	public void dispose() {
+		this.supplier.dispose();
 		this.comp.removeControlListener(this.compResizeListener);
 		this.overlayShell.dispose();
 	}
 
-	private void cover() {
+	/** move the shell where the comp is */
+	private void adjustLocation() {
 
 		final Rectangle compBounds = this.comp.getBounds();
-
 		final Point absLocation    = this.comp.getParent().toDisplay(compBounds.x, compBounds.y);
 		this.overlayShell.setLocation(absLocation);
+	}
+
+	/** size to shell to cover the comp */
+	private void adjustSize() {
+
+		final Rectangle compBounds = this.comp.getBounds();
 		this.overlayShell.setSize(compBounds.width, compBounds.height);
 	}
 }

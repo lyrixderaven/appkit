@@ -5,7 +5,6 @@ import com.google.common.collect.Lists;
 
 import java.util.Queue;
 
-//TODO: Measure: mutable Array isn't good
 public final class Measurement {
 
 	//~ Static fields/initializers -------------------------------------------------------------------------------------

@@ -50,7 +50,7 @@ public final class Colors {
 	private static void setColor(final Control control, final int r, final int g, final int b, final boolean foreground) {
 		/* check for UI-thread and if control is colorable */
 		Preconditions.checkState(
-			Display.getDefault().getThread() == Thread.currentThread(),
+			Display.getCurrent() != null,
 			"Colors is to be used from the display-thread exclusively!");
 		Preconditions.checkArgument(control instanceof Text, "don't know how to set color on {}", control);
 
@@ -76,7 +76,7 @@ public final class Colors {
 		if (colorCache.containsKey(hash)) {
 			color		  = colorCache.get(hash);
 		} else {
-			color = new Color(Display.getDefault(), r, g, b);
+			color = new Color(Display.getCurrent(), r, g, b);
 			L.debug("created color: {}", color);
 			colorCache.put(hash, color);
 		}

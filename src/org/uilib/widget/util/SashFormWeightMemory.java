@@ -10,10 +10,12 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.ControlListener;
+import org.eclipse.swt.widgets.Display;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.uilib.util.LoggingRunnable;
 import org.uilib.util.SWTSyncedRunnable;
 import org.uilib.util.Throttle;
 import org.uilib.util.prefs.PrefStore;
@@ -22,8 +24,8 @@ public final class SashFormWeightMemory {
 
 	//~ Static fields/initializers -------------------------------------------------------------------------------------
 
-	@SuppressWarnings("unused")
-	private static final Logger L							 = LoggerFactory.getLogger(SashFormWeightMemory.class);
+	private static final Logger L		   = LoggerFactory.getLogger(SashFormWeightMemory.class);
+	private static final int THROTTLE_TIME = 250;
 
 	//~ Instance fields ------------------------------------------------------------------------------------------------
 
@@ -37,11 +39,11 @@ public final class SashFormWeightMemory {
 
 	protected SashFormWeightMemory(final PrefStore prefStore, final Throttle throttler, final SashForm sashForm,
 								   final String key, final int defaultWeights[]) {
-		this.prefStore										 = prefStore;
-		this.throttler										 = throttler;
-		this.sashForm										 = sashForm;
-		this.memoryKey										 = key + ".sashsizes";
-		this.defaultWeights									 = defaultWeights;
+		this.prefStore		    = prefStore;
+		this.throttler		    = throttler;
+		this.sashForm		    = sashForm;
+		this.memoryKey		    = key + ".sashsizes";
+		this.defaultWeights     = defaultWeights;
 
 		/* position shell */
 		String weightString     = this.prefStore.get(this.memoryKey, "");
@@ -76,18 +78,24 @@ public final class SashFormWeightMemory {
 
 		@Override
 		public void controlResized(final ControlEvent event) {
+
+			int weights[]			  = sashForm.getWeights();
+			final String weightString = Joiner.on(",").join(weights[0], weights[1]);
+
+			Runnable runnable		  =
+				new LoggingRunnable() {
+					@Override
+					public void runChecked() {
+						L.debug("writing out weights {} to key", weightString, memoryKey);
+						prefStore.store(memoryKey, weightString);
+					}
+				};
+
 			throttler.throttle(
 				memoryKey,
-				50,
+				THROTTLE_TIME,
 				TimeUnit.MILLISECONDS,
-				new SWTSyncedRunnable() {
-						@Override
-						public void runChecked() {
-
-							int weights[] = sashForm.getWeights();
-							prefStore.store(memoryKey, Joiner.on(",").join(weights[0], weights[1]));
-						}
-					});
+				new SWTSyncedRunnable(Display.getCurrent(), runnable));
 		}
 	}
 }

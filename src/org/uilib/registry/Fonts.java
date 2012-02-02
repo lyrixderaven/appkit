@@ -33,14 +33,21 @@ public final class Fonts {
 	private static final Logger L = LoggerFactory.getLogger(Fonts.class);
 
 	/* default font options */
-	private static final String defaultFontName = Display.getDefault().getSystemFont().getFontData()[0].getName();
-	private static final int defaultFontStyle   = Display.getDefault().getSystemFont().getFontData()[0].getStyle();
-	private static final int defaultFontHeight  = Display.getDefault().getSystemFont().getFontData()[0].getHeight();
+	private static final String defaultFontName;
+	private static final int defaultFontStyle;
+	private static final int defaultFontHeight;
 
 	/* cache / registry */
 	private static final BiMap<Integer, Font> fontCache				    = HashBiMap.create();
 	private static final Multiset<Font> usage						    = HashMultiset.create();
 	private static final Map<Control, DisposeListener> disposeListeners = Maps.newHashMap();
+
+	static {
+		Preconditions.checkArgument(Display.getCurrent() != null, "");
+		defaultFontName		  = Display.getCurrent().getSystemFont().getFontData()[0].getName();
+		defaultFontStyle	  = Display.getCurrent().getSystemFont().getFontData()[0].getStyle();
+		defaultFontHeight     = Display.getCurrent().getSystemFont().getFontData()[0].getHeight();
+	}
 
 	//~ Constructors ---------------------------------------------------------------------------------------------------
 
@@ -50,7 +57,7 @@ public final class Fonts {
 
 	public static void set(final Control control, final Style fontStyle) {
 		Preconditions.checkState(
-			Display.getDefault().getThread() == Thread.currentThread(),
+			Display.getCurrent() != null,
 			"Fonts is to be used from the display-thread exclusively!");
 
 		/* if we already set a font on this control, remove it */
@@ -85,7 +92,7 @@ public final class Fonts {
 		if (fontCache.containsKey(hash)) {
 			font	    = fontCache.get(hash);
 		} else {
-			font = new Font(Display.getDefault(), name, height, style);
+			font = new Font(Display.getCurrent(), name, height, style);
 			L.debug("created font: {}", font);
 			fontCache.put(hash, font);
 		}
