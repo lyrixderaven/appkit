@@ -146,16 +146,16 @@ public final class ShellMemory {
 				new LoggingRunnable() {
 					@Override
 					public void runChecked() {
-						L.debug("writing out maximized {} to key", maximizedString, memoryKey);
+						L.debug("writing out maximized {} to key {}", maximizedString, memoryKey);
 						prefStore.store(memoryKey + ".maximized", maximizedString);
 
 						if (positionString != null) {
-							L.debug("writing out position {} to key", positionString, memoryKey);
+							L.debug("writing out position {} to key {}", positionString, memoryKey);
 							prefStore.store(memoryKey + ".position", positionString);
 						}
 
 						if (sizeString != null) {
-							L.debug("writing out size {} to key", sizeString, memoryKey);
+							L.debug("writing out size {} to key {}", sizeString, memoryKey);
 							prefStore.store(memoryKey + ".size", sizeString);
 						}
 					}

@@ -156,27 +156,50 @@ public final class DatepickerUI implements ComponentUI {
 
 		public DateRange(final Date fromDate, final Date toDate) {
 
+			Date tempFrom;
+			Date tempTo;
+
 			/* swap dates if necessary */
 			if ((fromDate != null) && (toDate != null)) {
 				if (fromDate.compareTo(toDate) <= 0) {
-					this.fromDate     = fromDate;
-					this.toDate		  = toDate;
+					tempFrom     = fromDate;
+					tempTo		 = toDate;
 				} else {
-					this.fromDate     = toDate;
-					this.toDate		  = fromDate;
+					tempFrom     = toDate;
+					tempTo		 = fromDate;
 				}
 			} else {
-				this.fromDate     = fromDate;
-				this.toDate		  = toDate;
+				tempFrom     = fromDate;
+				tempTo		 = toDate;
+			}
+
+			if (tempFrom != null) {
+				this.fromDate = new Date(tempFrom.getTime());
+			} else {
+				this.fromDate = null;
+			}
+
+			if (tempTo != null) {
+				this.toDate = new Date(tempTo.getTime());
+			} else {
+				this.toDate = null;
 			}
 		}
 
 		public Date getFromDate() {
-			return fromDate;
+			if (fromDate != null) {
+				return new Date(fromDate.getTime());
+			} else {
+				return null;
+			}
 		}
 
 		public Date getToDate() {
-			return toDate;
+			if (toDate != null) {
+				return new Date(toDate.getTime());
+			} else {
+				return null;
+			}
 		}
 
 		@Override

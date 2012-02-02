@@ -46,8 +46,9 @@ public final class Overlay {
 		this.overlayShell = new Shell(comp.getShell(), SWT.NO_TRIM);
 		this.overlayShell.setLayout(new FillLayout());
 
-		final Canvas canvas = new Canvas(this.overlayShell, SWT.BORDER);
+		final Canvas canvas = new Canvas(this.overlayShell, SWT.NONE);
 
+		/* hand the canvas to the supplier, so it can redraw */
 		this.supplier.setCanvas(canvas);
 
 		/* add resize listener to comp */
@@ -55,14 +56,12 @@ public final class Overlay {
 			new ControlListener() {
 					@Override
 					public void controlMoved(final ControlEvent event) {
-						canvas.redraw();
 						adjustLocation();
 						canvas.redraw();
 					}
 
 					@Override
 					public void controlResized(final ControlEvent event) {
-						canvas.redraw();
 						adjustSize();
 						canvas.redraw();
 					}
@@ -96,7 +95,7 @@ public final class Overlay {
 					}
 				});
 
-		/* set initial size and locatio and open */
+		/* set initial size and location and open and set back focus*/
 		adjustLocation();
 		adjustSize();
 		overlayShell.open();

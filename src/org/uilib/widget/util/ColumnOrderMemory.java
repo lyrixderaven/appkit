@@ -98,7 +98,7 @@ public final class ColumnOrderMemory {
 			new LoggingRunnable() {
 				@Override
 				public void runChecked() {
-					L.debug("writing out order {} to key", orderString, memoryKey);
+					L.debug("writing out order {} to key {}", orderString, memoryKey);
 					prefStore.store(memoryKey, orderString);
 				}
 			};

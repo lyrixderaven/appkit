@@ -86,7 +86,7 @@ public final class SashFormWeightMemory {
 				new LoggingRunnable() {
 					@Override
 					public void runChecked() {
-						L.debug("writing out weights {} to key", weightString, memoryKey);
+						L.debug("writing out weights {} to key {}", weightString, memoryKey);
 						prefStore.store(memoryKey, weightString);
 					}
 				};

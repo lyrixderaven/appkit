@@ -78,7 +78,7 @@ public final class ColumnSizeMemory {
 			new LoggingRunnable() {
 				@Override
 				public void runChecked() {
-					L.debug("writing out widths {} to key", widthString, memoryKey);
+					L.debug("writing out widths {} to key {}", widthString, memoryKey);
 					prefStore.store(memoryKey, widthString);
 				}
 			};
