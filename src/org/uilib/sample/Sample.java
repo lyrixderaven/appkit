@@ -79,10 +79,10 @@ public final class Sample {
 
 		PrefStore prefStore = PrefStore.createJavaPrefStore("org/uilib/sample");
 		executor = SmartExecutor.create();
+		TableUtils.fillTableWidth(t);
 		TableUtils.rememberColumnWeights(prefStore, executor, t, "tes2");
 		TableUtils.rememberColumnOrder(prefStore, executor, t, "tes2");
 		TableUtils.autosizeColumns(t);
-		TableUtils.fillTableWidth(t);
 
 		shell.open();
 
