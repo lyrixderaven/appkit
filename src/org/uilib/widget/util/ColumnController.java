@@ -79,7 +79,7 @@ public abstract class ColumnController {
 			if (i == (this.getColumnCount() - 1)) {
 
 				int diff = sum - controlWidth;
-				if ((diff > 0) && (diff <= this.getColumnCount())) {
+				if ((diff > 0) && (diff <= this.getColumnCount()+2)) {
 					width = width - diff;
 				}
 			}
