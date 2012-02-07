@@ -1,9 +1,7 @@
 package org.uilib.widget.util;
 
-import com.google.common.collect.Lists;
-
-import java.util.List;
-
+import org.eclipse.swt.events.ControlEvent;
+import org.eclipse.swt.events.ControlListener;
 import org.eclipse.swt.widgets.Table;
 
 import org.uilib.util.Throttle;
@@ -27,20 +25,31 @@ public final class TableUtils {
 	/** installs a listener that automatically sizes the columns when the table is resized.
 	 *
 	 * @param table
-	 * @param initialWeights initial weights for the column, the length of this array has to equal the column-count of the table.
 	 */
-	public static void autosizeColumns(final Table table, final List<Integer> initialWeights) {
-		new ColumnAutoSizer(new ColumnController.TableColumnController(table), initialWeights);
+	public static void autosizeColumns(final Table table) {
+		new ColumnAutoSizer(new ColumnController.TableColumnController(table));
 	}
 
-	public static void autosizeColumns(final Table table) {
+	public static void fillTableWidth(final Table table) {
 
-		List<Integer> weights = Lists.newArrayList();
-		for (int i = 0; i < table.getColumnCount(); i++) {
-			weights.add(table.getColumn(i).getWidth());
-		}
+		final ControlListener controlListener =
+			new ControlListener() {
+				@Override
+				public void controlResized(final ControlEvent event) {
 
-		new ColumnAutoSizer(new ColumnController.TableColumnController(table), weights);
+					int width = table.getBounds().width / table.getColumnCount();
+					for (int i = 0; i < table.getColumnCount(); i++) {
+						table.getColumn(i).setWidth(width);
+					}
+
+					table.removeControlListener(this);
+				}
+
+				@Override
+				public void controlMoved(final ControlEvent event) {}
+			};
+
+		table.addControlListener(controlListener);
 	}
 
 	public static void installScrollListener(final Table table, final ScrollListener listener) {

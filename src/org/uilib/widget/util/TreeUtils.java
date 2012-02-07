@@ -1,9 +1,7 @@
 package org.uilib.widget.util;
 
-import com.google.common.collect.Lists;
-
-import java.util.List;
-
+import org.eclipse.swt.events.ControlEvent;
+import org.eclipse.swt.events.ControlListener;
 import org.eclipse.swt.widgets.Tree;
 
 import org.uilib.util.Throttle;
@@ -13,8 +11,8 @@ public final class TreeUtils {
 
 	//~ Methods --------------------------------------------------------------------------------------------------------
 
-	public static void rememberColumnSize(final PrefStore prefStore, final Throttle throttler, final Tree tree,
-										  final String memoryKey) {
+	public static void rememberColumnSizes(final PrefStore prefStore, final Throttle throttler, final Tree tree,
+										   final String memoryKey) {
 		new ColumnSizeMemory(new ColumnController.TreeColumnController(tree), prefStore, throttler, memoryKey);
 	}
 
@@ -26,19 +24,30 @@ public final class TreeUtils {
 	/** installs a listener that automatically sizes the columns when the tree is resized.
 	 *
 	 * @param tree
-	 * @param initialWeights initial weights for the columns, the length of this array has to equal the column-count of the table.
 	 */
-	public static void autosizeColumns(final Tree tree, final List<Integer> initialWeights) {
-		new ColumnAutoSizer(new ColumnController.TreeColumnController(tree), initialWeights);
+	public static void autosizeColumns(final Tree tree) {
+		new ColumnAutoSizer(new ColumnController.TreeColumnController(tree));
 	}
 
-	public static void autosizeColumns(final Tree tree) {
+	public static void fillTreeWidth(final Tree tree) {
 
-		List<Integer> weights = Lists.newArrayList();
-		for (int i = 0; i < tree.getColumnCount(); i++) {
-			weights.add(tree.getColumn(i).getWidth());
-		}
+		final ControlListener controlListener =
+			new ControlListener() {
+				@Override
+				public void controlResized(final ControlEvent event) {
 
-		new ColumnAutoSizer(new ColumnController.TreeColumnController(tree), weights);
+					int width = tree.getBounds().width / tree.getColumnCount();
+					for (int i = 0; i < tree.getColumnCount(); i++) {
+						tree.getColumn(i).setWidth(width);
+					}
+
+					tree.removeControlListener(this);
+				}
+
+				@Override
+				public void controlMoved(final ControlEvent event) {}
+			};
+
+		tree.addControlListener(controlListener);
 	}
 }

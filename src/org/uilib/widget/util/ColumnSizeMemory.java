@@ -42,9 +42,32 @@ public final class ColumnSizeMemory {
 		this.colController     = colController;
 		this.memoryKey		   = key + ".columnsizes";
 
+		/* add initial listener for initial size-setting */
+		colController.installControlListener(
+			new ControlListener() {
+					@Override
+					public void controlResized(final ControlEvent event) {
+						loadWidths();
+						colController.removeControlListener(this);
+					}
+
+					@Override
+					public void controlMoved(final ControlEvent event) {}
+				});
+
+		/* add listeners */
+		for (int i = 0; i < colController.getColumnCount(); i++) {
+			colController.installColumnControlListener(i, new ColumnResizeListener());
+		}
+	}
+
+	//~ Methods --------------------------------------------------------------------------------------------------------
+
+	private void loadWidths() {
+
 		/* load the stored info */
 		String widthString = this.prefStore.get(this.memoryKey, "");
-		L.debug("widthString: " + widthString);
+		L.debug("widthString: '{}'", widthString);
 
 		List<String> widths = Lists.newArrayList(Splitter.on(",").split(widthString));
 		if (widths.size() == colController.getColumnCount()) {
@@ -55,14 +78,7 @@ public final class ColumnSizeMemory {
 				} catch (final NumberFormatException e) {}
 			}
 		}
-
-		/* add listeners */
-		for (int i = 0; i < colController.getColumnCount(); i++) {
-			colController.installColumnControlListener(i, new ColumnResizeListener());
-		}
 	}
-
-	//~ Methods --------------------------------------------------------------------------------------------------------
 
 	private void saveSizes() {
 

@@ -9,6 +9,4 @@ public interface EventContext {
 	//~ Methods --------------------------------------------------------------------------------------------------------
 
 	public void postEvent(final Object event);
-
-	public void backgroundTask(final Object task);
 }

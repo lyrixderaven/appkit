@@ -73,23 +73,23 @@ public final class Sample {
 		t.setHeaderVisible(true);
 
 		TableColumn c1 = new TableColumn(t, SWT.NONE);
-		c1.setText("eins");
+		c1.setText("one");
 
 		TableColumn c2 = new TableColumn(t, SWT.NONE);
-		c2.setText("zwei");
+		c2.setText("two");
 
 		TableColumn c3 = new TableColumn(t, SWT.NONE);
-		c3.setText("drei");
+		c3.setText("three");
 
 		TableItem item = new TableItem(t, SWT.NONE);
-		item.setText("asdasdas");
-
-		TableUtils.autosizeColumns(t);
+		item.setText("item1");
 
 		PrefStore prefStore = PrefStore.createJavaPrefStore("org/uilib/sample");
 		executor = SmartExecutor.create();
-		TableUtils.rememberColumnSizes(prefStore, executor, t, "test");
-		TableUtils.rememberColumnOrder(prefStore, executor, t, "test");
+		TableUtils.fillTableWidth(t);
+		TableUtils.autosizeColumns(t);
+		TableUtils.rememberColumnSizes(prefStore, executor, t, "tes");
+		TableUtils.rememberColumnOrder(prefStore, executor, t, "tes");
 
 		shell.open();
 

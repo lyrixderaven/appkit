@@ -28,6 +28,8 @@ public interface ColumnController {
 
 	void setColumnsMoveable();
 
+	void removeControlListener(final ControlListener controlListener);
+
 	//~ Inner Classes --------------------------------------------------------------------------------------------------
 
 	public static final class TableColumnController implements ColumnController {
@@ -85,6 +87,11 @@ public interface ColumnController {
 				c.setMoveable(true);
 			}
 		}
+
+		@Override
+		public void removeControlListener(final ControlListener controlListener) {
+			this.table.removeControlListener(controlListener);
+		}
 	}
 
 	public static final class TreeColumnController implements ColumnController {
@@ -140,6 +147,11 @@ public interface ColumnController {
 			for (final TreeColumn c : this.tree.getColumns()) {
 				c.setMoveable(true);
 			}
+		}
+
+		@Override
+		public void removeControlListener(final ControlListener controlListener) {
+			this.tree.removeControlListener(controlListener);
 		}
 	}
 }

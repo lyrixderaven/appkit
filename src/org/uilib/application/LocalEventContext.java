@@ -36,9 +36,4 @@ public final class LocalEventContext implements EventContext {
 	public void postEvent(final Object event) {
 		this.localBus.post(event);
 	}
-
-	@Override
-	public void backgroundTask(final Object task) {
-		throw new IllegalStateException("this is not a real context");
-	}
 }

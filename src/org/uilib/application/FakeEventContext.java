@@ -9,9 +9,4 @@ public final class FakeEventContext implements EventContext {
 
 		// No-op
 	}
-
-	@Override
-	public void backgroundTask(final Object task) {
-		throw new IllegalStateException("this is not a real context");
-	}
 }
