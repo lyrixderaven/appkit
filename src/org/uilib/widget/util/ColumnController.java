@@ -75,11 +75,11 @@ public abstract class ColumnController {
 
 			sum		   = sum + width;
 
-			/* rounding "error" on a 100% filled table can be as many px as there are columns */
+			/* correct rounding "errors" */
 			if (i == (this.getColumnCount() - 1)) {
 
 				int diff = sum - controlWidth;
-				if ((diff > 0) && (diff <= this.getColumnCount()+2)) {
+				if ((diff > 0) && (diff <= 20)) {
 					width = width - diff;
 				}
 			}

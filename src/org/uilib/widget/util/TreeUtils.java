@@ -43,7 +43,7 @@ public final class TreeUtils {
 				@Override
 				public void controlResized(final ControlEvent event) {
 
-					int width = tree.getBounds().width / tree.getColumnCount();
+					int width = tree.getBounds().width / tree.getColumnCount() - 5;
 					L.debug("fillTreeWidth: set column size to {}", width);
 
 					for (int i = 0; i < tree.getColumnCount(); i++) {

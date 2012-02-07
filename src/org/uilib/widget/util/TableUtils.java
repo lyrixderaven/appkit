@@ -44,7 +44,7 @@ public final class TableUtils {
 				@Override
 				public void controlResized(final ControlEvent event) {
 
-					int width = table.getBounds().width / table.getColumnCount();
+					int width = table.getBounds().width / table.getColumnCount() - 5;
 					L.debug("fillTableWidth: set column size to {}", width);
 					for (int i = 0; i < table.getColumnCount(); i++) {
 						table.getColumn(i).setWidth(width);
