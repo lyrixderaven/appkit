@@ -50,11 +50,11 @@ public final class ColumnOrderMemory {
 
 		/* reorder columns */
 		String orderString = this.prefStore.get(this.memoryKey, "");
-		L.debug("orderString: {}", orderString);
+		L.debug("loading order: '{}'", orderString);
 
 		List<String> orderList = Lists.newArrayList(Splitter.on(",").split(orderString));
 		if (orderList.size() == this.colController.getColumnCount()) {
-			L.debug("valid order " + orderList + " -> reordering columns");
+			L.debug("valid order {} -> reordering columns", orderList);
 			try {
 
 				int order[] = new int[this.colController.getColumnCount()];

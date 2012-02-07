@@ -19,11 +19,11 @@ import org.uilib.util.SWTSyncedRunnable;
 import org.uilib.util.Throttle;
 import org.uilib.util.prefs.PrefStore;
 
-public final class ColumnSizeMemory {
+public final class ColumnWeightMemory {
 
 	//~ Static fields/initializers -------------------------------------------------------------------------------------
 
-	private static final Logger L		   = LoggerFactory.getLogger(ColumnSizeMemory.class);
+	private static final Logger L		   = LoggerFactory.getLogger(ColumnWeightMemory.class);
 	private static final int THROTTLE_TIME = 250;
 
 	//~ Instance fields ------------------------------------------------------------------------------------------------
@@ -35,12 +35,12 @@ public final class ColumnSizeMemory {
 
 	//~ Constructors ---------------------------------------------------------------------------------------------------
 
-	protected ColumnSizeMemory(final ColumnController colController, final PrefStore prefStore,
-							   final Throttle throttler, final String key) {
+	protected ColumnWeightMemory(final ColumnController colController, final PrefStore prefStore,
+								 final Throttle throttler, final String key) {
 		this.prefStore		   = prefStore;
 		this.throttler		   = throttler;
 		this.colController     = colController;
-		this.memoryKey		   = key + ".columnsizes";
+		this.memoryKey		   = key + ".columnweights";
 
 		/* add initial listener for initial size-setting */
 		colController.installControlListener(
@@ -66,35 +66,37 @@ public final class ColumnSizeMemory {
 	private void loadWidths() {
 
 		/* load the stored info */
-		String widthString = this.prefStore.get(this.memoryKey, "");
-		L.debug("widthString: '{}'", widthString);
+		String weightString = this.prefStore.get(this.memoryKey, "");
+		L.debug("loading weights: '{}'", weightString);
 
-		List<String> widths = Lists.newArrayList(Splitter.on(",").split(widthString));
-		if (widths.size() == colController.getColumnCount()) {
-			L.debug("valid width " + widths + " -> sizing columns");
-			for (int i = 0; i < colController.getColumnCount(); i++) {
+		List<String> weightStrings = Lists.newArrayList(Splitter.on(",").split(weightString));
+		if (weightStrings.size() == colController.getColumnCount()) {
+
+			List<Integer> weights = Lists.newArrayList();
+
+			for (int i = 0; i < weightStrings.size(); i++) {
 				try {
-					colController.setWidth(i, Integer.valueOf(widths.get(i)));
-				} catch (final NumberFormatException e) {}
+					weights.add(Integer.valueOf(weightStrings.get(i)));
+				} catch (final NumberFormatException e) {
+					L.debug("no weight: '{}'", weightStrings.get(i));
+					return;
+				}
 			}
+
+			this.colController.setWeights(weights);
 		}
 	}
 
-	private void saveSizes() {
-
-		List<Integer> widths = Lists.newArrayList();
-		for (int i = 0; i < colController.getColumnCount(); i++) {
-			widths.add(colController.getWidth(i));
-		}
+	private void saveWeights() {
 
 		/* store */
-		final String widthString = Joiner.on(",").join(widths);
+		final String widthString = Joiner.on(",").join(this.colController.calculateWeights());
 
 		Runnable runnable		 =
 			new LoggingRunnable() {
 				@Override
 				public void runChecked() {
-					L.debug("writing out widths {} to key {}", widthString, memoryKey);
+					L.debug("writing out weights {} to key {}", widthString, memoryKey);
 					prefStore.store(memoryKey, widthString);
 				}
 			};
@@ -109,12 +111,27 @@ public final class ColumnSizeMemory {
 	//~ Inner Classes --------------------------------------------------------------------------------------------------
 
 	private class ColumnResizeListener implements ControlListener {
+
+		private int lastAvailWidth = -1;
+
 		@Override
 		public void controlMoved(final ControlEvent event) {}
 
 		@Override
 		public void controlResized(final ControlEvent event) {
-			saveSizes();
+			if (lastAvailWidth == -1) {
+				lastAvailWidth = colController.getAvailWidth();
+				return;
+			}
+
+			if (colController.getAvailWidth() == lastAvailWidth) {
+				L.debug(
+					"width {} didn't change -> columns resized -> saving new weights",
+					colController.getAvailWidth());
+				saveWeights();
+			} else {
+				lastAvailWidth = colController.getAvailWidth();
+			}
 		}
 	}
 }

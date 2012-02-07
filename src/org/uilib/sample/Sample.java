@@ -12,7 +12,6 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
-import org.eclipse.swt.widgets.TableItem;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -72,24 +71,18 @@ public final class Sample {
 		Table t = orders.selectUI("orders.$table", TableUI.class).getTable();
 		t.setHeaderVisible(true);
 
-		TableColumn c1 = new TableColumn(t, SWT.NONE);
-		c1.setText("one");
+		for (int i = 0; i <= 6; i++) {
 
-		TableColumn c2 = new TableColumn(t, SWT.NONE);
-		c2.setText("two");
-
-		TableColumn c3 = new TableColumn(t, SWT.NONE);
-		c3.setText("three");
-
-		TableItem item = new TableItem(t, SWT.NONE);
-		item.setText("item1");
+			TableColumn c1 = new TableColumn(t, SWT.NONE);
+			c1.setText("col " + i);
+		}
 
 		PrefStore prefStore = PrefStore.createJavaPrefStore("org/uilib/sample");
 		executor = SmartExecutor.create();
-		TableUtils.fillTableWidth(t);
+		TableUtils.rememberColumnWeights(prefStore, executor, t, "tes2");
+		TableUtils.rememberColumnOrder(prefStore, executor, t, "tes2");
 		TableUtils.autosizeColumns(t);
-		TableUtils.rememberColumnSizes(prefStore, executor, t, "tes");
-		TableUtils.rememberColumnOrder(prefStore, executor, t, "tes");
+		TableUtils.fillTableWidth(t);
 
 		shell.open();
 

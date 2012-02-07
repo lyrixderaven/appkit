@@ -4,16 +4,23 @@ import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.ControlListener;
 import org.eclipse.swt.widgets.Tree;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.uilib.util.Throttle;
 import org.uilib.util.prefs.PrefStore;
 
 public final class TreeUtils {
 
+	//~ Static fields/initializers -------------------------------------------------------------------------------------
+
+	private static final Logger L = LoggerFactory.getLogger(TreeUtils.class);
+
 	//~ Methods --------------------------------------------------------------------------------------------------------
 
-	public static void rememberColumnSizes(final PrefStore prefStore, final Throttle throttler, final Tree tree,
-										   final String memoryKey) {
-		new ColumnSizeMemory(new ColumnController.TreeColumnController(tree), prefStore, throttler, memoryKey);
+	public static void rememberColumnWeights(final PrefStore prefStore, final Throttle throttler, final Tree tree,
+											 final String memoryKey) {
+		new ColumnWeightMemory(new ColumnController.TreeColumnController(tree), prefStore, throttler, memoryKey);
 	}
 
 	public static void rememberColumnOrder(final PrefStore prefStore, final Throttle throttler, final Tree tree,
@@ -37,11 +44,14 @@ public final class TreeUtils {
 				public void controlResized(final ControlEvent event) {
 
 					int width = tree.getBounds().width / tree.getColumnCount();
+					L.debug("fillTreeWidth: set column size to {}", width);
+
 					for (int i = 0; i < tree.getColumnCount(); i++) {
 						tree.getColumn(i).setWidth(width);
 					}
 
 					tree.removeControlListener(this);
+					L.debug("fillTreeWidth: done and listener removed");
 				}
 
 				@Override
