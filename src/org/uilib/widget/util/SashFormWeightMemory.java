@@ -25,7 +25,7 @@ public final class SashFormWeightMemory {
 	//~ Static fields/initializers -------------------------------------------------------------------------------------
 
 	private static final Logger L		   = LoggerFactory.getLogger(SashFormWeightMemory.class);
-	private static final int THROTTLE_TIME = 250;
+	private static final int THROTTLE_TIME = 100;
 
 	//~ Instance fields ------------------------------------------------------------------------------------------------
 

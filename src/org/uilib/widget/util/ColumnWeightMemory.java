@@ -24,7 +24,7 @@ public final class ColumnWeightMemory {
 	//~ Static fields/initializers -------------------------------------------------------------------------------------
 
 	private static final Logger L		   = LoggerFactory.getLogger(ColumnWeightMemory.class);
-	private static final int THROTTLE_TIME = 250;
+	private static final int THROTTLE_TIME = 100;
 
 	//~ Instance fields ------------------------------------------------------------------------------------------------
 

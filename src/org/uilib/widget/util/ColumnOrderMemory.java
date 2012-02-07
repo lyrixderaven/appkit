@@ -25,7 +25,7 @@ public final class ColumnOrderMemory {
 	//~ Static fields/initializers -------------------------------------------------------------------------------------
 
 	private static final Logger L		   = LoggerFactory.getLogger(ColumnOrderMemory.class);
-	private static final int THROTTLE_TIME = 250;
+	private static final int THROTTLE_TIME = 100;
 
 	//~ Instance fields ------------------------------------------------------------------------------------------------
 
