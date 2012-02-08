@@ -9,6 +9,7 @@ There's a sample application in the source which shows some of the features.
 
 Idea
 -------
+
 Uilib is a collection of utilities aiming to improve and help coding with SWT and
 building better, more comprehensive, modern applications.
 It's a library, not a framework in the sense, that it tries not to force you to change your
@@ -36,15 +37,18 @@ It should work with older versions of libraries as well.
 
 License
 -------------
+
 Code is released under the LGPL.  
 CocoaUIEnhancer.java is an exception, it's released under the EPL.
 
 Thank you / Donations
 ------------------------------------
+
 If you want you can [flattr](https://flattr.com/profile/cel1ne) me.
 
 RFC / Advise
 ------------------------
+
 * Tell me if i overlooked something concerning licensing
 * does it make sense to select a Component before initialisation?
 * MigLayout instead of GridLayout?
@@ -52,11 +56,14 @@ RFC / Advise
 
 Features / Overview
 -------------------------------
+
 > ### Templating
 > * Load interface descriptions from json
 > * Work with interface-components by selecting elements via a query syntax
+
 > ### EventHandling
 > * Simple wrappers to write less cluttered event-handling code using Guava's EventBus
+
 > ### Utilities
 > * Registries for handling Colors, Fonts and Images
 > * Store and load user-preferences
@@ -64,12 +71,14 @@ Features / Overview
 > * Display overlays on Composites
 > * Do measurements of your code run-time
 > …
+
 > ### Various widget utilities
 > * Automatically resize table columns
 > * save / restore column-order and weights
 > * save / restore Shell position, maximised state etc.
 > * ScrollListener for Table
 > …
+
 > ### Various useful widgets
 > * better MessageBox
 > * SearchFrom
