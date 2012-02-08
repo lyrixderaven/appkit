@@ -1,8 +1,8 @@
 org.uilib.application
 org.uilib.measure
 org.uilib.osdependant
+org.uilib.overlay
 org.uilib.registry
-org.uilib.sample
 org.uilib.templating
 org.uilib.templating.components
 org.uilib.util
