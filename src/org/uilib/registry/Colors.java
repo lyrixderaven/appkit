@@ -22,15 +22,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /** <b>SWT Color cache/registry</b>
- *
+ * <br />
+ * <br />
  * Creates, assigns and caches {@link Color}s. Colors can be set to the foreground or background of a {@link Control}.
  * Use of the color is deregistered when the control is disposed or manually via the <code>putBack</code> methods.
- *
+ * <br />
+ * <br />
  * This uses a simple counter to keep of track of usage of certain Colors. If the usage drops to 0, the color
  * is disposed.
- *
- * <b>TODO:</b>"ColorSetable" interface to set Color on arbitrary things and more controls
- * <b>TODO:</b>Direct creation of colors?
+ * <br />
+ * <br />
+ * <b>TODO:</b> "ColorSetable" interface to set Color on arbitrary things and more controls<br />
+ * <b>TODO:</b> Direct creation of colors?
  */
 public final class Colors {
 

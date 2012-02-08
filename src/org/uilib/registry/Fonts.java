@@ -22,16 +22,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /** <b>SWT Font cache/registry</b>
- *
+ * <br />
+ * <br />
  * Creates, assigns and caches {@link Font}s. Fonts can be set on a {@link Control}.
  * Use of the color is deregistered when the control is disposed or manually via the <code>putBack</code> methods.
- *
- * This uses a simple counter to keep of track of usage of certain Fonts. If the usage drops to 0, the font
+ * <br />
+ * <br />
+ * This uses a simple counter to keep of track of usage of Fonts. If the usage drops to 0, the font
  * is disposed.
- *
- * <b>TODO:</b>"FontSetable" interface to set Font on arbitrary things and more controls
- * <b>TODO:</b>Direct creation of fonts?
- * <b>TODO:</b>Interface to describe Styles? FontData?
+ * <br />
+ * <br />
+ * <b>TODO:</b>"FontSetable" interface to set Font on arbitrary things and more controls<br />
+ * <b>TODO:</b>Direct creation of fonts?<br />
+ * <b>TODO:</b>Interface to describe Styles? FontData?<br />
  */
 public final class Fonts {
 

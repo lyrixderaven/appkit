@@ -5,6 +5,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -19,11 +20,24 @@ import org.uilib.templating.components.LayoutUI;
 import org.uilib.util.Naming;
 
 /**
- * A Templating-component. Has a name, a type, 0…n child-component, associated {@link Options} and a {@link ComponentUI}
+ * A Templating-component. Has a name, a type, 0...n child-component, associated {@link Options} and a {@link ComponentUI}
  * that does the actually rendering/displaying job.
  *
+ * <ul>
  * <li>For the name only the following characters are valid: a-z,A-Z, '?', '!' and '-'.
+ * </ul>
  *
+ * Components are selectable via a query-syntax, which works like this: <code>name$type</code>.<br />
+ * <br />
+ * Examples:
+ * <ul>
+ * <li> <code>$buttons</code> will return all buttons
+ * <li> <code>book-in$button</code> will return all buttons called bookin
+ * <li> <code>action.book-in$button</code> will return all buttons called bookin in an composite called action
+ * <li> <code>sidebar$label</code> will return all labels in a composite called sidebar
+ * </ul>
+ * <br />
+ * <br />
  * Trying to construct invalid component will throw an IllegalArgumentException.
  */
 public final class Component {
@@ -86,20 +100,25 @@ public final class Component {
 		/* 1. this is addressable via name */
 		this.naming.register(name, this);
 
-		/* 1. this is addressable as $<type> */
+		/* 2. this is addressable as $<type> */
 		this.naming.register("$" + type, this);
 
-		/* 2. this is also addressable as <name>$<type> */
+		/* 3. this is also addressable as <name>$<type> */
 		this.naming.register(name + "$" + type, this);
 
-		/* 3. add all namings of children */
+		/* children */
 		for (final Component child : this.children) {
-			this.naming.register(child.getNaming());
-		}
+			for (final Map.Entry<String, Component> entry : child.getNaming().asMap().entries()) {
+				/* 4. copy all namings of children */
+				this.naming.register(entry.getKey(), entry.getValue());
 
-		/* 4. add all namings of children reachable via <name>.<children-naming> and <name>$<type> */
-		for (final Component child : this.children) {
-			this.naming.register(this.name + ".", child.getNaming());
+				/* 5. add all namings of children reachable via <this-name>.<children-naming> and <this-name>$<type> */
+				if (entry.getKey().startsWith("$")) {
+					this.naming.register(this.name + entry.getKey(), entry.getValue());
+				} else {
+					this.naming.register(this.name + "." + entry.getKey(), entry.getValue());
+				}
+			}
 		}
 
 		/* *** build name-map for this component */

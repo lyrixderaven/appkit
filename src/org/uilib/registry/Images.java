@@ -30,16 +30,19 @@ import org.uilib.util.ParamSupplier;
 import org.uilib.util.ResourceStreamSupplier;
 
 /** <b>SWT Image cache/registry</b>
- *
+ * <br />
+ * <br />
  * Creates, assigns and caches {@link Image}s. Images can be set on a {@link Control}.
  * Use of an image is deregistered when the control is disposed or manually via the <code>putBack</code> methods.
- *
+ * <br />
+ * <br />
  * This uses a simple counter to keep of track of usage of Images. If the usage drops to 0, the image
  * is disposed.
- *
+ * <br />
+ * <br />
  * The methods expect {@link Supplier}s for keys. This can be implemented easily by an Enum for example.
  *
- * <b>TODO:</b>"ImageSetable" interface to set Image on arbitrary things and more controls
+ * <b>TODO:</b> "ImageSetable" interface to set Image on arbitrary things and more controls<br />
  */
 public final class Images {
 

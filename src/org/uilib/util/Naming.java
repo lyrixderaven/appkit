@@ -3,6 +3,7 @@ package org.uilib.util;
 import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.HashMultimap;
+import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -94,19 +95,8 @@ public final class Naming<E> {
 		this.data.put(name, object);
 	}
 
-	public void register(final String name, final Naming<E> naming) {
-		Preconditions.checkState(! this.isSealed(), "naming was already sealed");
-
-		for (final String key : naming.data.keySet()) {
-			this.data.putAll(name + key, naming.data.get(key));
-		}
-	}
-
-	/** add all of naming into this */
-	public void register(final Naming<E> naming) {
-		Preconditions.checkState(! this.isSealed(), "naming was already sealed");
-
-		this.data.putAll(naming.data);
+	public ImmutableMultimap<String, E> asMap() {
+		return ImmutableMultimap.copyOf(this.data);
 	}
 
 	/**

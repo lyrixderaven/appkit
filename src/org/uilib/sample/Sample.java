@@ -71,11 +71,12 @@ public final class Sample {
 		L.debug(orders.getNaming().toString());
 
 		/* selects the table */
-		Table t = orders.selectUI("orders.$table", TableUI.class).getTable();
+		Table t = orders.selectUI("orders$table", TableUI.class).getTable();
 		t.setHeaderVisible(true);
 
 		/* create columns */
 		for (int i = 0; i <= 6; i++) {
+
 			TableColumn c1 = new TableColumn(t, SWT.NONE);
 			c1.setText("col " + i);
 		}
@@ -114,8 +115,8 @@ public final class Sample {
 	public void localEvent(final Object object) {
 		L.debug("event: " + object);
 
-		/* display a spinner THIS BLOCKS */
-		Table t			 = orders.selectUI("orders.$table", TableUI.class).getTable();
+		/* display a spinner: unfinished */
+		Table t			 = orders.selectUI("orders$table", TableUI.class).getTable();
 		final Overlay ov = new Overlay(t, new SpinnerOverlay(this.executor));
 		ov.show();
 	}
