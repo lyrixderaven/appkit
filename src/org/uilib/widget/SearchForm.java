@@ -14,6 +14,10 @@ import org.eclipse.swt.widgets.Text;
 
 import org.uilib.registry.Texts;
 
+/**
+ * A Search form which aims to behave as natural on the OS as possible.
+ *
+ */
 public class SearchForm extends Composite {
 
 	//~ Instance fields ------------------------------------------------------------------------------------------------

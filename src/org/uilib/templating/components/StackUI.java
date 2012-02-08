@@ -12,6 +12,7 @@ import org.eclipse.swt.widgets.Control;
 import org.uilib.application.EventContext;
 import org.uilib.templating.Options;
 
+/** for creating components that use a {@link StackLayout} on a {@link Composite} */
 public class StackUI implements ComponentUI {
 
 	//~ Instance fields ------------------------------------------------------------------------------------------------

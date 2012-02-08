@@ -5,6 +5,14 @@ import com.google.common.collect.Lists;
 
 import java.util.Queue;
 
+/**
+ * This static class starts, keeps track of and stops measurement. Measurement can be nested,
+ * the internal state is managed using {@link ThreadLocal} variables.
+ *
+ * Every method has a boolean switch to turn off measurement, so it can be kept in the code
+ * and turned of for performance reasons.
+ *
+ */
 public final class Measurement {
 
 	//~ Static fields/initializers -------------------------------------------------------------------------------------
@@ -28,56 +36,93 @@ public final class Measurement {
 
 	//~ Instance fields ------------------------------------------------------------------------------------------------
 
-	private final String description[];
+	private final String name;
 	private final Stopwatch watch = new Stopwatch();
 	private final long start;
 	private final Object data;
 
 	//~ Constructors ---------------------------------------------------------------------------------------------------
 
-	private Measurement(final String description[], final Object data) {
+	/** instatiate a measurement */
+	private Measurement(final String name, final Object data) {
 		this.start				  = System.currentTimeMillis();
-		this.description		  = description;
+		this.name				  = name;
 		this.watch.start();
 		this.data = data;
 	}
 
 	//~ Methods --------------------------------------------------------------------------------------------------------
 
+	/**
+	 * sets a Listener to be notified of a new measurement
+	 * @see SimpleStatistic
+	 */
 	public static void notify(final Measurement.Listener listener) {
 		Measurement.listener.set(listener);
 	}
 
-	public static MeasureData mark(final boolean doIt, String... description) {
-		return mark(doIt, null, description);
+	/**
+	 * performs a zero-duration measurement = a mark
+	 *
+	 * @param doIt actually do the measurement
+	 * @param name name of the measurement
+	 * @return the finished measurement
+	 */
+	public static MeasureData mark(final boolean doIt, final String name) {
+		return mark(doIt, null, name);
 	}
 
-	public static MeasureData mark(final boolean doIt, final Object data, String... description) {
+	/**
+	 * performs a zero-duration measurement = a mark and attach data to it
+	 *
+	 * @param doIt actually do the measurement
+	 * @param name name of the measurement
+	 * @param data data to be attached
+	 * @return the finished measurement
+	 */
+	public static MeasureData mark(final boolean doIt, final String name, final Object data) {
 		if (! doIt) {
 			return null;
 		}
 
-		MeasureData md = new MeasureData(description, data, System.currentTimeMillis());
+		MeasureData md = new MeasureData(name, data, System.currentTimeMillis());
 		Listener l     = listener.get();
 		if (l != null) {
-			l.input(md);
+			l.notify(md);
 		}
 
 		return md;
 	}
 
-	public static void run(final boolean doIt, String... description) {
-		run(doIt, null, description);
+	/**
+	 * starts a measurement with the given name
+	 *
+	 * @param doIt actually do the measurement
+	 * @param name name of the measurement
+	 */
+	public static void run(final boolean doIt, final String name) {
+		run(doIt, null, name);
 	}
 
-	public static void run(final boolean doIt, final Object data, String... description) {
+	/**
+	 * starts a measurement with the given name and attached data
+	 *
+	 * @param doIt actually do the measurement
+	 * @param name name of the measurement
+	 */
+	public static void run(final boolean doIt, final String name, final Object data) {
 		if (! doIt) {
 			return;
 		}
 
-		runningMeasurements.get().add(new Measurement(description, data));
+		runningMeasurements.get().add(new Measurement(name, data));
 	}
 
+	/**
+	 * stops the currently running measurement = the last that was started in this thread
+	 *
+	 * @return the finished measurement
+	 */
 	public static MeasureData stop() {
 
 		Queue<Measurement> rM = runningMeasurements.get();
@@ -88,7 +133,7 @@ public final class Measurement {
 		MeasureData md = rM.poll().stopMeasurement();
 		Listener l     = listener.get();
 		if (l != null) {
-			l.input(md);
+			l.notify(md);
 		}
 
 		return md;
@@ -97,12 +142,12 @@ public final class Measurement {
 	private MeasureData stopMeasurement() {
 		this.watch.stop();
 
-		return new MeasureData(this.description, this.data, this.start, this.watch.elapsedMillis());
+		return new MeasureData(this.name, this.data, this.start, this.watch.elapsedMillis());
 	}
 
 	//~ Inner Interfaces -----------------------------------------------------------------------------------------------
 
 	public static interface Listener {
-		void input(final MeasureData data);
+		void notify(final MeasureData data);
 	}
 }

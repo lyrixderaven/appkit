@@ -8,6 +8,7 @@ import org.eclipse.swt.widgets.Label;
 import org.uilib.application.EventContext;
 import org.uilib.templating.Options;
 
+/** no-op component for use as a spacer in GridLayouts*/
 public class SpacerUI implements ComponentUI {
 
 	//~ Methods --------------------------------------------------------------------------------------------------------

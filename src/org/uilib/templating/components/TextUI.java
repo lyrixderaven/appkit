@@ -8,6 +8,7 @@ import org.eclipse.swt.widgets.Text;
 import org.uilib.application.EventContext;
 import org.uilib.templating.Options;
 
+/** for creating components that is a {@link Text} */
 public class TextUI implements ComponentUI {
 
 	//~ Methods --------------------------------------------------------------------------------------------------------

@@ -26,6 +26,9 @@ public class OSDependent {
 
 	//~ Methods --------------------------------------------------------------------------------------------------------
 
+	/**
+	 * Returns the correct userDataFolder on OSX and all windows version for the given application name.
+	 */
 	public static String userDataFolder(final String applicationName) {
 
 		// default

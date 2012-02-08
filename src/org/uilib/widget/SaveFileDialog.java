@@ -8,6 +8,9 @@ import org.eclipse.swt.widgets.Shell;
 
 import org.uilib.registry.Texts;
 
+/**
+ * A FileDialog that asks for overwrite-confirmation if a file already exists.
+ */
 public class SaveFileDialog {
 
 	//~ Instance fields ------------------------------------------------------------------------------------------------

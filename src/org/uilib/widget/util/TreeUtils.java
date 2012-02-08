@@ -10,6 +10,10 @@ import org.slf4j.LoggerFactory;
 import org.uilib.util.Throttle;
 import org.uilib.util.prefs.PrefStore;
 
+/**
+ * various utility-functions for working with {@link Tree}s
+ *
+ */
 public final class TreeUtils {
 
 	//~ Static fields/initializers -------------------------------------------------------------------------------------
@@ -18,24 +22,42 @@ public final class TreeUtils {
 
 	//~ Methods --------------------------------------------------------------------------------------------------------
 
+	/**
+	 * restores column-weights, tracks and saves changes.
+	 *
+	 * @param prefStore the prefStore used to load and save weights
+	 * @param throttler throttler used to throttle calls to the prefStore
+	 * @param memoryKey prefStore key to use
+	 */
 	public static void rememberColumnWeights(final PrefStore prefStore, final Throttle throttler, final Tree tree,
 											 final String memoryKey) {
 		new ColumnWeightMemory(new ColumnController.TreeColumnController(tree), prefStore, throttler, memoryKey);
 	}
 
+	/**
+	 * restores column-order, tracks and saves changes.
+	 *
+	 * @param prefStore the prefStore used to load and save order
+	 * @param throttler throttler used to throttle calls to the prefStore
+	 * @param memoryKey prefStore key to use
+	 */
 	public static void rememberColumnOrder(final PrefStore prefStore, final Throttle throttler, final Tree tree,
 										   final String memoryKey) {
 		new ColumnOrderMemory(new ColumnController.TreeColumnController(tree), prefStore, throttler, memoryKey);
 	}
 
-	/** installs a listener that automatically sizes the columns when the tree is resized.
+	/**
+	 * installs a listener that proportionally resizes all columns when the tree is resized.
 	 *
-	 * @param tree
 	 */
 	public static void autosizeColumns(final Tree tree) {
 		new ColumnAutoSizer(new ColumnController.TreeColumnController(tree));
 	}
 
+	/**
+	 * resizes all columns equally to fill the entire width of the tree
+	 *
+	 */
 	public static void fillTreeWidth(final Tree tree) {
 
 		final ControlListener controlListener =
@@ -43,7 +65,7 @@ public final class TreeUtils {
 				@Override
 				public void controlResized(final ControlEvent event) {
 
-					int width = tree.getBounds().width / tree.getColumnCount() - 5;
+					int width = (tree.getBounds().width / tree.getColumnCount()) - 5;
 					L.debug("fillTreeWidth: set column size to {}", width);
 
 					for (int i = 0; i < tree.getColumnCount(); i++) {

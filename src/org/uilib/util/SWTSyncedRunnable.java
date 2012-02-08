@@ -2,6 +2,10 @@ package org.uilib.util;
 
 import org.eclipse.swt.widgets.Display;
 
+/**
+ * Wrapper for a Runnable that will execute it in the given {@link Display}'s thread.
+ *
+ */
 public final class SWTSyncedRunnable implements Runnable {
 
 	//~ Instance fields ------------------------------------------------------------------------------------------------
@@ -18,6 +22,10 @@ public final class SWTSyncedRunnable implements Runnable {
 
 	//~ Methods --------------------------------------------------------------------------------------------------------
 
+	/*
+	 * (non-Javadoc)
+	 * @see java.lang.Runnable#run()
+	 */
 	@Override
 	public final void run() {
 		if (this.display.isDisposed()) {

@@ -21,6 +21,18 @@ import org.eclipse.swt.widgets.Display;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/** <b>SWT Font cache/registry</b>
+ *
+ * Creates, assigns and caches {@link Font}s. Fonts can be set on a {@link Control}.
+ * Use of the color is deregistered when the control is disposed or manually via the <code>putBack</code> methods.
+ *
+ * This uses a simple counter to keep of track of usage of certain Fonts. If the usage drops to 0, the font
+ * is disposed.
+ *
+ * <b>TODO:</b>"FontSetable" interface to set Font on arbitrary things and more controls
+ * <b>TODO:</b>Direct creation of fonts?
+ * <b>TODO:</b>Interface to describe Styles? FontData?
+ */
 public final class Fonts {
 
 	//~ Enumerations ---------------------------------------------------------------------------------------------------
@@ -43,7 +55,7 @@ public final class Fonts {
 	private static final Map<Control, DisposeListener> disposeListeners = Maps.newHashMap();
 
 	static {
-		Preconditions.checkArgument(Display.getCurrent() != null, "");
+		Preconditions.checkArgument(Display.getCurrent() != null, "can't instiate Fonts on a non-display thread");
 		defaultFontName		  = Display.getCurrent().getSystemFont().getFontData()[0].getName();
 		defaultFontStyle	  = Display.getCurrent().getSystemFont().getFontData()[0].getStyle();
 		defaultFontHeight     = Display.getCurrent().getSystemFont().getFontData()[0].getHeight();
@@ -55,6 +67,11 @@ public final class Fonts {
 
 	//~ Methods --------------------------------------------------------------------------------------------------------
 
+	/**
+	 * sets a font, described by a fontStyle on the control
+	 *
+	 * @throws IllegalStateException if called from a non-Display thread
+	 */
 	public static void set(final Control control, final Style fontStyle) {
 		Preconditions.checkState(
 			Display.getCurrent() != null,
@@ -109,6 +126,11 @@ public final class Fonts {
 		control.addDisposeListener(listener);
 	}
 
+	/**
+	 * deregisters use of the font of a control
+	 *
+	 * @throws IllegalStateException if control isn't registered
+	 */
 	public static void putBack(final Control control) {
 		Preconditions.checkState(disposeListeners.containsKey(control), "control {} not registered", control);
 

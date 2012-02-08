@@ -9,6 +9,7 @@ import org.eclipse.swt.widgets.Table;
 import org.uilib.application.EventContext;
 import org.uilib.templating.Options;
 
+/** for creating components that is a {@link Table} */
 public class TableUI implements ComponentUI {
 
 	//~ Instance fields ------------------------------------------------------------------------------------------------

@@ -9,6 +9,10 @@ import java.net.URL;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * a ParamSupplier which returns an InputStream by loading from resources
+ *
+ */
 public class ResourceStreamSupplier implements ParamSupplier<String, InputStream> {
 
 	//~ Static fields/initializers -------------------------------------------------------------------------------------
@@ -22,6 +26,7 @@ public class ResourceStreamSupplier implements ParamSupplier<String, InputStream
 		return new ResourceStreamSupplier();
 	}
 
+	/** returns an InputStream for the resource */
 	@Override
 	public InputStream get(final String resource) {
 

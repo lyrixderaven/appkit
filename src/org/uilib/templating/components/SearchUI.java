@@ -20,6 +20,7 @@ import org.uilib.templating.Options;
 import org.uilib.templating.Templating;
 import org.uilib.templating.components.ComponentUI;
 
+/** for creating a component that aims to be a search-field */
 public final class SearchUI implements ComponentUI {
 
 	//~ Static fields/initializers -------------------------------------------------------------------------------------

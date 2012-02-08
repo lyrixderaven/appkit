@@ -20,10 +20,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.uilib.templating.Component;
+import org.uilib.templating.components.RadioSetUI;
 import org.uilib.util.ParamSupplier;
 import org.uilib.util.ResourceStreamSupplier;
 
-public class Texts {
+/**
+ * Loads and stores I18N-Strings and provides method for working with them.
+ *
+ */
+public final class Texts {
 
 	//~ Static fields/initializers -------------------------------------------------------------------------------------
 
@@ -35,6 +40,9 @@ public class Texts {
 
 	//~ Constructors ---------------------------------------------------------------------------------------------------
 
+	/**
+	 * loads Text by passing the <code>resourceName</code> into the <code>dataSupplier</data>
+	 */
 	public Texts(final ParamSupplier<String, InputStream> dataSupplier, final String resourceName) {
 
 		ImmutableMap.Builder<String, String> map = ImmutableMap.builder();
@@ -64,24 +72,46 @@ public class Texts {
 
 	//~ Methods --------------------------------------------------------------------------------------------------------
 
+	/**
+	 * loads the default-texts using the default-locale from resources.
+	 * Example: on a english-system this would load i18n/en.properties from resources.
+	 */
 	public static Texts fromResources() {
 		return fromResources(Locale.getDefault());
 	}
 
+	/**
+	 * loads texts using the default-locale for a given component type.
+	 * Example: specifying "orderview" on an english system will load components/orderview.en.properties
+	 */
 	public static Texts forComponent(final String componentType) {
 		return forComponent(componentType, Locale.getDefault());
 	}
 
+	/**
+	 * loads the default-texts using the given locale
+	 */
 	public static Texts fromResources(final Locale locale) {
 		return new Texts(new ResourceStreamSupplier(), "i18n/" + locale.getLanguage() + ".properties");
 	}
 
+	/**
+	 * loads texts using the given locale for a given component type.
+	 */
 	public static Texts forComponent(final String componentType, final Locale locale) {
 		return new Texts(
 			new ResourceStreamSupplier(),
 			"components/" + componentType + "." + locale.getLanguage() + ".properties");
 	}
 
+	/**
+	 * translates a {@link Component} by using all keys of .properties file to
+	 * find sub-components. Calls setText() {@link Button}s, {@link Text}s and {@link Label}s.
+	 * Other widgets/component are ignored until the implement {@link CustomI18N}.
+	 *
+	 * @see CustomI18N
+	 * @see Component#selectUI(String, Class)
+	 */
 	public void translateComponent(final Component component) {
 		for (final Entry<String, String> msg : this.texts.entrySet()) {
 
@@ -111,6 +141,11 @@ public class Texts {
 		}
 	}
 
+	/**
+	 * returns the I18N-string for the given identifier and values
+	 *
+	 * @return "<missing identifier>" if no string was found
+	 */
 	public String get(final String identifier, final Object... values) {
 
 		String text = this.texts.get(identifier);
@@ -125,6 +160,11 @@ public class Texts {
 
 	//~ Inner Interfaces -----------------------------------------------------------------------------------------------
 
+	/**
+	 * Implement this to make a component translatable. The content of i18nInfo doesn't have to follow a particular format.
+	 * It usually is just a string but for {@link RadioSetUI} for example it contains multiple key-value-pairs to
+	 * translate all it's options.
+	 */
 	public static interface CustomI18N {
 		public void translate(final String i18nInfo);
 	}

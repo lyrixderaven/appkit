@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.uilib.application.EventContext;
 import org.uilib.templating.Options;
 
+/** for creating a component that is a {@link Composite} with a {@link GridLayout} */
 public class ComponentGridUI implements LayoutUI {
 
 	//~ Static fields/initializers -------------------------------------------------------------------------------------

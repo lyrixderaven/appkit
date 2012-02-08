@@ -29,6 +29,18 @@ import org.slf4j.LoggerFactory;
 import org.uilib.util.ParamSupplier;
 import org.uilib.util.ResourceStreamSupplier;
 
+/** <b>SWT Image cache/registry</b>
+ *
+ * Creates, assigns and caches {@link Image}s. Images can be set on a {@link Control}.
+ * Use of an image is deregistered when the control is disposed or manually via the <code>putBack</code> methods.
+ *
+ * This uses a simple counter to keep of track of usage of Images. If the usage drops to 0, the image
+ * is disposed.
+ *
+ * The methods expect {@link Supplier}s for keys. This can be implemented easily by an Enum for example.
+ *
+ * <b>TODO:</b>"ImageSetable" interface to set Image on arbitrary things and more controls
+ */
 public final class Images {
 
 	//~ Static fields/initializers -------------------------------------------------------------------------------------
@@ -46,10 +58,24 @@ public final class Images {
 
 	//~ Methods --------------------------------------------------------------------------------------------------------
 
+	/**
+	 * Sets an image on the control. The InputStream for loading the image
+	 * is retrieved by passing the key received from the
+	 * <code>keySupplier</code> into the a {@link ResourceStreamSupplier}.
+	 */
 	public static void set(final Control control, final Supplier<String> keySupplier) {
 		set(control, keySupplier, ResourceStreamSupplier.create());
 	}
 
+	/**
+	 * sets an image on the control. The InputStream for loading the image
+	 * is retrieved by passing the key received from the
+	 * <code>keySupplier</code> into the <code>dataSupplier</code>
+	 *
+	 * <b>TODO</b>This works only for {@link Button}s, {@link org.eclipse.swt.widgets.Text}s and {@link Label}s at the moment
+	 * @throws IllegalStateException if called from a non-Display thread
+	 * @throws IllegalArgumentException if image couldn't be set
+	 */
 	public static <E> void set(final Control control, final Supplier<E> keySupplier,
 							   final ParamSupplier<E, InputStream> dataSupplier) {
 		/* check for UI-thread and if control is imageable */
@@ -115,6 +141,11 @@ public final class Images {
 		control.addDisposeListener(listener);
 	}
 
+	/**
+	 * deregisters use of an image of a control
+	 *
+	 * @throws IllegalStateException if control isn't registered
+	 */
 	public static void putBack(final Control control) {
 		Preconditions.checkState(disposeListeners.containsKey(control), "control {} not registered", control);
 

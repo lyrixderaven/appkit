@@ -14,7 +14,7 @@ import org.eclipse.swt.widgets.TreeColumn;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class ColumnController {
+abstract class ColumnController {
 
 	//~ Static fields/initializers -------------------------------------------------------------------------------------
 

@@ -21,6 +21,17 @@ import org.eclipse.swt.widgets.Text;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/** <b>SWT Color cache/registry</b>
+ *
+ * Creates, assigns and caches {@link Color}s. Colors can be set to the foreground or background of a {@link Control}.
+ * Use of the color is deregistered when the control is disposed or manually via the <code>putBack</code> methods.
+ *
+ * This uses a simple counter to keep of track of usage of certain Colors. If the usage drops to 0, the color
+ * is disposed.
+ *
+ * <b>TODO:</b>"ColorSetable" interface to set Color on arbitrary things and more controls
+ * <b>TODO:</b>Direct creation of colors?
+ */
 public final class Colors {
 
 	//~ Static fields/initializers -------------------------------------------------------------------------------------
@@ -39,10 +50,30 @@ public final class Colors {
 
 	//~ Methods --------------------------------------------------------------------------------------------------------
 
+	/**
+	 * sets the foreground color of the given control to an RGB-value
+	 *
+	 * <b>TODO</b>This works only for {@link Text} at the moment
+	 * @param control control on which color should be set
+	 * @param r red value
+	 * @param g green value
+	 * @param b blue value
+	 */
 	public static void setForeground(final Control control, final int r, final int g, final int b) {
 		setColor(control, r, g, b, true);
 	}
 
+	/**
+	 * sets the background color of the given control to an RGB-value
+	 *
+	 * <b>TODO</b>This works only for {@link Text} at the moment
+	 * @param control control on which color should be set
+	 * @param r red value
+	 * @param g green value
+	 * @param b blue value
+	 * @throws IllegalStateException if called from a non-Display thread
+	 * @throws IllegalArgumentException if image couldn't be set
+	 */
 	public static void setBackground(final Control control, final int r, final int g, final int b) {
 		setColor(control, r, g, b, false);
 	}
@@ -105,10 +136,20 @@ public final class Colors {
 		}
 	}
 
+	/**
+	 * deregister use of foreground-color of control
+	 *
+	 * @throws IllegalStateException if control isn't registered
+	 */
 	public static void putBackForeground(final Control control) {
 		putBack(control, true);
 	}
 
+	/**
+	 * deregisters use of background-color of control
+	 *
+	 * @throws IllegalStateException if control isn't registered
+	 */
 	public static void putBackBackground(final Control control) {
 		putBack(control, false);
 	}

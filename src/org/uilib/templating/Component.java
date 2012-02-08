@@ -13,10 +13,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.uilib.application.EventContext;
+import org.uilib.application.FakeEventContext;
 import org.uilib.templating.components.ComponentUI;
 import org.uilib.templating.components.LayoutUI;
 import org.uilib.util.Naming;
 
+/**
+ * A Templating-component. Has a name, a type, 0…n child-component, associated {@link Options} and a {@link ComponentUI}
+ * that does the actually rendering/displaying job.
+ *
+ * <li>For the name only the following characters are valid: a-z,A-Z, '?', '!' and '-'.
+ *
+ * Trying to construct invalid component will throw an IllegalArgumentException.
+ */
 public final class Component {
 
 	//~ Static fields/initializers -------------------------------------------------------------------------------------
@@ -44,6 +53,10 @@ public final class Component {
 
 	//~ Constructors ---------------------------------------------------------------------------------------------------
 
+	/**
+	 * Creates a component. If children aren't empty the ComponentUI has to be a {@link LayoutUI}.
+	 *
+	 */
 	public Component(final String name, final String type, final List<Component> children, final ComponentUI ui,
 					 final Options options) {
 		/* check arguments */
@@ -99,22 +112,27 @@ public final class Component {
 		return this.naming;
 	}
 
+	/** returns the Control that was returns by the UI */
 	public Control getControl() {
 		return this.control;
 	}
 
+	/** returns the UI */
 	public ComponentUI getUI() {
 		return this.ui;
 	}
 
+	/** returns the type */
 	public String getType() {
 		return this.type;
 	}
 
+	/** returns the name */
 	public String getName() {
 		return this.name;
 	}
 
+	/** returns the options */
 	public Options getOptions() {
 		return this.options;
 	}
@@ -130,26 +148,55 @@ public final class Component {
 		return s;
 	}
 
+	/** select the sub-component (which can be this component itself) by the given query.
+	 *
+	 * @throws IllegalStateException if Component wasn't initialized yest
+	 *
+	 */
 	public Component select(final String query) {
 		Preconditions.checkState(this.control != null, "control wasn't initialized yet");
 
 		return this.naming.select(query, Component.class);
 	}
 
+	/**
+	 * returns the control of the sub-component selected by the given query cast to the specified class
+	 *
+	 * @throws IllegalStateException if Component wasn't initialized yet
+	 *
+	 */
 	@SuppressWarnings("unchecked")
 	public <E extends Control> E select(final String query, final Class<E> clazz) {
 		return (E) this.select(query).getControl();
 	}
 
+	/**
+	 * returns the UI of the sub-component selected by the given query cast to the specified class
+	 *
+	 * @throws IllegalStateException if Component wasn't initialized yet
+	 *
+	 */
 	@SuppressWarnings("unchecked")
 	public <E extends ComponentUI> E selectUI(final String query, final Class<E> clazz) {
 		return (E) this.select(query).getUI();
 	}
 
+	/**
+	 * Initializes the Component / creates the widgets on the given parent using a {@link FakeEventContext}.
+	 *
+	 * @throws IllegalStateException if Component wasn't initialized yet
+	 *
+	 */
 	public void initialize(final Composite parent) {
 		this.initialize(EventContext.FAKE, parent);
 	}
 
+	/**
+	 * Initializes the Component / creates the widgets on the given parent using the given EventContext.
+	 *
+	 * @throws IllegalStateException if Component wasn't initialized yet
+	 *
+	 */
 	public void initialize(final EventContext app, final Composite parent) {
 		Preconditions.checkArgument(this.control == null, "control wasn't null -> double initialization");
 
@@ -177,6 +224,14 @@ public final class Component {
 		}
 	}
 
+	/**
+	 * Sets the visibility of the component selected by the query, by passing it's control
+	 * to the {@link LayoutUI} of this component.
+	 *
+	 * @throws IllegalStateException if this' UI doesn't implement LayoutUI.
+	 * @throws IllegalArgumentException if this' control isn't the parent of the control you want to modify
+	 *
+	 */
 	public void setVisible(final String query, final boolean visible) {
 		Preconditions.checkArgument(
 			this.ui instanceof LayoutUI,
@@ -191,10 +246,16 @@ public final class Component {
 		((LayoutUI) this.ui).setVisible(child, visible);
 	}
 
+	/**
+	 * @see #setVisible(String, boolean)
+	 */
 	public void hide(final String query) {
 		this.setVisible(query, false);
 	}
 
+	/**
+	 * @see #setVisible(String, boolean)
+	 */
 	public void show(final String query) {
 		this.setVisible(query, true);
 	}

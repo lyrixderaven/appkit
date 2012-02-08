@@ -3,6 +3,11 @@ package org.uilib.util.prefs;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 
+/**
+ * A simple preferences store. All retrieval methods require a default to be specified, which will
+ * be returned when the key isn't found or type-conversion from String fails.
+ *
+ */
 public final class PrefStore {
 
 	//~ Instance fields ------------------------------------------------------------------------------------------------
@@ -17,18 +22,35 @@ public final class PrefStore {
 
 	//~ Methods --------------------------------------------------------------------------------------------------------
 
+	/**
+	 * create a new PrefStore using the JavaPreferences back-end
+	 *
+	 * @param node preferred JavaPreferences node
+	 *
+	 */
 	public static PrefStore createJavaPrefStore(final String node) {
 		return new PrefStore(new JavaPreferencesBackend(node));
 	}
 
-	public void store(final String property, final String value) {
-		this.backend.store(property, value);
+	/**
+	 * stores a String
+	 */
+	public void store(final String key, final String value) {
+		this.backend.store(key, value);
 	}
 
-	public void store(final String property, final int value) {
-		this.backend.store(property, String.valueOf(value));
+	/**
+	 * stores an int
+	 */
+	public void store(final String key, final int value) {
+		this.backend.store(key, String.valueOf(value));
 	}
 
+	/**
+	 * retrieves a String
+	 *
+	 * @param def default to be returned if key wasn't found
+	 */
 	public String get(final String key, final String def) {
 
 		String pref = this.backend.get(key);
@@ -39,6 +61,11 @@ public final class PrefStore {
 		return pref;
 	}
 
+	/**
+	 * retrieves an int
+	 *
+	 * @param def default to be returned if key wasn't found or {@link Integer#valueOf(int)} failed.
+	 */
 	public int get(final String key, final int def) {
 
 		String pref = this.backend.get(key);
@@ -53,6 +80,11 @@ public final class PrefStore {
 		}
 	}
 
+	/**
+	 * retrieves a boolean
+	 *
+	 * @param def default to be returned if key wasn't found or stored property is no boolean ("true" or "false")
+	 */
 	public boolean get(final String key, final boolean def) {
 
 		String pref = this.backend.get(key);
@@ -69,14 +101,23 @@ public final class PrefStore {
 		}
 	}
 
+	/**
+	 * removes a property
+	 */
 	public void remove(final String property) {
 		this.backend.remove(property);
 	}
 
+	/**
+	 * returns all stored property-keys
+	 */
 	public ImmutableSet<String> getKeys() {
 		return this.backend.getKeys();
 	}
 
+	/**
+	 * returns all stored property-keys starting with a string
+	 */
 	public ImmutableSet<String> getKeys(final String match) {
 
 		ImmutableSet.Builder<String> matchingKeys = ImmutableSet.builder();
@@ -89,6 +130,9 @@ public final class PrefStore {
 		return matchingKeys.build();
 	}
 
+	/**
+	 * returns all stored properties as a map
+	 */
 	public ImmutableMap<String, String> getMap() {
 
 		ImmutableMap.Builder<String, String> hm = ImmutableMap.builder();
@@ -99,6 +143,9 @@ public final class PrefStore {
 		return hm.build();
 	}
 
+	/**
+	 * returns all stored properties starting with a string as a map
+	 */
 	public ImmutableMap<String, String> getMap(final String match) {
 
 		ImmutableMap.Builder<String, String> hm = ImmutableMap.builder();
@@ -109,6 +156,11 @@ public final class PrefStore {
 		return hm.build();
 	}
 
+	/**
+	 * returns all stored properties as a map of integer
+	 *
+	 * @param def map-value if matched property couldn't be converted to an integer
+	 */
 	public ImmutableMap<String, Integer> getMap(final int def) {
 
 		ImmutableMap.Builder<String, Integer> hm = ImmutableMap.builder();
@@ -119,6 +171,11 @@ public final class PrefStore {
 		return hm.build();
 	}
 
+	/**
+	 * returns all stored properties,  as a map of integer
+	 *
+	 * @param def map-value if matched property couldn't be converted to an integer
+	 */
 	public ImmutableMap<String, Integer> getMap(final String match, final int def) {
 
 		ImmutableMap.Builder<String, Integer> hm = ImmutableMap.builder();

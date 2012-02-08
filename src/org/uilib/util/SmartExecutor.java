@@ -16,6 +16,11 @@ import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * An Executor that provides commonly-used methods for running Runnables and is a {@link Throttle}.
+ * It uses a Scheduler-Thread to schedule and run tasks.
+ *
+ */
 public final class SmartExecutor implements Throttle, Executor {
 
 	//~ Static fields/initializers -------------------------------------------------------------------------------------
@@ -47,15 +52,21 @@ public final class SmartExecutor implements Throttle, Executor {
 
 	//~ Methods --------------------------------------------------------------------------------------------------------
 
+	/** creates a new SmartExecutor with a cached thread-pool. It has to be shutdown after use. */
 	public static SmartExecutor create() {
 		return new SmartExecutor(null);
 	}
 
+	/** creates a new SmartExecutor using the given executor */
 	public static SmartExecutor create(final Executor executor) {
 		return new SmartExecutor(executor);
 	}
 
-	/* shut the the executor down */
+	/** shut the executor down
+	 *
+	 * @throws IllegalStateException if this executor was created on top of another
+	 *
+	 */
 	public void shutdown() {
 		Preconditions.checkState(
 			this.executorService != null,
@@ -63,28 +74,27 @@ public final class SmartExecutor implements Throttle, Executor {
 		this.executorService.shutdownNow();
 	}
 
-	/* execute a Runnable once */
+	/** execute a Runnable once */
 	@Override
 	public void execute(final Runnable runnable) {
 		this.executor.execute(runnable);
 	}
 
-	/* schedule a Runnable to be executed after a fixed period of time */
+	/** schedule a Runnable to be executed after a fixed period of time */
 	public void schedule(final long delay, final TimeUnit timeUnit, final Runnable runnable) {
 		this.taskQueue.put(new DelayedRunnable(runnable, delay, timeUnit));
 	}
 
-	/* schedule a Runnable to be executed using a fixed delay between the end of a run and the start of the next one */
+	/** schedule a Runnable to be executed using a fixed delay between the end of a run and the start of the next */
 	public void scheduleAtFixedRate(final long period, final TimeUnit timeUnit, final Runnable runnable) {
 		this.taskQueue.put(new RepeatingRunnable(runnable, period, timeUnit));
 	}
 
+	/** cancel a scheduled repeating runnable */
 	public void cancelRepeatingRunnable(final Runnable runnable) {
 		this.cancelledTasks.add(runnable);
 	}
 
-	/* schedule a Runnable to be executed a fixed period of time after it was scheduled
-	 * if a new Runnable with the same throttleName is scheduled before this one was called, it will overwrite this */
 	@Override
 	public void throttle(final String throttleName, final long delay, final TimeUnit timeUnit, final Runnable runnable) {
 

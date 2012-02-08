@@ -3,11 +3,12 @@ package org.uilib.util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/** a Runnable that logs all RuntimeException */
 public abstract class LoggingRunnable implements Runnable {
 
-	//~ Instance fields ------------------------------------------------------------------------------------------------
+	//~ Static fields/initializers -------------------------------------------------------------------------------------
 
-	private final Logger logger = LoggerFactory.getLogger(this.getClass());
+	private static final Logger L = LoggerFactory.getLogger(LoggingRunnable.class);
 
 	//~ Methods --------------------------------------------------------------------------------------------------------
 
@@ -16,9 +17,10 @@ public abstract class LoggingRunnable implements Runnable {
 		try {
 			this.runChecked();
 		} catch (final RuntimeException e) {
-			this.logger.error(e.getMessage(), e);
+			L.error(e.getMessage(), e);
 		}
 	}
 
+	/** overwrite to call your standard <code>run()</code> method */
 	public abstract void runChecked();
 }

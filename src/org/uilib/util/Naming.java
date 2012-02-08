@@ -17,6 +17,12 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * This serves as a generic dictionary which allows objects to be registered under names.
+ * The methods for retrieving the values allow you to specify a class which is assignable
+ * from the object. The object will be cast to the class upon retrieval.
+ *
+ */
 public final class Naming<E> {
 
 	//~ Static fields/initializers -------------------------------------------------------------------------------------
@@ -59,7 +65,10 @@ public final class Naming<E> {
 		return new Naming<T>();
 	}
 
-	/** seals the naming, so queries are allowed to be cached */
+	/** seals the naming, so queries are allowed to be cached
+	 *
+	 * @throws IllegalStateException if naming was already sealed
+	 */
 	public void seal() {
 		Preconditions.checkState(! this.isSealed(), "naming was already sealed");
 
@@ -71,7 +80,12 @@ public final class Naming<E> {
 		return (this.cache != null);
 	}
 
-	/** registers a new object with the given name*/
+	/** registers a new object with the given name
+	 *
+	 * @throws IllegalStateException if naming was already sealed
+	 * @throws IllegalArgumentException if name or object is null
+	 *
+	 */
 	public void register(final String name, final E object) {
 		Preconditions.checkState(! this.isSealed(), "naming was already sealed");
 		Preconditions.checkArgument((object != null) && (name != null), "null-names or objects are not allowedl");
@@ -95,12 +109,19 @@ public final class Naming<E> {
 		this.data.putAll(naming.data);
 	}
 
-	/** selects the object matching a class */
+	/**
+	 * selects the object matching a class
+	 *
+	 * @throws IllegalStateException if not exactly 1 was found
+	 *
+	 */
 	public <T extends E> T select(final Class<T> clazz) {
 		return this.select(null, clazz);
 	}
 
-	/** checks if select for object would work */
+	/**
+	 * checks if exactly 1 object with the given name and class exists
+	 */
 	public <T extends E> boolean exists(final String name, final Class<T> clazz) {
 		try {
 			this.select(name, clazz);
@@ -111,17 +132,24 @@ public final class Naming<E> {
 		}
 	}
 
-	/** checks if select for object would work */
+	/**
+	 * checks if exactly 1 object with the given class exists
+	 */
 	public <T extends E> boolean exists(final Class<T> clazz) {
 		return this.exists(null, clazz);
 	}
 
-	/** finds all objects matching a class */
+	/** returns all objects matching a class */
 	public <T extends E> ImmutableSet<T> find(final Class<T> clazz) {
 		return this.find(null, clazz);
 	}
 
-	/** selects the object matching a class and a name */
+	/**
+	 * selects the object matching a class and a name
+	 *
+	 * @throws IllegalStateException if not exactly 1 was found
+	 *
+	 */
 	public <T extends E> T select(final String name, final Class<T> clazz) {
 
 		ImmutableSet<T> results = this.find(name, clazz);
@@ -136,7 +164,7 @@ public final class Naming<E> {
 		return results.iterator().next();
 	}
 
-	/** finds all objects matching a class and a name-query */
+	/** returns all objects matching a class and a name */
 	@SuppressWarnings("unchecked")
 	public <T extends E> ImmutableSet<T> find(final String name, final Class<T> clazz) {
 

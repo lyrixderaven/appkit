@@ -11,6 +11,7 @@ import org.uilib.application.EventContext;
 import org.uilib.registry.Fonts;
 import org.uilib.templating.Options;
 
+/** for creating a component that is a {@link Label} */
 public class LabelUI implements ComponentUI {
 
 	//~ Methods --------------------------------------------------------------------------------------------------------

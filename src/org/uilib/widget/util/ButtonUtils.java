@@ -7,10 +7,17 @@ import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Menu;
 
+/**
+ * Various utility-functions for working with {@link Button}s
+ *
+ */
 public final class ButtonUtils {
 
 	//~ Methods --------------------------------------------------------------------------------------------------------
 
+	/**
+	 * Adds a dropdown menu to the button.
+	 */
 	public static void setDropDownMenu(final Button button, final Menu menu) {
 		/* show menu on button click */
 		button.addSelectionListener(

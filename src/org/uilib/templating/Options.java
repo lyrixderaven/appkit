@@ -10,12 +10,24 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 
 import java.util.Collection;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Holds options for component and provides methods for working with. For retrieval operations
+ * defaults have to be specified, similar to {@link org.uilib.util.prefs.PrefStore}.
+ *
+ * <li>For keys of options only the following characters are valid: a-z,A-Z, '?', '_' and '-'.
+ * <li>boolean options values can be "true","false","yes" or "no"
+ * <li>an options called "options" will be split by space into a list of boolean options.
+ *     Specifying <code>options="border bold"</code> equals specifying <code>border=yes</code> and <code>bold=yes</code>.
+ * Trying to construct invalid options or options that contradict itself will throw an IllegalArgumentException.
+ *
+ */
 public class Options {
 
 	//~ Static fields/initializers -------------------------------------------------------------------------------------
@@ -63,18 +75,20 @@ public class Options {
 
 	//~ Methods --------------------------------------------------------------------------------------------------------
 
-	public static Options set(final String boolOpt) {
-		return new Options(ImmutableMap.of(boolOpt, "yes"));
-	}
-
+	/** creates empty Options */
 	public static Options empty() {
 		return new Options(ImmutableMap.<String, String>of());
 	}
 
+	/** creates empty Options from the given map*/
 	public static Options of(final Map<String, String> options) {
 		return new Options(options);
 	}
 
+	/**
+	 * returns new options where this options are combined with the specified defaults,
+	 * which are inserted if they weren't specified.
+	 */
 	public Options withDefaults(final Options defaults) {
 
 		Map<String, String> newOptions = Maps.newHashMap();
@@ -89,28 +103,49 @@ public class Options {
 		return new Options(newOptions);
 	}
 
+	/**
+	 * returns an option as a boolean
+	 *
+	 * @return def is returns if option wasn't found or didn't match "true","false","yes" or "no"
+	 */
 	public boolean get(final String key, final boolean def) {
 
 		String option = this.options.get(key);
 		if (option == null) {
 			return def;
 		} else {
-			Preconditions.checkArgument(boolTransl.containsKey(option), option + " no a valid boolean option");
+			Preconditions.checkArgument(
+				boolTransl.containsKey(option.toLowerCase(Locale.ENGLISH)),
+				option + " no a valid boolean option");
 
-			return boolTransl.get(option);
+			return boolTransl.get(option.toLowerCase(Locale.ENGLISH));
 		}
 	}
 
+	/**
+	 * returns an option as an int
+	 *
+	 * @return def is returns if option wasn't found or couldn't be converted to an Integer
+	 */
 	public int get(final String key, final int def) {
 
 		String option = this.options.get(key);
 		if (option == null) {
 			return def;
-		} else {
+		}
+
+		try {
 			return Integer.valueOf(option);
+		} catch (final NumberFormatException e) {
+			return def;
 		}
 	}
 
+	/**
+	 * returns an option as a string
+	 *
+	 * @return def is returns if option wasn't found
+	 */
 	public String get(final String key, final String def) {
 
 		String option = this.options.get(key);
@@ -121,6 +156,12 @@ public class Options {
 		}
 	}
 
+	/**
+	 * returns an option as a List of Strings.
+	 * The option's value is splitted by space, the inividual options are trimmed.
+	 *
+	 * @throws IllegalArgumentException if the key was "options" since this is special key that will be split into booleans
+	 */
 	public ImmutableList<String> get(final String key) {
 		Preconditions.checkArgument(! key.equals("options"), "'options' is translated into boolean options");
 
@@ -132,6 +173,9 @@ public class Options {
 		}
 	}
 
+	/**
+	 * returns this options as a map
+	 */
 	public ImmutableMap<String, String> getMap() {
 		return this.options;
 	}

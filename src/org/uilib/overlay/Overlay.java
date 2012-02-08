@@ -18,6 +18,14 @@ import org.eclipse.swt.widgets.Shell;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * An overlay that can be displayed on top of an existing {@link Composite}.
+ *
+ * It currently uses a second shell that is modified to reflect size and position of the composite.
+ *
+ * <b>This is unfinished</b>
+ *
+ */
 public final class Overlay {
 
 	//~ Static fields/initializers -------------------------------------------------------------------------------------
@@ -34,6 +42,10 @@ public final class Overlay {
 
 	//~ Constructors ---------------------------------------------------------------------------------------------------
 
+	/**
+	 * creates a new overlay on the given {@link Composite}
+	 *
+	 */
 	public Overlay(final Composite comp, final OverlaySupplier supplier) {
 		this.comp											 = comp;
 		this.supplier										 = supplier;
@@ -41,6 +53,9 @@ public final class Overlay {
 
 	//~ Methods --------------------------------------------------------------------------------------------------------
 
+	/**
+	 * shows the overlay
+	 */
 	public void show() {
 		/* create overlay shell with canvas */
 		this.overlayShell = new Shell(comp.getShell(), SWT.NO_TRIM);
@@ -101,7 +116,9 @@ public final class Overlay {
 		overlayShell.open();
 	}
 
-	/** dispose the overlay */
+	/**
+	 * disposes the overlay
+	 */
 	public void dispose() {
 		this.supplier.dispose();
 		this.comp.removeControlListener(this.compResizeListener);

@@ -21,6 +21,7 @@ import org.uilib.application.EventContext;
 import org.uilib.registry.Texts.CustomI18N;
 import org.uilib.templating.Options;
 
+/** for creating a component that uses multiple {@link Button}s to form a radio-set */
 public class RadioSetUI implements ComponentUI, CustomI18N {
 
 	//~ Static fields/initializers -------------------------------------------------------------------------------------

@@ -53,11 +53,14 @@ public final class Sample {
 
 		/* create templating and load a template */
 		Templating templating = Templating.fromResources();
+
+		/* register the SearchUI component */
 		templating.registerType(SearchUI.class, "search");
 
-		/* instantiate a component with simple event-context */
+		/* for catching all local event */
 		LocalEventContext eventContext = new LocalEventContext(this);
 
+		/* create the orderview component with the given eventContext */
 		orders = templating.create("orderview");
 		orders.initialize(eventContext, shell);
 
@@ -67,7 +70,7 @@ public final class Sample {
 		/* output naming for debugging purposes */
 		L.debug(orders.getNaming().toString());
 
-		/* test */
+		/* selects the table */
 		Table t = orders.selectUI("orders.$table", TableUI.class).getTable();
 		t.setHeaderVisible(true);
 
@@ -80,8 +83,8 @@ public final class Sample {
 		PrefStore prefStore = PrefStore.createJavaPrefStore("org/uilib/sample");
 		executor = SmartExecutor.create();
 		TableUtils.fillTableWidth(t);
-		TableUtils.rememberColumnWeights(prefStore, executor, t, "tes2");
-		TableUtils.rememberColumnOrder(prefStore, executor, t, "tes2");
+		TableUtils.rememberColumnWeights(prefStore, executor, t, "sample");
+		TableUtils.rememberColumnOrder(prefStore, executor, t, "sample");
 		TableUtils.autosizeColumns(t);
 
 		shell.open();

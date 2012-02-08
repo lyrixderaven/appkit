@@ -19,6 +19,7 @@ import org.uilib.application.EventContext;
 import org.uilib.registry.Texts;
 import org.uilib.templating.Options;
 
+/** for creating a component that is a {@link DateTime} */
 public final class DatepickerUI implements ComponentUI {
 
 	//~ Instance fields ------------------------------------------------------------------------------------------------

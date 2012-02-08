@@ -17,6 +17,10 @@ import org.uilib.util.LoggingRunnable;
 import org.uilib.util.SWTSyncedRunnable;
 import org.uilib.util.SmartExecutor;
 
+/**
+ * An {@link Overlay} that displays a spinner.
+ *
+ */
 public final class SpinnerOverlay implements OverlaySupplier {
 
 	//~ Static fields/initializers -------------------------------------------------------------------------------------
@@ -36,6 +40,11 @@ public final class SpinnerOverlay implements OverlaySupplier {
 
 	//~ Constructors ---------------------------------------------------------------------------------------------------
 
+	/**
+	 * Instantiates the overlay.
+	 *
+	 * @param executor
+	 */
 	public SpinnerOverlay(final SmartExecutor executor) {
 		this.executor = executor;
 	}
@@ -59,6 +68,7 @@ public final class SpinnerOverlay implements OverlaySupplier {
 		}
 	}
 
+	/** return an image of this spinner at it's current step */
 	@Override
 	public ImageData getImageData(final int overlayWidth, final int overlayHeight) {
 

@@ -10,6 +10,9 @@ public interface ComponentUI {
 
 	//~ Methods --------------------------------------------------------------------------------------------------------
 
+	/**
+	 * creates the widgets
+	 */
 	Control initialize(final EventContext app, final Composite parent, final String name, final String type,
 					   final Options options);
 }

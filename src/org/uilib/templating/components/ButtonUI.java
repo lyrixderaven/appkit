@@ -8,6 +8,7 @@ import org.eclipse.swt.widgets.Control;
 import org.uilib.application.EventContext;
 import org.uilib.templating.Options;
 
+/** for creating simple {@link Button} components */
 public class ButtonUI implements ComponentUI {
 
 	//~ Methods --------------------------------------------------------------------------------------------------------

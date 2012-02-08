@@ -5,7 +5,7 @@ import com.google.common.collect.ImmutableSet;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
-public final class JavaPreferencesBackend implements PrefStoreBackend {
+final class JavaPreferencesBackend implements PrefStoreBackend {
 
 	//~ Instance fields ------------------------------------------------------------------------------------------------
 
@@ -13,7 +13,7 @@ public final class JavaPreferencesBackend implements PrefStoreBackend {
 
 	//~ Constructors ---------------------------------------------------------------------------------------------------
 
-	public JavaPreferencesBackend(final String node) {
+	protected JavaPreferencesBackend(final String node) {
 		this.prefs = Preferences.userRoot().node(node);
 	}
 

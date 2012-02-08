@@ -16,6 +16,9 @@ import org.eclipse.swt.widgets.Text;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * A more sophisticated MessageBox.
+ */
 public final class MBox {
 
 	//~ Enumerations ---------------------------------------------------------------------------------------------------

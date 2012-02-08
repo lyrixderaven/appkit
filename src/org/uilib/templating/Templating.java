@@ -37,6 +37,12 @@ import org.uilib.util.ResourceStringSupplier;
 
 import sun.reflect.generics.reflectiveObjects.ParameterizedTypeImpl;
 
+/**
+ * Templating enables you to load Interface-description out of JSON. Other/different formats may follow.
+ *
+ * It creates a {@link Component} which can be used to work with the Interface in an easy-to-use way.
+ *
+ */
 public final class Templating {
 
 	//~ Static fields/initializers -------------------------------------------------------------------------------------
@@ -53,6 +59,7 @@ public final class Templating {
 
 	//~ Constructors ---------------------------------------------------------------------------------------------------
 
+	/** instantiates Templating which loads json via the given <code>templateSupplier</code> */
 	public Templating(final ParamSupplier<String, String> templateSupplier) {
 		this.templateSupplier = templateSupplier;
 
@@ -78,16 +85,27 @@ public final class Templating {
 
 	//~ Methods --------------------------------------------------------------------------------------------------------
 
+	/** instantiates Templating which loads from resources.
+	 * It will load the type "orderview" by loading the file 'components/orderview.json' from resource
+	 */
 	public static Templating fromResources() {
 		return new Templating(ResourceStringSupplier.instance());
 	}
 
+	/** registers a new component type
+	 *
+	 * @throws IllegalStateException if type was already registered
+	 */
 	public void registerType(final Class<?extends ComponentUI> ui, final String typeName) {
 		Preconditions.checkState(! this.types.containsKey(typeName), "type %s already registered", typeName);
 
 		this.types.put(typeName, ui);
 	}
 
+	/** create a component of the specified type
+	 *
+	 * @throws IllegalStateException when JSON parsing failed or there other errors
+	 */
 	public Component create(final String componentType) {
 		L.debug("creating component: " + componentType);
 
