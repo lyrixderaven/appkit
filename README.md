@@ -4,6 +4,7 @@ uilib:	(swt) user-interface-library
 
 * API-Documentation: [JavaDoc](http://fab1an.github.com/uilib/javadoc/).
 * Download latest build: [uilib.jar](http://fab1an.github.com/uilib/uilib.jar).
+* Discussion: [uilib@googlegroups.com] (https://groups.google.com/group/uilib)
 
 There's a sample application in the source which shows some of the features.
 

@@ -31,7 +31,7 @@
 			</fileset>
 		</pmd>
 
-		<xslt in="tools/pmd.xml" style="tools/fabian-pmd.xslt" out="tools/pmd.html" />
+		<xslt in="tools/pmd.xml" style="tools/pmd.xslt" out="tools/pmd.html" />
 		<delete file="tools/pmd.xml" />
 	</target>
 </project>
