@@ -3,7 +3,7 @@ uilib:	(swt) user-interface-library
 ============================
 
 * API-Documentation: [JavaDoc](http://fab1an.github.com/uilib/javadoc/).
-* Download **latest** build: [uilib.jar](http://fab1an.github.com/uilib/uilib.jar).
+* Download latest build: [uilib.jar](http://fab1an.github.com/uilib/uilib.jar).
 
 There's a sample application in the source which shows some of the features.
 
@@ -16,7 +16,7 @@ application-structure. Instead you can gradually adapt your code to use parts an
 which you might find useful.
 
 A lot of the API was designed with the special circumstances of SWT-GUI-applications in mind.
-Almost all SWT-related calls have to be done in the Display-Thread, which enables you to use static methods more freely.
+Almost all SWT-related calls have to be done in the Display-Thread, which enables you to use static methods more freely.  
 The library makes heavy use of the Google Guava-toolkit, which enables you to write more modern and fun Java-code.
 A lot of the code is safe-guarded by using Guava's Preconditions which makes the code fail-fast on illegal arguments etc.
 
@@ -36,76 +36,191 @@ It should work with older versions of libraries as well.
 
 License
 -------------
-Code is released under the LGPL.
+Code is released under the LGPL.  
 CocoaUIEnhancer.java is an exception, it's released under the EPL.
 
-Thank you
------------------
+Thank you / Donations
+------------------------------------
 If you want you can [flattr](https://flattr.com/profile/cel1ne) me.
-
-Features / Overview
--------------------------------
-> ## Templating:
-> Load interface descriptions from json
-> Work width interface-components by selecting elements via a query syntax
-> ## EventHandling:
-> Simple wrappers to write less cluttered event-handling code using Guava's EventBus
-> ## Utilities:
-> Registries for handling Colors, Fonts and Images
-> Store and load user-preferences
-> Throttle Runnables
-> Display overlays on Composites
-> Do measurements of your code run-time
-> …
-> ## Various widget utilities:
-> Automatically resize table columns
-> save / restore column-order and weights
-> save / restore Shell position, maximised state etc.
-> ScrollListener for Table
-> …
-> ## Various useful widgets
-> better MessageBox
-> SearchFrom
-> better SaveFileDialog
 
 RFC / Advise
 ------------------------
 * Tell me if i overlooked something concerning licensing
-* **Component** does it make sense to select something before initialization
+* does it make sense to select a Component before initialisation?
 * MigLayout instead of GridLayout?
 * Where does a BuilderSyntax make sense? e.g. options.get("bold").withDefault(false);
+
+Features / Overview
+-------------------------------
+> ### Templating
+> * Load interface descriptions from json
+> * Work with interface-components by selecting elements via a query syntax
+> ### EventHandling
+> * Simple wrappers to write less cluttered event-handling code using Guava's EventBus
+> ### Utilities
+> * Registries for handling Colors, Fonts and Images
+> * Store and load user-preferences
+> * Throttle Runnables
+> * Display overlays on Composites
+> * Do measurements of your code run-time
+> …
+> ### Various widget utilities
+> * Automatically resize table columns
+> * save / restore column-order and weights
+> * save / restore Shell position, maximised state etc.
+> * ScrollListener for Table
+> …
+> ### Various useful widgets
+> * better MessageBox
+> * SearchFrom
+> * better SaveFileDialog
+
+Sample Code
+----------------------
+
+	package org.uilib.sample;
+
+	// imports
+
+	public final class Sample {
+
+	//~ Static fields/initializers -------------------------------------------------------------------------
+	private static final Logger L = LoggerFactory.getLogger(Sample.class);
+
+	//~ Instance fields ------------------------------------------------------------------------------------
+
+	private Shell shell;
+	private Component orders;
+	private SmartExecutor executor;
+
+	//~ Constructors ---------------------------------------------------------------------------------------
+
+	public Sample() {
+		/* Log4J Configuration */
+		PropertyConfigurator.configure(log4jProperties());
+
+		/* create a shell */
+		shell					  = new Shell();
+		shell.setLayout(new FillLayout());
+
+		/* create templating and load a template */
+		Templating templating = Templating.fromResources();
+
+		/* register the SearchUI component */
+		templating.registerType(SearchUI.class, "search");
+
+		/* for catching all local events (see the methods tagged with @Subscribe) */
+		LocalEventContext eventContext = new LocalEventContext(this);
+
+		/* create the orderview component with the given eventContext */
+		orders = templating.create("orderview");
+		orders.initialize(eventContext, shell);
+
+		/* translate component */
+		Texts.forComponent("orderview", Locale.ENGLISH).translateComponent(orders);
+
+		/* output naming for debugging purposes */
+		L.debug(orders.getNaming().toString());
+
+		/* selects the table */
+		Table t = orders.selectUI("orders.$table", TableUI.class).getTable();
+		t.setHeaderVisible(true);
+
+		/* create columns */
+		for (int i = 0; i <= 6; i++) {
+			TableColumn c1 = new TableColumn(t, SWT.NONE);
+			c1.setText("col " + i);
+		}
+
+		PrefStore prefStore = PrefStore.createJavaPrefStore("org/uilib/sample");
+		executor = SmartExecutor.create();
+
+		/* divide table equally among columns */
+		TableUtils.fillTableWidth(t);
+
+		/* restore and save columnweights and order */
+		TableUtils.rememberColumnWeights(prefStore, executor, t, "sample");
+		TableUtils.rememberColumnOrder(prefStore, executor, t, "sample");
+
+		/* resize columns proportionally if table is resized */
+		TableUtils.autosizeColumns(t);
+
+		shell.open();
+
+		while (! shell.isDisposed()) {
+			if (! shell.getDisplay().readAndDispatch()) {
+				shell.getDisplay().sleep();
+			}
+		}
+
+		executor.shutdown();
+	}
+
+	//~ Methods -----------------------------------------------------------------------------------------------------
+
+	public static void main(final String args[]) {
+		new Sample();
+	}
+
+	@Subscribe
+	public void localEvent(final Object object) {
+		L.debug("event: " + object);
+
+		/* display a spinner THIS BLOCKS */
+		Table t			 = orders.selectUI("orders.$table", TableUI.class).getTable();
+		final Overlay ov = new Overlay(t, new SpinnerOverlay(this.executor));
+		ov.show();
+	}
+
+	@Subscribe
+	public void daterangeChange(final DateRange daterange) {
+		L.debug("we got a date-range: " + daterange);
+	}
+
+	public static Properties log4jProperties() {
+
+		Properties props = new Properties();
+
+		props.setProperty("log4j.rootLogger", "DEBUG,console");
+		props.setProperty("log4j.appender.console", "org.apache.log4j.ConsoleAppender");
+		props.setProperty("log4j.appender.console.Threshold", "DEBUG");
+		props.setProperty("log4j.appender.console.layout", "org.apache.log4j.PatternLayout");
+		props.setProperty("log4j.appender.console.layout.ConversionPattern", "%d [%t] %-5p %c - %m%n");
+
+		return props;
+	}
+	}
 
 TODOs / Ideas
 ------------------------
 
-> ### General: ###
-> * Help for (Win)Sparkle-Integration
+> ### General
+> * Help for adding (Win)Sparkle-Integration
 > * Unit tests
 > * Help for creating browser-based widgets (links and images are a problem)
 > * Help to intergrate swing-widgets
 
-> ### Overlay: ###
-> * paint directly on widget without the need of a shell
-> * ability to lock composite
+> ### Overlay
+> * Paint directly on widget without the need of a shell
+> * Ability to lock composite
 
-> ### Application: ###
+> ### Application
 > * provide a wrapper to run background tasks and handle threading (weak references?)
-> * Executor that executes Runnable's in the display thread on a best effort base by 
+> * Executor that executes Runnable's in the display thread on a best effort approach by 
 > collection event-statistics
 
-> ### Templating ###
-> * different format (yaml?)
-> * MigLayou?
+> ### Templating
+> * Different formats (YAML ?)
+> * MigLayout?
 > * LayoutUI that positions widget absolute
-> Template editing help:
-> > * fast reloading of templates
-> > * activate all composite borders
-> > * gridlayout configuration
-> > * write back json to format it properly
+> * Editing Help: fast reloading of templates
+> * Editing Help: activate all composite borders
+> * Editing Help: gridlayout configuration
+> * Editing Help: write back json to format it properly
 	
 > ### Measurement / Statistic 
-> summary output (longest running calls etc.)
-> wrapper that measures the length of swt-event-handlers
+> * output summary (longest running calls etc.)
+> * wrapper that measures the length of swt-EventHandlers
 
 > ### Widgets
 > * Table that shows results fast

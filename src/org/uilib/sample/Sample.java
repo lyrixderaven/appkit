@@ -57,7 +57,7 @@ public final class Sample {
 		/* register the SearchUI component */
 		templating.registerType(SearchUI.class, "search");
 
-		/* for catching all local event */
+		/* for catching all local events (see the methods tagged with @Subscribe) */
 		LocalEventContext eventContext = new LocalEventContext(this);
 
 		/* create the orderview component with the given eventContext */
@@ -74,17 +74,23 @@ public final class Sample {
 		Table t = orders.selectUI("orders.$table", TableUI.class).getTable();
 		t.setHeaderVisible(true);
 
+		/* create columns */
 		for (int i = 0; i <= 6; i++) {
-
 			TableColumn c1 = new TableColumn(t, SWT.NONE);
 			c1.setText("col " + i);
 		}
 
 		PrefStore prefStore = PrefStore.createJavaPrefStore("org/uilib/sample");
 		executor = SmartExecutor.create();
+
+		/* divide table equally among columns */
 		TableUtils.fillTableWidth(t);
+
+		/* restore and save columnweights and order */
 		TableUtils.rememberColumnWeights(prefStore, executor, t, "sample");
 		TableUtils.rememberColumnOrder(prefStore, executor, t, "sample");
+
+		/* resize columns proportionally if table is resized */
 		TableUtils.autosizeColumns(t);
 
 		shell.open();
@@ -108,6 +114,7 @@ public final class Sample {
 	public void localEvent(final Object object) {
 		L.debug("event: " + object);
 
+		/* display a spinner THIS BLOCKS */
 		Table t			 = orders.selectUI("orders.$table", TableUI.class).getTable();
 		final Overlay ov = new Overlay(t, new SpinnerOverlay(this.executor));
 		ov.show();
