@@ -65,11 +65,15 @@ public final class TreeUtils {
 				@Override
 				public void controlResized(final ControlEvent event) {
 
-					int width = (tree.getBounds().width / tree.getColumnCount()) - 5;
-					L.debug("fillTreeWidth: set column size to {}", width);
+					int width = tree.getClientArea().width;
+					width = width - (tree.getBorderWidth() * 2);
+
+					int colWidth = width / tree.getColumnCount();
+
+					L.debug("fillTreeWidth: set column width to {}", colWidth);
 
 					for (int i = 0; i < tree.getColumnCount(); i++) {
-						tree.getColumn(i).setWidth(width);
+						tree.getColumn(i).setWidth(colWidth);
 					}
 
 					tree.removeControlListener(this);

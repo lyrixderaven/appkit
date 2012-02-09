@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.ControlListener;
+import org.eclipse.swt.events.PaintEvent;
+import org.eclipse.swt.events.PaintListener;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,12 +27,15 @@ public final class ColumnAutoSizer {
 		this.colController		  = colController;
 
 		/* add table resize-listener */
-		this.colController.installControlListener(new ControlResizeListener());
+		this.colController.getControl().addControlListener(new ControlResizeListener());
 
 		/* add column resize-listener */
 		for (int i = 0; i < colController.getColumnCount(); i++) {
 			this.colController.installColumnControlListener(i, new ColumnResizeListener());
 		}
+
+		/* if vertical toolbar changed we want to resize too */
+		this.colController.getControl().addPaintListener(new VerticalToolbarChanged());
 	}
 
 	//~ Inner Classes --------------------------------------------------------------------------------------------------
@@ -75,6 +80,20 @@ public final class ColumnAutoSizer {
 					colController.getAvailWidth(),
 					lastAvailWidth);
 				lastAvailWidth = colController.getAvailWidth();
+			}
+		}
+	}
+
+	private class VerticalToolbarChanged implements PaintListener {
+
+		private boolean vertToolbarVis = false;
+
+		@Override
+		public void paintControl(final PaintEvent event) {
+			if (colController.getControl().getVerticalBar().isVisible() != vertToolbarVis) {
+				vertToolbarVis     = colController.getControl().getVerticalBar().isVisible();
+				weights			   = colController.calculateWeights();
+				colController.setWeights(weights);
 			}
 		}
 	}

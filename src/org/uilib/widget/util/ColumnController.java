@@ -6,6 +6,7 @@ import com.google.common.primitives.Ints;
 import java.util.List;
 
 import org.eclipse.swt.events.ControlListener;
+import org.eclipse.swt.widgets.Scrollable;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.Tree;
@@ -31,7 +32,7 @@ abstract class ColumnController {
 
 	abstract int getAvailWidth();
 
-	abstract void installControlListener(final ControlListener listener);
+	abstract Scrollable getControl();
 
 	abstract void installColumnControlListener(final int column, final ControlListener listener);
 
@@ -40,8 +41,6 @@ abstract class ColumnController {
 	abstract int[] getColumnOrder();
 
 	abstract void setColumnsMoveable();
-
-	abstract void removeControlListener(final ControlListener controlListener);
 
 	public final List<Integer> calculateWeights() {
 		L.debug("calculating weights");
@@ -100,6 +99,16 @@ abstract class ColumnController {
 		}
 
 		@Override
+		Scrollable getControl() {
+			return this.table;
+		}
+
+		@Override
+		public void installColumnControlListener(final int column, final ControlListener listener) {
+			this.table.getColumn(column).addControlListener(listener);
+		}
+
+		@Override
 		public int getColumnCount() {
 			return this.table.getColumnCount();
 		}
@@ -116,17 +125,7 @@ abstract class ColumnController {
 
 		@Override
 		public int getAvailWidth() {
-			return this.table.getClientArea().width;
-		}
-
-		@Override
-		public void installControlListener(final ControlListener listener) {
-			this.table.addControlListener(listener);
-		}
-
-		@Override
-		public void installColumnControlListener(final int column, final ControlListener listener) {
-			this.table.getColumn(column).addControlListener(listener);
+			return this.table.getClientArea().width - (this.table.getBorderWidth() * 2);
 		}
 
 		@Override
@@ -146,11 +145,6 @@ abstract class ColumnController {
 				c.setMoveable(true);
 			}
 		}
-
-		@Override
-		public void removeControlListener(final ControlListener controlListener) {
-			this.table.removeControlListener(controlListener);
-		}
 	}
 
 	public static final class TreeColumnController extends ColumnController {
@@ -162,8 +156,13 @@ abstract class ColumnController {
 		}
 
 		@Override
+		Scrollable getControl() {
+			return this.tree;
+		}
+
+		@Override
 		public int getColumnCount() {
-			return this.tree.getColumnCount();
+			return this.tree.getColumnCount() - (this.tree.getBorderWidth() * 2);
 		}
 
 		@Override
@@ -179,11 +178,6 @@ abstract class ColumnController {
 		@Override
 		public int getAvailWidth() {
 			return this.tree.getClientArea().width;
-		}
-
-		@Override
-		public void installControlListener(final ControlListener listener) {
-			this.tree.addControlListener(listener);
 		}
 
 		@Override
@@ -206,11 +200,6 @@ abstract class ColumnController {
 			for (final TreeColumn c : this.tree.getColumns()) {
 				c.setMoveable(true);
 			}
-		}
-
-		@Override
-		public void removeControlListener(final ControlListener controlListener) {
-			this.tree.removeControlListener(controlListener);
 		}
 	}
 }

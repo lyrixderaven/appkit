@@ -4,7 +4,6 @@ import com.google.common.eventbus.Subscribe;
 
 import java.util.Locale;
 import java.util.Properties;
-
 import org.apache.log4j.PropertyConfigurator;
 
 import org.eclipse.swt.SWT;
@@ -12,6 +11,7 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.TableItem;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +27,8 @@ import org.uilib.templating.components.SearchUI;
 import org.uilib.templating.components.TableUI;
 import org.uilib.util.SmartExecutor;
 import org.uilib.util.prefs.PrefStore;
+import org.uilib.widget.util.TableScrollDetector.ScrollEvent;
+import org.uilib.widget.util.TableScrollDetector.ScrollListener;
 import org.uilib.widget.util.TableUtils;
 
 public final class Sample {
@@ -81,18 +83,36 @@ public final class Sample {
 			c1.setText("col " + i);
 		}
 
+		/* add items */
+		for (int i = 0; i <= 15; i++) {
+
+			TableItem i1 = new TableItem(t, SWT.NONE);
+			i1.setText("item " + i);
+		}
+
 		PrefStore prefStore = PrefStore.createJavaPrefStore("org/uilib/sample");
 		executor = SmartExecutor.create();
 
 		/* divide table equally among columns */
 		TableUtils.fillTableWidth(t);
 
-		/* restore and save columnweights and order */
+		/* restore and save column-weights and order */
 		TableUtils.rememberColumnWeights(prefStore, executor, t, "sample");
 		TableUtils.rememberColumnOrder(prefStore, executor, t, "sample");
 
 		/* resize columns proportionally if table is resized */
 		TableUtils.autosizeColumns(t);
+
+		/* install a ScrollDetector */
+		TableUtils.installScrollListener(
+			t,
+			new ScrollListener() {
+					@Override
+					public void scrolled(final ScrollEvent event) {
+						L.debug("first vis: {}", event.getFirstVisibleRow());
+						L.debug("last vis: {}", event.getLastVisibleRow());
+					}
+				});
 
 		shell.open();
 
@@ -116,7 +136,8 @@ public final class Sample {
 		L.debug("event: " + object);
 
 		/* display a spinner: unfinished */
-		Table t			 = orders.selectUI("orders$table", TableUI.class).getTable();
+		final Table t = orders.selectUI("orders$table", TableUI.class).getTable();
+
 		final Overlay ov = new Overlay(t, new SpinnerOverlay(this.executor));
 		ov.show();
 	}

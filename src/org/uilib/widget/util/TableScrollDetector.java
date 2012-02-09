@@ -4,7 +4,6 @@ import com.google.common.base.Objects;
 
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
-import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Table;
 
 import org.slf4j.Logger;
@@ -37,14 +36,9 @@ public final class TableScrollDetector implements PaintListener {
 	@Override
 	public void paintControl(final PaintEvent event) {
 
-		Rectangle rect   = table.getClientArea();
-		int itemHeight   = table.getItemHeight();
-		int headerHeight = table.getHeaderHeight();
-		int visibleCount = ((rect.height - headerHeight + itemHeight) - 1) / itemHeight;
-
-		int totalRows    = table.getItemCount();
-		int newFirstVis  = table.getTopIndex();
-		int newLastVis   = (newFirstVis + visibleCount) - 1;
+		int totalRows   = table.getItemCount();
+		int newFirstVis = table.getTopIndex();
+		int newLastVis  = TableUtils.getBottomIndex(table);
 
 		/* -1 if no data in table */
 		if (totalRows == 0) {

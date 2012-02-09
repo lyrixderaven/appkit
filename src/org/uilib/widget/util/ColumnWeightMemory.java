@@ -43,12 +43,12 @@ public final class ColumnWeightMemory {
 		this.memoryKey		   = key + ".columnweights";
 
 		/* add initial listener for initial size-setting */
-		colController.installControlListener(
+		colController.getControl().addControlListener(
 			new ControlListener() {
 					@Override
 					public void controlResized(final ControlEvent event) {
 						loadWidths();
-						colController.removeControlListener(this);
+						colController.getControl().removeControlListener(this);
 					}
 
 					@Override

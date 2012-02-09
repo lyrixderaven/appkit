@@ -2,6 +2,7 @@ package org.uilib.widget.util;
 
 import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.ControlListener;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Table;
 
 import org.slf4j.Logger;
@@ -66,10 +67,14 @@ public final class TableUtils {
 				@Override
 				public void controlResized(final ControlEvent event) {
 
-					int width = (table.getBounds().width / table.getColumnCount()) - 5;
-					L.debug("fillTableWidth: set column size to {}", width);
+					int width = table.getClientArea().width;
+					width = width - (table.getBorderWidth() * 2);
+
+					int colWidth = width / table.getColumnCount();
+
+					L.debug("fillTableWidth: set column width to {}", colWidth);
 					for (int i = 0; i < table.getColumnCount(); i++) {
-						table.getColumn(i).setWidth(width);
+						table.getColumn(i).setWidth(colWidth);
 					}
 
 					table.removeControlListener(this);
@@ -88,5 +93,24 @@ public final class TableUtils {
 	 */
 	public static void installScrollListener(final Table table, final ScrollListener listener) {
 		new TableScrollDetector(table, listener);
+	}
+
+	/**
+	 * returns the last visible row
+	 *
+	 * @return -1 if no data in the table
+	 */
+	public static int getBottomIndex(final Table table) {
+		if (table.getItemCount() == 0) {
+			return -1;
+		}
+
+		Rectangle rect   = table.getClientArea();
+		int itemHeight   = table.getItemHeight();
+		int headerHeight = table.getHeaderHeight();
+
+		int visibleCount = ((rect.height - headerHeight + itemHeight) - 1) / itemHeight;
+
+		return (table.getTopIndex() + visibleCount) - 1;
 	}
 }
