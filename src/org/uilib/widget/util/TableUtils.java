@@ -67,16 +67,20 @@ public final class TableUtils {
 				@Override
 				public void controlResized(final ControlEvent event) {
 
-					int width = table.getClientArea().width;
-					width = width - (table.getBorderWidth() * 2);
+					if (table.getColumnCount() != 0) {
+						int width = table.getClientArea().width;
+						width = width - (table.getBorderWidth() * 2);
 
-					int colWidth = width / table.getColumnCount();
+						int colWidth = width / table.getColumnCount();
 
-					L.debug("fillTableWidth: set column width to {}", colWidth);
-					for (int i = 0; i < table.getColumnCount(); i++) {
-						table.getColumn(i).setWidth(colWidth);
+						L.debug("fillTableWidth: set column width to {}", colWidth);
+						for (int i = 0; i < table.getColumnCount(); i++) {
+							table.getColumn(i).setWidth(colWidth);
+						}						
+					} else {
+						L.debug("fillTableWidth: no columns in table");						
 					}
-
+					
 					table.removeControlListener(this);
 					L.debug("fillTableWidth: done and listener removed");
 				}
