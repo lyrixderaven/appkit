@@ -18,7 +18,7 @@
 	<classpathentry kind="lib" path="lib/slf4j-log4j12-1.6.4.jar"/>
 	<classpathentry kind="lib" path="lib/swt-3.7.1-cocoa64.jar">
 		<attributes>
-			<attribute name="javadoc_location" value="http://help.eclipse.org/nftopic/org.eclipse.platform.doc.isv/reference/api"/>
+			<attribute name="javadoc_location" value="http://help.eclipse.org/indigo/nftopic/org.eclipse.platform.doc.isv/reference/api/"/>
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="output" path="build"/>
