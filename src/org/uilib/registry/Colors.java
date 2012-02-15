@@ -16,7 +16,6 @@ import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Text;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,15 +24,11 @@ import org.slf4j.LoggerFactory;
  * <br />
  * <br />
  * Creates, assigns and caches {@link Color}s. Colors can be set to the foreground or background of a {@link Control}.
- * Use of the color is deregistered when the control is disposed or manually via the <code>putBack</code> methods.
+ * Use of the color is de-registered when the control is disposed or manually via the <code>putBack</code> methods.
  * <br />
  * <br />
  * This uses a simple counter to keep of track of usage of certain Colors. If the usage drops to 0, the color
  * is disposed.
- * <br />
- * <br />
- * <b>TODO:</b> "ColorSetable" interface to set Color on arbitrary things and more controls<br />
- * <b>TODO:</b> Direct creation of colors?
  */
 public final class Colors {
 
@@ -42,10 +37,16 @@ public final class Colors {
 	private static final Logger L = LoggerFactory.getLogger(Colors.class);
 
 	/* cache / registry */
-	private static final BiMap<Integer, Color> colorCache				  = HashBiMap.create();
-	private static final Multiset<Color> usage							  = HashMultiset.create();
+	private static final BiMap<Integer, Color> colorCache = HashBiMap.create();
+	private static final Multiset<Color> usage			  = HashMultiset.create();
+
+	/* currently installed disposeListeners */
 	private static final Map<Control, DisposeListener> fgDisposeListeners = Maps.newHashMap();
 	private static final Map<Control, DisposeListener> bgDisposeListeners = Maps.newHashMap();
+
+	static {
+		Preconditions.checkArgument(Display.getCurrent() != null, "can't instantiate Colors on a non-display thread");
+	}
 
 	//~ Constructors ---------------------------------------------------------------------------------------------------
 
@@ -56,11 +57,11 @@ public final class Colors {
 	/**
 	 * sets the foreground color of the given control to an RGB-value
 	 *
-	 * <b>TODO</b>This works only for {@link Text} at the moment
 	 * @param control control on which color should be set
 	 * @param r red value
 	 * @param g green value
 	 * @param b blue value
+	 * @throws IllegalStateException if called from a non-Display thread
 	 */
 	public static void setForeground(final Control control, final int r, final int g, final int b) {
 		setColor(control, r, g, b, true);
@@ -69,24 +70,21 @@ public final class Colors {
 	/**
 	 * sets the background color of the given control to an RGB-value
 	 *
-	 * <b>TODO</b>This works only for {@link Text} at the moment
 	 * @param control control on which color should be set
 	 * @param r red value
 	 * @param g green value
 	 * @param b blue value
 	 * @throws IllegalStateException if called from a non-Display thread
-	 * @throws IllegalArgumentException if image couldn't be set
 	 */
 	public static void setBackground(final Control control, final int r, final int g, final int b) {
 		setColor(control, r, g, b, false);
 	}
 
 	private static void setColor(final Control control, final int r, final int g, final int b, final boolean foreground) {
-		/* check for UI-thread and if control is colorable */
+		/* check for UI-thread and if control is color-able */
 		Preconditions.checkState(
 			Display.getCurrent() != null,
 			"Colors is to be used from the display-thread exclusively!");
-		Preconditions.checkArgument(control instanceof Text, "don't know how to set color on {}", control);
 
 		L.debug(
 			"setting " + (foreground ? "fore" : "back") + "ground-color {} for {}",
@@ -120,22 +118,18 @@ public final class Colors {
 		L.debug("usage of {} now {}", color, usage.count(color));
 
 		/* set the color and add the disposer */
-		if (control instanceof Text) {
-			if (foreground) {
-				control.setForeground(color);
+		if (foreground) {
+			control.setForeground(color);
 
-				DisposeListener listener = new ColorDisposeListener(true);
-				fgDisposeListeners.put(control, listener);
-				control.addDisposeListener(listener);
-			} else {
-				control.setBackground(color);
-
-				DisposeListener listener = new ColorDisposeListener(false);
-				bgDisposeListeners.put(control, listener);
-				control.addDisposeListener(listener);
-			}
+			DisposeListener listener = new ColorDisposeListener(true);
+			fgDisposeListeners.put(control, listener);
+			control.addDisposeListener(listener);
 		} else {
-			throw new IllegalStateException();
+			control.setBackground(color);
+
+			DisposeListener listener = new ColorDisposeListener(false);
+			bgDisposeListeners.put(control, listener);
+			control.addDisposeListener(listener);
 		}
 	}
 
@@ -173,14 +167,10 @@ public final class Colors {
 
 		/* get the color */
 		Color color;
-		if (control instanceof Text) {
-			if (foreground) {
-				color = ((Text) control).getForeground();
-			} else {
-				color = ((Text) control).getBackground();
-			}
+		if (foreground) {
+			color = control.getForeground();
 		} else {
-			throw new IllegalStateException();
+			color = control.getBackground();
 		}
 
 		/* decrease usage-counter */

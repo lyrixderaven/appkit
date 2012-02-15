@@ -30,11 +30,6 @@ import org.slf4j.LoggerFactory;
  * <br />
  * This uses a simple counter to keep of track of usage of Fonts. If the usage drops to 0, the font
  * is disposed.
- * <br />
- * <br />
- * <b>TODO:</b>"FontSetable" interface to set Font on arbitrary things and more controls<br />
- * <b>TODO:</b>Direct creation of fonts?<br />
- * <b>TODO:</b>Interface to describe Styles? FontData?<br />
  */
 public final class Fonts {
 
@@ -53,12 +48,14 @@ public final class Fonts {
 	private static final int defaultFontHeight;
 
 	/* cache / registry */
-	private static final BiMap<Integer, Font> fontCache				    = HashBiMap.create();
-	private static final Multiset<Font> usage						    = HashMultiset.create();
+	private static final BiMap<Integer, Font> fontCache = HashBiMap.create();
+	private static final Multiset<Font> usage		    = HashMultiset.create();
+
+	/* currently installed disposeListeners */
 	private static final Map<Control, DisposeListener> disposeListeners = Maps.newHashMap();
 
 	static {
-		Preconditions.checkArgument(Display.getCurrent() != null, "can't instiate Fonts on a non-display thread");
+		Preconditions.checkArgument(Display.getCurrent() != null, "can't instantiate Fonts on a non-display thread");
 		defaultFontName		  = Display.getCurrent().getSystemFont().getFontData()[0].getName();
 		defaultFontStyle	  = Display.getCurrent().getSystemFont().getFontData()[0].getStyle();
 		defaultFontHeight     = Display.getCurrent().getSystemFont().getFontData()[0].getHeight();

@@ -41,8 +41,6 @@ import org.uilib.util.ResourceStreamSupplier;
  * <br />
  * <br />
  * The methods expect {@link Supplier}s for keys. This can be implemented easily by an Enum for example.
- *
- * <b>TODO:</b> "ImageSetable" interface to set Image on arbitrary things and more controls<br />
  */
 public final class Images {
 
@@ -51,9 +49,21 @@ public final class Images {
 	private static final Logger L = LoggerFactory.getLogger(Images.class);
 
 	/* cache / registry */
-	private static final BiMap<Integer, Image> imageCache			    = HashBiMap.create();
-	private static final Multiset<Image> usage						    = HashMultiset.create();
+	private static final BiMap<Integer, Image> imageCache = HashBiMap.create();
+	private static final Multiset<Image> usage			  = HashMultiset.create();
+
+	/* currently installed disposeListeners */
 	private static final Map<Control, DisposeListener> disposeListeners = Maps.newHashMap();
+
+	/* setters for images */
+	private static final Map<Class<?>, ImageInterface> setters = Maps.newHashMap();
+
+	static {
+		Preconditions.checkArgument(Display.getCurrent() != null, "can't instantiate Images on a non-display thread");
+		addImageSetter(Button.class, new ButtonImageInterface());
+		addImageSetter(Label.class, new LabelImageInterface());
+		addImageSetter(Shell.class, new ShellImageInterface());
+	}
 
 	//~ Constructors ---------------------------------------------------------------------------------------------------
 
@@ -62,9 +72,19 @@ public final class Images {
 	//~ Methods --------------------------------------------------------------------------------------------------------
 
 	/**
+	 * registers an ImageInterface for a control
+	 */
+	public static <E extends Object> void addImageSetter(final Class<E> clazz, final ImageInterface setter) {
+		setters.put(clazz, setter);
+	}
+
+	/**
 	 * Sets an image on the control. The InputStream for loading the image
 	 * is retrieved by passing the key received from the
 	 * <code>keySupplier</code> into the a {@link ResourceStreamSupplier}.
+	 *
+	 * @throws IllegalStateException if called from a non-Display thread
+	 * @throws IllegalArgumentException if image couldn't be set
 	 */
 	public static void set(final Control control, final Supplier<String> keySupplier) {
 		set(control, keySupplier, ResourceStreamSupplier.create());
@@ -75,7 +95,6 @@ public final class Images {
 	 * is retrieved by passing the key received from the
 	 * <code>keySupplier</code> into the <code>dataSupplier</code>
 	 *
-	 * <b>TODO</b>This works only for {@link Button}s, {@link org.eclipse.swt.widgets.Text}s and {@link Label}s at the moment
 	 * @throws IllegalStateException if called from a non-Display thread
 	 * @throws IllegalArgumentException if image couldn't be set
 	 */
@@ -86,8 +105,8 @@ public final class Images {
 			Display.getCurrent() != null,
 			"Images is to be used from the display-thread exclusively!");
 		Preconditions.checkArgument(
-			control instanceof Label || control instanceof Button || control instanceof Shell,
-			"don't know how to set image on {}",
+			setters.containsKey(control.getClass()),
+			"don't know how to set image on {}, add a image-setter first",
 			control);
 
 		/* if we already set an image on this control, remove it */
@@ -128,15 +147,7 @@ public final class Images {
 		L.debug("usage of {} now {}", image, usage.count(image));
 
 		/* set image */
-		if (control instanceof Label) {
-			((Label) control).setImage(image);
-		} else if (control instanceof Button) {
-			((Button) control).setImage(image);
-		} else if (control instanceof Shell) {
-			((Shell) control).setImage(image);
-		} else {
-			throw new IllegalStateException();
-		}
+		setters.get(control.getClass()).setImage(control, image);
 
 		/* and add the disposer */
 		DisposeListener listener = new ImageDisposeListener();
@@ -179,12 +190,56 @@ public final class Images {
 		}
 	}
 
+	//~ Inner Interfaces -----------------------------------------------------------------------------------------------
+
+	public static interface ImageInterface {
+		void setImage(final Object control, final Image image);
+
+		Image getImage(final Object control);
+	}
+
 	//~ Inner Classes --------------------------------------------------------------------------------------------------
 
 	private static final class ImageDisposeListener implements DisposeListener {
 		@Override
 		public void widgetDisposed(final DisposeEvent event) {
 			putBack((Control) event.widget);
+		}
+	}
+
+	private static final class LabelImageInterface implements ImageInterface {
+		@Override
+		public void setImage(final Object o, final Image image) {
+			((Label) o).setImage(image);
+		}
+
+		@Override
+		public Image getImage(final Object o) {
+			return ((Label) o).getImage();
+		}
+	}
+
+	private static final class ButtonImageInterface implements ImageInterface {
+		@Override
+		public void setImage(final Object o, final Image image) {
+			((Button) o).setImage(image);
+		}
+
+		@Override
+		public Image getImage(final Object o) {
+			return ((Button) o).getImage();
+		}
+	}
+
+	private static final class ShellImageInterface implements ImageInterface {
+		@Override
+		public void setImage(final Object o, final Image image) {
+			((Shell) o).setImage(image);
+		}
+
+		@Override
+		public Image getImage(final Object o) {
+			return ((Shell) o).getImage();
 		}
 	}
 }
