@@ -1,22 +1,31 @@
 package org.uilib.overlay;
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.ControlEvent;
-import org.eclipse.swt.events.ControlListener;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.concurrent.TimeUnit;
+
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
-import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.layout.FillLayout;
-import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Shell;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import org.uilib.util.SWTSyncedTickReceiver;
+import org.uilib.util.SmartExecutor;
+import org.uilib.util.Ticker;
+import org.uilib.util.Ticker.TickReceiver;
+import org.uilib.widget.util.SWTUtils;
 
 /**
  * An overlay that can be displayed on top of an existing {@link Composite}.
@@ -30,25 +39,30 @@ public final class Overlay {
 
 	//~ Static fields/initializers -------------------------------------------------------------------------------------
 
-	@SuppressWarnings("unused")
-	private static final Logger L							 = LoggerFactory.getLogger(Overlay.class);
+	private static final Logger L = LoggerFactory.getLogger(Overlay.class);
 
 	//~ Instance fields ------------------------------------------------------------------------------------------------
 
+	private final SmartExecutor executor;
 	private final Composite comp;
 	private final OverlaySupplier supplier;
-	private Shell overlayShell;
-	private ControlListener compResizeListener;
+
+	/* data */
+	private final Map<Control, PaintListener> registeredListeners = Maps.newHashMap();
+	private Point lastCompSize									  = new Point(0, 0);
+	private Ticker ticker;
+	private Image currentImage;
 
 	//~ Constructors ---------------------------------------------------------------------------------------------------
 
 	/**
 	 * creates a new overlay on the given {@link Composite}
-	 *
+	 * @param executor
 	 */
-	public Overlay(final Composite comp, final OverlaySupplier supplier) {
-		this.comp											 = comp;
-		this.supplier										 = supplier;
+	public Overlay(final SmartExecutor executor, final Composite comp, final OverlaySupplier supplier) {
+		this.executor											  = executor;
+		this.comp												  = comp;
+		this.supplier											  = supplier;
 	}
 
 	//~ Methods --------------------------------------------------------------------------------------------------------
@@ -57,86 +71,98 @@ public final class Overlay {
 	 * shows the overlay
 	 */
 	public void show() {
-		/* create overlay shell with canvas */
-		this.overlayShell = new Shell(comp.getShell(), SWT.NO_TRIM);
-		this.overlayShell.setLayout(new FillLayout());
 
-		final Canvas canvas = new Canvas(this.overlayShell, SWT.NONE);
+		List<Control> controls = Lists.newArrayList();
+		controls.add(this.comp);
 
-		/* hand the canvas to the supplier, so it can redraw */
-		this.supplier.setCanvas(canvas);
+		while (! controls.isEmpty()) {
 
-		/* add resize listener to comp */
-		this.compResizeListener =
-			new ControlListener() {
-					@Override
-					public void controlMoved(final ControlEvent event) {
-						adjustLocation();
-						canvas.redraw();
-					}
+			Control c = controls.remove(0);
 
-					@Override
-					public void controlResized(final ControlEvent event) {
-						adjustSize();
-						canvas.redraw();
-					}
-				};
-		this.comp.addControlListener(compResizeListener);
+			if (c instanceof Composite) {
+				controls.addAll(Arrays.asList(((Composite) c).getChildren()));
+			}
 
-		canvas.addPaintListener(
-			new PaintListener() {
-					@Override
-					public void paintControl(final PaintEvent event) {
+			L.debug("adding PaintListener to {}", c);
 
-						int width    = comp.getBounds().width;
-						int height   = comp.getBounds().height;
+			PaintListener listener = new ControlPaintListener();
+			c.addPaintListener(listener);
+			this.registeredListeners.put(c, listener);
+		}
 
-						Image buffer = new Image(Display.getCurrent(), width, height);
-						GC gcBuffer  = new GC(buffer);
+		this.comp.redraw();
 
-						/* take photo of composite into image */
-						GC gcHiddenComp = new GC(comp.getParent());
-						gcHiddenComp.copyArea(buffer, 0, 0);
-						gcHiddenComp.dispose();
+		if (this.supplier instanceof AnimatedOverlaySupplier) {
 
-						/* get overlay image from supplier */
-						Image image = new Image(Display.getCurrent(), supplier.getImageData(width, height));
-						gcBuffer.drawImage(image, 0, 0);
-						gcBuffer.dispose();
-						image.dispose();
+			final AnimatedOverlaySupplier aSupplier = (AnimatedOverlaySupplier) this.supplier;
 
-						event.gc.drawImage(buffer, 0, 0);
-						buffer.dispose();
-					}
-				});
+			/* create a ticker */
+			this.ticker =
+				this.executor.createTicker(aSupplier.getTickerTime(TimeUnit.MILLISECONDS), TimeUnit.MILLISECONDS);
+			this.ticker.notify(
+				new SWTSyncedTickReceiver(
+					comp.getDisplay(),
+					new TickReceiver() {
+							@Override
+							public void tick() {
+								aSupplier.tick();
 
-		/* set initial size and location and open and set back focus*/
-		adjustLocation();
-		adjustSize();
-		overlayShell.open();
+								if (currentImage != null) {
+									currentImage.dispose();
+									currentImage = null;
+								}
+
+								comp.redraw();
+								comp.update();
+							}
+						}));
+		}
 	}
 
 	/**
 	 * disposes the overlay
 	 */
 	public void dispose() {
+
+		/* stop the animator */
+		if (this.ticker != null) {
+			this.ticker.stop();
+		}
+
+		/* remove the paint-listeners */
+		for (final Entry<Control, PaintListener> entry : this.registeredListeners.entrySet()) {
+			entry.getKey().removePaintListener(entry.getValue());
+		}
+
+		/* dispose the supplier */
 		this.supplier.dispose();
-		this.comp.removeControlListener(this.compResizeListener);
-		this.overlayShell.dispose();
 	}
 
-	/** move the shell where the comp is */
-	private void adjustLocation() {
+	//~ Inner Classes --------------------------------------------------------------------------------------------------
 
-		final Rectangle compBounds = this.comp.getBounds();
-		final Point absLocation    = this.comp.getParent().toDisplay(compBounds.x, compBounds.y);
-		this.overlayShell.setLocation(absLocation);
-	}
+	private final class ControlPaintListener implements PaintListener {
+		@Override
+		public void paintControl(final PaintEvent e) {
 
-	/** size to shell to cover the comp */
-	private void adjustSize() {
+			/* check if composite was resized */
+			if ((currentImage == null) | ! comp.getSize().equals(lastCompSize)) {
+				lastCompSize = comp.getSize();
 
-		final Rectangle compBounds = this.comp.getBounds();
-		this.overlayShell.setSize(compBounds.width, compBounds.height);
+				ImageData imageData = supplier.getImageData(comp.getSize().x, comp.getSize().y);
+				imageData.alpha = supplier.getAlpha();
+
+				if (currentImage != null) {
+					currentImage.dispose();
+				}
+
+				/* make overlay image */
+				currentImage = new Image(Display.getCurrent(), imageData);
+			}
+
+			Control c    = (Control) e.widget;
+			Point refPos = SWTUtils.getPositionRelTo(c, comp);
+
+			e.gc.drawImage(currentImage, refPos.x, refPos.y, e.width, e.height, 0, 0, e.width, e.height);
+		}
 	}
 }

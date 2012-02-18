@@ -8,6 +8,7 @@ import org.eclipse.swt.widgets.Table;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.uilib.util.SmartExecutor;
 import org.uilib.util.Throttle;
 import org.uilib.util.prefs.PrefStore;
 import org.uilib.widget.util.TableScrollDetector.ScrollListener;
@@ -28,24 +29,24 @@ public final class TableUtils {
 	 * restores column-weights, tracks and saves changes.
 	 *
 	 * @param prefStore the prefStore used to load and save weights
-	 * @param throttler throttler used to throttle calls to the prefStore
+	 * @param executor used to create a {@link Throttle} to the save function
 	 * @param memoryKey prefStore key to use
 	 */
-	public static void rememberColumnWeights(final PrefStore prefStore, final Throttle throttler, final Table table,
-											 final String memoryKey) {
-		new ColumnWeightMemory(new ColumnController.TableColumnController(table), prefStore, throttler, memoryKey);
+	public static void rememberColumnWeights(final PrefStore prefStore, final SmartExecutor executor,
+											 final Table table, final String memoryKey) {
+		new ColumnWeightMemory(new ColumnController.TableColumnController(table), prefStore, executor, memoryKey);
 	}
 
 	/**
 	 * restores column-order, tracks and saves changes.
 	 *
 	 * @param prefStore the prefStore used to load and save order
-	 * @param throttler throttler used to throttle calls to the prefStore
+	 * @param executor used to create a {@link Throttle} to the save function
 	 * @param memoryKey prefStore key to use
 	 */
-	public static void rememberColumnOrder(final PrefStore prefStore, final Throttle throttler, final Table table,
+	public static void rememberColumnOrder(final PrefStore prefStore, final SmartExecutor executor, final Table table,
 										   final String memoryKey) {
-		new ColumnOrderMemory(new ColumnController.TableColumnController(table), prefStore, throttler, memoryKey);
+		new ColumnOrderMemory(new ColumnController.TableColumnController(table), prefStore, executor, memoryKey);
 	}
 
 	/**
@@ -66,8 +67,8 @@ public final class TableUtils {
 			new ControlListener() {
 				@Override
 				public void controlResized(final ControlEvent event) {
-
 					if (table.getColumnCount() != 0) {
+
 						int width = table.getClientArea().width;
 						width = width - (table.getBorderWidth() * 2);
 
@@ -76,11 +77,11 @@ public final class TableUtils {
 						L.debug("fillTableWidth: set column width to {}", colWidth);
 						for (int i = 0; i < table.getColumnCount(); i++) {
 							table.getColumn(i).setWidth(colWidth);
-						}						
+						}
 					} else {
-						L.debug("fillTableWidth: no columns in table");						
+						L.debug("fillTableWidth: no columns in table");
 					}
-					
+
 					table.removeControlListener(this);
 					L.debug("fillTableWidth: done and listener removed");
 				}

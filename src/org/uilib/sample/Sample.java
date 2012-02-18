@@ -4,10 +4,12 @@ import com.google.common.eventbus.Subscribe;
 
 import java.util.Locale;
 import java.util.Properties;
+
 import org.apache.log4j.PropertyConfigurator;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
@@ -42,6 +44,7 @@ public final class Sample {
 	private Shell shell;
 	private Component orders;
 	private SmartExecutor executor;
+	private Overlay overlay;
 
 	//~ Constructors ---------------------------------------------------------------------------------------------------
 
@@ -136,10 +139,13 @@ public final class Sample {
 		L.debug("event: " + object);
 
 		/* display a spinner: unfinished */
-		final Table t = orders.selectUI("orders$table", TableUI.class).getTable();
+		//final Table t = orders.selectUI("orders$table", TableUI.class).getTable();
+		if (this.overlay != null) {
+			this.overlay.dispose();
+		}
 
-		final Overlay ov = new Overlay(t, new SpinnerOverlay(this.executor));
-		ov.show();
+		this.overlay = new Overlay(this.executor, (Composite) orders.getControl(), new SpinnerOverlay());
+		this.overlay.show();
 	}
 
 	@Subscribe

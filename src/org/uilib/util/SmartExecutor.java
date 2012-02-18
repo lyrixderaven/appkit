@@ -6,8 +6,8 @@ import com.google.common.collect.Sets;
 
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.DelayQueue;
-import java.util.concurrent.Delayed;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -21,7 +21,7 @@ import org.slf4j.LoggerFactory;
  * It uses a Scheduler-Thread to schedule and run tasks.
  *
  */
-public final class SmartExecutor implements Throttle, Executor {
+public final class SmartExecutor implements Executor {
 
 	//~ Static fields/initializers -------------------------------------------------------------------------------------
 
@@ -95,15 +95,65 @@ public final class SmartExecutor implements Throttle, Executor {
 		this.cancelledTasks.add(runnable);
 	}
 
-	@Override
-	public void throttle(final String throttleName, final long delay, final TimeUnit timeUnit, final Runnable runnable) {
+	public Throttle createThrottle(final long delay, final TimeUnit timeUnit) {
+		return new UUIDThrottle(delay, timeUnit);
+	}
 
-		ThrottledRunnable thrTask = new ThrottledRunnable(runnable, throttleName, delay, timeUnit);
-		this.throttledTasks.put(thrTask.getThrottleName(), thrTask);
-		this.taskQueue.put(thrTask);
+	public Ticker createTicker(final long delay, final TimeUnit timeUnit) {
+		return new MyTicker(delay, timeUnit);
 	}
 
 	//~ Inner Classes --------------------------------------------------------------------------------------------------
+
+	private final class UUIDThrottle implements Throttle {
+
+		private final String uuid	    = UUID.randomUUID().toString();
+		private final long delay;
+		private final TimeUnit timeUnit;
+
+		public UUIDThrottle(final long delay, final TimeUnit timeUnit) {
+			this.delay				    = delay;
+			this.timeUnit			    = timeUnit;
+		}
+
+		@Override
+		public void schedule(final Runnable runnable) {
+
+			ThrottledRunnable thrTask = new ThrottledRunnable(runnable, this.uuid, this.delay, this.timeUnit);
+			throttledTasks.put(thrTask.getThrottleName(), thrTask);
+			taskQueue.put(thrTask);
+		}
+	}
+
+	private final class MyTicker implements Ticker {
+
+		private final long delay;
+		private final TimeUnit timeUnit;
+		private Runnable runnable;
+
+		public MyTicker(final long delay, final TimeUnit timeUnit) {
+			this.delay		  = delay;
+			this.timeUnit     = timeUnit;
+		}
+
+		@Override
+		public void notify(final TickReceiver receiver) {
+			this.runnable =
+				new Runnable() {
+						@Override
+						public void run() {
+							receiver.tick();
+						}
+					};
+
+			scheduleAtFixedRate(this.delay, this.timeUnit, this.runnable);
+		}
+
+		@Override
+		public void stop() {
+			cancelRepeatingRunnable(this.runnable);
+		}
+	}
 
 	private final class Scheduler implements Runnable {
 		@Override
@@ -144,74 +194,6 @@ public final class SmartExecutor implements Throttle, Executor {
 				SmartExecutor.L.debug("scheduler interrupted (shutting down)");
 				return;
 			}
-		}
-	}
-
-	/** delayed runnable */
-	private static class DelayedRunnable implements Delayed, Runnable {
-
-		protected final Runnable runnable;
-		private final long endOfDelay;
-
-		public DelayedRunnable(final Runnable runnable, final long delay, final TimeUnit delayUnit) {
-			this.runnable	    = runnable;
-			this.endOfDelay     = delayUnit.toMillis(delay) + System.currentTimeMillis();
-		}
-
-		@Override
-		public int compareTo(final Delayed other) {
-
-			final Long delay1 = this.getDelay(TimeUnit.MILLISECONDS);
-			final Long delay2 = other.getDelay(TimeUnit.MILLISECONDS);
-
-			return delay1.compareTo(delay2);
-		}
-
-		@Override
-		public long getDelay(final TimeUnit unit) {
-			return unit.convert(this.endOfDelay - System.currentTimeMillis(), TimeUnit.MILLISECONDS);
-		}
-
-		public Runnable getRunnable() {
-			return this.runnable;
-		}
-
-		@Override
-		public void run() {
-			this.runnable.run();
-		}
-	}
-
-	/** repeating runnable */
-	private static final class RepeatingRunnable extends DelayedRunnable {
-
-		private final long periodInMillis;
-
-		public RepeatingRunnable(final Runnable runnable, final long period, final TimeUnit delayUnit) {
-			super(runnable, period, delayUnit);
-
-			this.periodInMillis = delayUnit.convert(period, TimeUnit.MILLISECONDS);
-		}
-
-		public RepeatingRunnable reschedule() {
-			return new RepeatingRunnable(this.runnable, this.periodInMillis, TimeUnit.MILLISECONDS);
-		}
-	}
-
-	/** throttled runnable */
-	private static final class ThrottledRunnable extends DelayedRunnable {
-
-		private final String throttleName;
-
-		public ThrottledRunnable(final Runnable runnable, final String throttleName, final long period,
-								 final TimeUnit delayUnit) {
-			super(runnable, period, delayUnit);
-
-			this.throttleName = throttleName;
-		}
-
-		public String getThrottleName() {
-			return this.throttleName;
 		}
 	}
 }

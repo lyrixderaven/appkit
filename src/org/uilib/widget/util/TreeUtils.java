@@ -7,6 +7,7 @@ import org.eclipse.swt.widgets.Tree;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.uilib.util.SmartExecutor;
 import org.uilib.util.Throttle;
 import org.uilib.util.prefs.PrefStore;
 
@@ -26,24 +27,24 @@ public final class TreeUtils {
 	 * restores column-weights, tracks and saves changes.
 	 *
 	 * @param prefStore the prefStore used to load and save weights
-	 * @param throttler throttler used to throttle calls to the prefStore
+	 * @param executor used to create a {@link Throttle} to the save function
 	 * @param memoryKey prefStore key to use
 	 */
-	public static void rememberColumnWeights(final PrefStore prefStore, final Throttle throttler, final Tree tree,
+	public static void rememberColumnWeights(final PrefStore prefStore, final SmartExecutor executor, final Tree tree,
 											 final String memoryKey) {
-		new ColumnWeightMemory(new ColumnController.TreeColumnController(tree), prefStore, throttler, memoryKey);
+		new ColumnWeightMemory(new ColumnController.TreeColumnController(tree), prefStore, executor, memoryKey);
 	}
 
 	/**
 	 * restores column-order, tracks and saves changes.
 	 *
 	 * @param prefStore the prefStore used to load and save order
-	 * @param throttler throttler used to throttle calls to the prefStore
+	 * @param executor used to create a {@link Throttle} to the save function
 	 * @param memoryKey prefStore key to use
 	 */
-	public static void rememberColumnOrder(final PrefStore prefStore, final Throttle throttler, final Tree tree,
+	public static void rememberColumnOrder(final PrefStore prefStore, final SmartExecutor executor, final Tree tree,
 										   final String memoryKey) {
-		new ColumnOrderMemory(new ColumnController.TreeColumnController(tree), prefStore, throttler, memoryKey);
+		new ColumnOrderMemory(new ColumnController.TreeColumnController(tree), prefStore, executor, memoryKey);
 	}
 
 	/**

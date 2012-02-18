@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 
 import org.uilib.util.LoggingRunnable;
 import org.uilib.util.SWTSyncedRunnable;
+import org.uilib.util.SmartExecutor;
 import org.uilib.util.Throttle;
 import org.uilib.util.prefs.PrefStore;
 
@@ -30,7 +31,7 @@ public final class ColumnOrderMemory {
 	//~ Instance fields ------------------------------------------------------------------------------------------------
 
 	private final PrefStore prefStore;
-	private final Throttle throttler;
+	private final Throttle throttle;
 	private final ColumnController colController;
 	private final String memoryKey;
 
@@ -40,9 +41,9 @@ public final class ColumnOrderMemory {
 	//~ Constructors ---------------------------------------------------------------------------------------------------
 
 	protected ColumnOrderMemory(final ColumnController colController, final PrefStore prefStore,
-								final Throttle throttler, final String key) {
+								final SmartExecutor executor, final String key) {
 		this.prefStore		   = prefStore;
-		this.throttler		   = throttler;
+		this.throttle		   = executor.createThrottle(THROTTLE_TIME, TimeUnit.MILLISECONDS);
 		this.colController     = colController;
 		this.memoryKey		   = key + ".columnorder";
 
@@ -103,11 +104,7 @@ public final class ColumnOrderMemory {
 				}
 			};
 
-		this.throttler.throttle(
-			memoryKey,
-			THROTTLE_TIME,
-			TimeUnit.MILLISECONDS,
-			new SWTSyncedRunnable(Display.getCurrent(), runnable));
+		this.throttle.schedule(new SWTSyncedRunnable(Display.getCurrent(), runnable));
 	}
 
 	//~ Inner Classes --------------------------------------------------------------------------------------------------

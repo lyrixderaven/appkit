@@ -4,6 +4,7 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Shell;
 
+import org.uilib.util.SmartExecutor;
 import org.uilib.util.Throttle;
 import org.uilib.util.prefs.PrefStore;
 
@@ -31,15 +32,15 @@ public final class ShellUtils {
 	 * restores the size and position of a shell, tracks and saves changes
 	 *
 	 * @param prefStore the prefStore used to load and save size and position
-	 * @param throttler throttler used to throttle calls to the prefStore
+	 * @param executor used to create a {@link Throttle} to the save function
 	 * @param memoryKey prefStore key to save to
 	 */
-	public static void rememberSizeAndPosition(final PrefStore prefStore, final Throttle throttler, final Shell shell,
-											   final String memoryKey, final int defaultWidth, final int defaultHeight,
-											   final int defaultX, final int defaultY) {
+	public static void rememberSizeAndPosition(final PrefStore prefStore, final SmartExecutor executor,
+											   final Shell shell, final String memoryKey, final int defaultWidth,
+											   final int defaultHeight, final int defaultX, final int defaultY) {
 		new ShellMemory(
 			prefStore,
-			throttler,
+			executor,
 			shell,
 			memoryKey,
 			defaultWidth,
@@ -54,11 +55,11 @@ public final class ShellUtils {
 	 * restores the size of a shell, tracks and saves changes.
 	 *
 	 * @param prefStore the prefStore used to load and save size and position
-	 * @param throttler throttler used to throttle calls to the prefStore
+	 * @param executor used to create a {@link Throttle} to the save function
 	 * @param memoryKey prefStore key to save to
 	 */
-	public static void rememberSize(final PrefStore prefStore, final Throttle throttler, final Shell shell,
+	public static void rememberSize(final PrefStore prefStore, final SmartExecutor executor, final Shell shell,
 									final String memoryKey, final int defaultWidth, final int defaultHeight) {
-		new ShellMemory(prefStore, throttler, shell, memoryKey, defaultWidth, defaultHeight, 0, 0, false, true);
+		new ShellMemory(prefStore, executor, shell, memoryKey, defaultWidth, defaultHeight, 0, 0, false, true);
 	}
 }

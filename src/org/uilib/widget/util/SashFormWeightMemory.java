@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 
 import org.uilib.util.LoggingRunnable;
 import org.uilib.util.SWTSyncedRunnable;
+import org.uilib.util.SmartExecutor;
 import org.uilib.util.Throttle;
 import org.uilib.util.prefs.PrefStore;
 
@@ -30,17 +31,17 @@ public final class SashFormWeightMemory {
 	//~ Instance fields ------------------------------------------------------------------------------------------------
 
 	private final PrefStore prefStore;
-	private final Throttle throttler;
+	private final Throttle throttle;
 	private final SashForm sashForm;
 	private final String memoryKey;
 	private final int defaultWeights[];
 
 	//~ Constructors ---------------------------------------------------------------------------------------------------
 
-	protected SashFormWeightMemory(final PrefStore prefStore, final Throttle throttler, final SashForm sashForm,
+	protected SashFormWeightMemory(final PrefStore prefStore, final SmartExecutor executor, final SashForm sashForm,
 								   final String key, final int defaultWeights[]) {
 		this.prefStore		    = prefStore;
-		this.throttler		    = throttler;
+		this.throttle		    = executor.createThrottle(THROTTLE_TIME, TimeUnit.MILLISECONDS);
 		this.sashForm		    = sashForm;
 		this.memoryKey		    = key + ".sashsizes";
 		this.defaultWeights     = defaultWeights;
@@ -91,11 +92,7 @@ public final class SashFormWeightMemory {
 					}
 				};
 
-			throttler.throttle(
-				memoryKey,
-				THROTTLE_TIME,
-				TimeUnit.MILLISECONDS,
-				new SWTSyncedRunnable(Display.getCurrent(), runnable));
+			throttle.schedule(new SWTSyncedRunnable(Display.getCurrent(), runnable));
 		}
 	}
 }

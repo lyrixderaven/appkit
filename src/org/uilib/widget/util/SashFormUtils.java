@@ -2,6 +2,7 @@ package org.uilib.widget.util;
 
 import org.eclipse.swt.custom.SashForm;
 
+import org.uilib.util.SmartExecutor;
 import org.uilib.util.Throttle;
 import org.uilib.util.prefs.PrefStore;
 
@@ -21,15 +22,15 @@ public final class SashFormUtils {
 	 *
 	 * @param prefStore
 	 *            the prefStore used to load and save the weights
-	 * @param throttler
-	 *            throttler used to throttle calls to the prefStore
+	 * @param executor
+	 *            executor used to create a {@link Throttle} to the save function
 	 * @param memoryKey
 	 *            the key to save to
 	 * @param defaultWeights
 	 *            default-weights if no saved are found
 	 */
-	public static void rememberWeights(final PrefStore prefStore, final Throttle throttler, final SashForm sashForm,
-									   final String memoryKey, final int defaultWeights[]) {
-		new SashFormWeightMemory(prefStore, throttler, sashForm, memoryKey, defaultWeights);
+	public static void rememberWeights(final PrefStore prefStore, final SmartExecutor executor,
+									   final SashForm sashForm, final String memoryKey, final int defaultWeights[]) {
+		new SashFormWeightMemory(prefStore, executor, sashForm, memoryKey, defaultWeights);
 	}
 }

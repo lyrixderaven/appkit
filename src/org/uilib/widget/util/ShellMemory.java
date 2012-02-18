@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 
 import org.uilib.util.LoggingRunnable;
 import org.uilib.util.SWTSyncedRunnable;
+import org.uilib.util.SmartExecutor;
 import org.uilib.util.Throttle;
 import org.uilib.util.prefs.PrefStore;
 
@@ -31,7 +32,7 @@ public final class ShellMemory {
 	//~ Instance fields ------------------------------------------------------------------------------------------------
 
 	private final PrefStore prefStore;
-	private final Throttle throttler;
+	private final Throttle throttle;
 	private final Shell shell;
 	private final String memoryKey;
 	private final int defaultX;
@@ -43,17 +44,17 @@ public final class ShellMemory {
 
 	//~ Constructors ---------------------------------------------------------------------------------------------------
 
-	protected ShellMemory(final PrefStore prefStore, final Throttle throttler, final Shell shell,
+	protected ShellMemory(final PrefStore prefStore, final SmartExecutor executor, final Shell shell,
 						  final String memoryKey, final int defaultWidth, final int defaultHeight, final int defaultX,
 						  final int defaultY) {
-		this(prefStore, throttler, shell, memoryKey, defaultWidth, defaultHeight, defaultX, defaultY, false, false);
+		this(prefStore, executor, shell, memoryKey, defaultWidth, defaultHeight, defaultX, defaultY, false, false);
 	}
 
-	protected ShellMemory(final PrefStore prefStore, final Throttle throttler, final Shell shell,
+	protected ShellMemory(final PrefStore prefStore, final SmartExecutor executor, final Shell shell,
 						  final String memoryKey, final int defaultWidth, final int defaultHeight, final int defaultX,
 						  final int defaultY, final boolean defaultMaximized, final boolean sizeOnly) {
 		this.prefStore			  = prefStore;
-		this.throttler			  = throttler;
+		this.throttle			  = executor.createThrottle(THROTTLE_TIME, TimeUnit.MILLISECONDS);
 		this.shell				  = shell;
 		this.memoryKey			  = memoryKey;
 		this.defaultX			  = defaultX;
@@ -161,11 +162,8 @@ public final class ShellMemory {
 					}
 				};
 
-			throttler.throttle(
-				memoryKey,
-				THROTTLE_TIME,
-				TimeUnit.MILLISECONDS,
-				new SWTSyncedRunnable(Display.getCurrent(), runnable));
+			throttle.schedule(new SWTSyncedRunnable(Display.getCurrent(), runnable));
+
 		}
 	}
 }
