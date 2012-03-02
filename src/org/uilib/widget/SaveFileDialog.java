@@ -57,10 +57,10 @@ public class SaveFileDialog {
 					String option1 = this.texts.get("savefiledialog_q_replace_a_replace");
 					String option2 = this.texts.get("savefiledialog_q_replace_a_abort");
 
-					MBox mb		   = new MBox(dlg.getParent(), MBox.Icon.INFO, title, message, option1, option2);
+					MBox mb		   = new MBox(dlg.getParent(), MBox.Type.INFO, title, message, 1, option1, option2);
 
 					// If they click Yes, we're done and we drop out. If
-					if (mb.open() == 0) {
+					if (mb.openReturningInt() == 0) {
 						done = true;
 					}
 				} else {

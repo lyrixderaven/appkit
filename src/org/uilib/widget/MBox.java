@@ -1,5 +1,6 @@
 package org.uilib.widget;
 
+import java.util.Arrays;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -16,6 +17,9 @@ import org.eclipse.swt.widgets.Text;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableList;
+
 /**
  * A more sophisticated MessageBox.
  */
@@ -23,7 +27,7 @@ public final class MBox {
 
 	//~ Enumerations ---------------------------------------------------------------------------------------------------
 
-	public enum Icon {ERROR, INFO;
+	public enum Type {ERROR, INFO, WARNING, QUESTION;
 	}
 
 	//~ Static fields/initializers -------------------------------------------------------------------------------------
@@ -35,11 +39,19 @@ public final class MBox {
 
 	private final Shell shell;
 	private int answer										 = 0;
+	private ImmutableList<String> options;
 
 	//~ Constructors ---------------------------------------------------------------------------------------------------
 
-	public MBox(final Shell parentShell, final Icon icon, final String title, final String message,
-				final String... options) {
+	public MBox(final Shell parentShell, final Type type, final String title, final String message, final int def,
+				final String... optionArray) {
+
+		this.options = ImmutableList.copyOf(Arrays.asList(optionArray));
+		this.answer = def;
+
+		Preconditions.checkArgument(this.options.size() > 0, "empy options");
+		Preconditions.checkArgument(def >= 0 && def < this.options.size(), "%s options but default %s specified", this.options.size(), def);
+
 		this.shell = new Shell(parentShell, SWT.APPLICATION_MODAL | SWT.DIALOG_TRIM | SWT.SHEET);
 		this.shell.setLayout(new GridLayout(2, false));
 
@@ -52,8 +64,23 @@ public final class MBox {
 		compIcon.setLayout(gl);
 
 		Label label = new Label(compIcon, SWT.NONE);
+
+		int systemImage;
+		switch (type) {
+			case ERROR:
+				systemImage = SWT.ICON_ERROR;
+				break;
+			case WARNING:
+				systemImage = SWT.ICON_WARNING;
+				break;
+			case QUESTION:
+				systemImage = SWT.ICON_QUESTION;
+				break;
+			default:
+				systemImage = SWT.ICON_INFORMATION;
+		}
 		Image image =
-			this.shell.getDisplay().getSystemImage((icon == Icon.ERROR) ? SWT.ICON_ERROR : SWT.ICON_INFORMATION);
+			this.shell.getDisplay().getSystemImage(systemImage);
 		label.setImage(image);
 
 		this.shell.setText(title);
@@ -73,10 +100,10 @@ public final class MBox {
 		}
 
 		Composite compButtons = new Composite(this.shell, SWT.NONE);
-		compButtons.setLayout(new GridLayout(options.length + 1, false));
+		compButtons.setLayout(new GridLayout(options.size() + 1, false));
 		compButtons.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 2, 1));
 
-		if (options.length != 1) {
+		if (options.size() != 1) {
 
 			Label spacer = new Label(compButtons, SWT.NONE);
 			spacer.setLayoutData(new GridData(SWT.FILL, SWT.NONE, true, false));
@@ -84,26 +111,29 @@ public final class MBox {
 
 		int i	   = 0;
 		Button btn = null;
+		Button defBtn = null;
 		for (final String option : options) {
 			btn = new Button(compButtons, SWT.PUSH);
 			btn.setText(option);
 			btn.setLayoutData(new GridData(SWT.NONE, SWT.NONE, false, false));
 			btn.addSelectionListener(new BClicked(i));
+
+			if (i == answer) {
+				defBtn = btn;
+			}
+
 			i++;
 		}
 
+		shell.setDefaultButton(defBtn);
+		defBtn.setFocus();
+
 		/* Center Button if there is just one */
-		if (options.length == 1) {
+		if (options.size() == 1) {
 			((GridData) btn.getLayoutData()).horizontalAlignment		   = SWT.CENTER;
 			((GridData) btn.getLayoutData()).grabExcessHorizontalSpace     = true;
 		}
 
-		/* last Option is default */
-		this.answer = i - 1;
-		if (btn != null) {
-			shell.setDefaultButton(btn);
-			btn.setFocus();
-		}
 		if (message.length() < 1000) {
 			this.shell.setSize(shell.computeSize(SWT.DEFAULT, SWT.DEFAULT));
 		} else {
@@ -120,7 +150,11 @@ public final class MBox {
 
 	//~ Methods --------------------------------------------------------------------------------------------------------
 
-	public int open() {
+	public void open() {
+		this.openReturningInt();
+	}
+
+	public int openReturningInt() {
 		this.shell.open();
 
 		while (! this.shell.isDisposed()) {
@@ -130,6 +164,10 @@ public final class MBox {
 		}
 
 		return this.answer;
+	}
+
+	public String openReturningString() {
+		return this.options.get(this.openReturningInt());
 	}
 
 	//~ Inner Classes --------------------------------------------------------------------------------------------------
