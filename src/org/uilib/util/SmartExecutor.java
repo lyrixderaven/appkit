@@ -3,6 +3,8 @@ package org.uilib.util;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.google.common.util.concurrent.SimpleTimeLimiter;
+import com.google.common.util.concurrent.TimeLimiter;
 
 import java.util.Map;
 import java.util.Set;
@@ -30,24 +32,23 @@ public final class SmartExecutor implements Executor {
 	//~ Instance fields ------------------------------------------------------------------------------------------------
 
 	/* can be null if executorService wasn't created here */
+	private final boolean executorCreatedInternally;
 	private final ExecutorService executorService;
-	private final Executor executor;
 	private final DelayQueue<DelayedRunnable> taskQueue = new DelayQueue<DelayedRunnable>();
 	private final Map<String, ThrottledRunnable> throttledTasks = Maps.newHashMap();
 	private final Set<Runnable> cancelledTasks = Sets.newHashSet();
 
 	//~ Constructors ---------------------------------------------------------------------------------------------------
 
-	private SmartExecutor(final Executor executor) {
-		if (executor != null) {
+	private SmartExecutor(final ExecutorService executorService) {
+		if (executorService != null) {
 			this.executorService     = null;
-			this.executor			 = executor;
+			this.executorCreatedInternally = false;
 		} else {
 			this.executorService     = Executors.newCachedThreadPool();
-			this.executor			 = this.executorService;
-
+			this.executorCreatedInternally = true;
 		}
-		this.executor.execute(new Scheduler());
+		this.executorService.execute(new Scheduler());
 	}
 
 	//~ Methods --------------------------------------------------------------------------------------------------------
@@ -57,9 +58,9 @@ public final class SmartExecutor implements Executor {
 		return new SmartExecutor(null);
 	}
 
-	/** creates a new SmartExecutor using the given executor */
-	public static SmartExecutor create(final Executor executor) {
-		return new SmartExecutor(executor);
+	/** creates a new SmartExecutor using the given executor-service */
+	public static SmartExecutor createUsing(final ExecutorService executorService) {
+		return new SmartExecutor(executorService);
 	}
 
 	/** shut the executor down
@@ -69,15 +70,15 @@ public final class SmartExecutor implements Executor {
 	 */
 	public void shutdown() {
 		Preconditions.checkState(
-			this.executorService != null,
-			"executor-service wasn't created within this instance, dispose it yourself!");
+			this.executorCreatedInternally,
+			"executor-service wasn't created within this instance");
 		this.executorService.shutdownNow();
 	}
 
 	/** execute a Runnable once */
 	@Override
 	public void execute(final Runnable runnable) {
-		this.executor.execute(runnable);
+		this.executorService.execute(runnable);
 	}
 
 	/** schedule a Runnable to be executed after a fixed period of time */
@@ -101,6 +102,10 @@ public final class SmartExecutor implements Executor {
 
 	public Ticker createTicker(final long delay, final TimeUnit timeUnit) {
 		return new MyTicker(delay, timeUnit);
+	}
+
+	public TimeLimiter createTimeLimiter() {
+		return new SimpleTimeLimiter(this.executorService);
 	}
 
 	//~ Inner Classes --------------------------------------------------------------------------------------------------
@@ -168,7 +173,7 @@ public final class SmartExecutor implements Executor {
 
 						/* if runnable wasn't cancelled tell executor to run the action and reschedule it afterwards */
 						if (! cancelledTasks.contains(task.getRunnable())) {
-							SmartExecutor.this.executor.execute(
+							SmartExecutor.this.executorService.execute(
 								new Runnable() {
 										@Override
 										public void run() {
@@ -183,11 +188,11 @@ public final class SmartExecutor implements Executor {
 
 						/* run only if this is the latest task in given throttle, otherwise skip execution */
 						if (SmartExecutor.this.throttledTasks.get(thrTask.getThrottleName()) == thrTask) {
-							SmartExecutor.this.executor.execute(task);
+							SmartExecutor.this.executorService.execute(task);
 						}
 					} else {
 						/* tell the executor to just run the action */
-						SmartExecutor.this.executor.execute(task);
+						SmartExecutor.this.executorService.execute(task);
 					}
 				}
 			} catch (final InterruptedException e) {

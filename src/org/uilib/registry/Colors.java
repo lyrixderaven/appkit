@@ -121,13 +121,13 @@ public final class Colors {
 		if (foreground) {
 			control.setForeground(color);
 
-			DisposeListener listener = new ColorDisposeListener(true);
+			DisposeListener listener = new ControlDisposeListener(true);
 			fgDisposeListeners.put(control, listener);
 			control.addDisposeListener(listener);
 		} else {
 			control.setBackground(color);
 
-			DisposeListener listener = new ColorDisposeListener(false);
+			DisposeListener listener = new ControlDisposeListener(false);
 			bgDisposeListeners.put(control, listener);
 			control.addDisposeListener(listener);
 		}
@@ -187,11 +187,11 @@ public final class Colors {
 
 	//~ Inner Classes --------------------------------------------------------------------------------------------------
 
-	private static final class ColorDisposeListener implements DisposeListener {
+	private static final class ControlDisposeListener implements DisposeListener {
 
 		private final boolean foreground;
 
-		public ColorDisposeListener(final boolean foreground) {
+		public ControlDisposeListener(final boolean foreground) {
 			this.foreground = foreground;
 		}
 
