@@ -1,17 +1,18 @@
 
-uilib:	(swt) user-interface-library 
-============================
+swt-appkit - easing development of swt-applications
+==========================================
 
-* API-Documentation: [JavaDoc](http://fab1an.github.com/uilib/javadoc/).
+* API-Documentation: [JavaDoc](http://fab1an.github.com/appkit/javadoc/).
+* Email: fabian.zeindl@gmail.com
 * Latest build: see Downloads of this repo
-* Discussion: [uilib@googlegroups.com] (https://groups.google.com/group/uilib)
+* Discussion: [appkit@googlegroups.com] (https://groups.google.com/group/appkit)
 
 There's a sample application in the source which shows some of the features.
 
 Idea
 -------
 
-Uilib is a collection of utilities aiming to improve and help coding with SWT and
+SWT-Appkit is a collection of utilities aiming to improve and help coding with SWT and
 building better, more comprehensive, modern applications.
 It's a library, not a framework in the sense, that it tries not to force you to change your
 application-structure. Instead you can gradually adapt your code to use parts and features,
@@ -88,7 +89,7 @@ Features / Overview
 Sample Code
 ----------------------
 
-	package org.uilib.sample;
+	package org.appkit.sample;
 
 	// imports
 
@@ -142,7 +143,7 @@ Sample Code
 			c1.setText("col " + i);
 		}
 
-		PrefStore prefStore = PrefStore.createJavaPrefStore("org/uilib/sample");
+		PrefStore prefStore = PrefStore.createJavaPrefStore("org/appkit/sample");
 		executor = SmartExecutor.create();
 
 		/* divide table equally among columns */
