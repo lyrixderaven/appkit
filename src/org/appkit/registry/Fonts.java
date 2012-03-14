@@ -9,10 +9,9 @@ import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multiset;
 
-import com.sun.jna.Platform;
-
 import java.util.Map;
 
+import org.appkit.widget.util.SWTUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
@@ -217,7 +216,7 @@ public final class Fonts {
 
 		@Override
 		public String getName(final String defaultName) {
-			if (Platform.isWindows()) {
+			if (SWTUtils.isWindows()) {
 				return "Lucida Console";
 			} else {
 				return defaultName;

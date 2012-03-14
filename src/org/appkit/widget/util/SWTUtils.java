@@ -1,5 +1,6 @@
 package org.appkit.widget.util;
 
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Control;
 
@@ -10,6 +11,14 @@ import org.eclipse.swt.widgets.Control;
 public final class SWTUtils {
 
 	//~ Methods --------------------------------------------------------------------------------------------------------
+
+	public static boolean isWindows() {
+		if (SWT.getPlatform().equalsIgnoreCase("win32") || SWT.getPlatform().equalsIgnoreCase("win64")) {
+			return true;
+		}
+		
+		return false;
+	}
 
 	public static Point getPositionRelTo(final Control control, final Control referenceControl) {
 
