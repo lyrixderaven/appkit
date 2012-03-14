@@ -4,6 +4,10 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
+import org.appkit.application.EventContext;
+import org.appkit.registry.Texts;
+import org.appkit.templating.Options;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -14,10 +18,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.DateTime;
 import org.eclipse.swt.widgets.Label;
-
-import org.appkit.application.EventContext;
-import org.appkit.registry.Texts;
-import org.appkit.templating.Options;
 
 /** for creating a component that is a {@link DateTime} */
 public final class DatepickerUI implements ComponentUI {

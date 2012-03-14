@@ -7,17 +7,17 @@ import com.google.common.collect.ImmutableList;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.appkit.application.EventContext;
 import org.appkit.application.FakeEventContext;
 import org.appkit.templating.components.ComponentUI;
 import org.appkit.templating.components.LayoutUI;
 import org.appkit.util.Naming;
+
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A Templating-component. Has a name, a type, 0...n child-component, associated {@link Options} and a {@link ComponentUI}

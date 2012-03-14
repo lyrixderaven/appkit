@@ -1,8 +1,8 @@
 package org.appkit.templating.components;
 
-import org.eclipse.swt.widgets.Control;
-
 import org.appkit.templating.Options;
+
+import org.eclipse.swt.widgets.Control;
 
 /**
  * Implementing this to enable your {@link org.appkit.templating.Component} to have children.

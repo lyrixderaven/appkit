@@ -1,5 +1,7 @@
 package org.appkit.widget;
 
+import org.appkit.registry.Texts;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
@@ -11,8 +13,6 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
-
-import org.appkit.registry.Texts;
 
 /**
  * A Search form which aims to behave as natural on the OS as possible.

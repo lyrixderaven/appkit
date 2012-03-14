@@ -1,5 +1,8 @@
 package org.appkit.templating.components;
 
+import org.appkit.application.EventContext;
+import org.appkit.templating.Options;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -8,9 +11,6 @@ import org.eclipse.swt.widgets.Control;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import org.appkit.application.EventContext;
-import org.appkit.templating.Options;
 
 /** for creating a component that is a {@link Composite} with a {@link GridLayout} */
 public class ComponentGridUI implements LayoutUI {

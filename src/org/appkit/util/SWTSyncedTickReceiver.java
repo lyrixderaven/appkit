@@ -1,8 +1,8 @@
 package org.appkit.util;
 
-import org.eclipse.swt.widgets.Display;
-
 import org.appkit.util.Ticker.TickReceiver;
+
+import org.eclipse.swt.widgets.Display;
 
 /**
  * Wrapper for a TickReceiver that will execute it in the given {@link Display}'s thread.

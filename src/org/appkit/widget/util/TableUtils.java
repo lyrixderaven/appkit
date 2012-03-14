@@ -1,5 +1,10 @@
 package org.appkit.widget.util;
 
+import org.appkit.util.SmartExecutor;
+import org.appkit.util.Throttle;
+import org.appkit.util.prefs.PrefStore;
+import org.appkit.widget.util.TableScrollDetector.ScrollListener;
+
 import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.ControlListener;
 import org.eclipse.swt.graphics.Rectangle;
@@ -7,11 +12,6 @@ import org.eclipse.swt.widgets.Table;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import org.appkit.util.SmartExecutor;
-import org.appkit.util.Throttle;
-import org.appkit.util.prefs.PrefStore;
-import org.appkit.widget.util.TableScrollDetector.ScrollListener;
 
 /**
  * various utility-functions for working with {@link Table}s

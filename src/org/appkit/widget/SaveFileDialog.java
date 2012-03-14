@@ -2,11 +2,11 @@ package org.appkit.widget;
 
 import java.io.File;
 
+import org.appkit.registry.Texts;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Shell;
-
-import org.appkit.registry.Texts;
 
 /**
  * A FileDialog that asks for overwrite-confirmation if a file already exists.

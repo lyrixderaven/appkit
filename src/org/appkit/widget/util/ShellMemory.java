@@ -7,6 +7,12 @@ import com.google.common.collect.Lists;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import org.appkit.util.LoggingRunnable;
+import org.appkit.util.SWTSyncedRunnable;
+import org.appkit.util.SmartExecutor;
+import org.appkit.util.Throttle;
+import org.appkit.util.prefs.PrefStore;
+
 import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.ControlListener;
 import org.eclipse.swt.graphics.Point;
@@ -15,12 +21,6 @@ import org.eclipse.swt.widgets.Shell;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import org.appkit.util.LoggingRunnable;
-import org.appkit.util.SWTSyncedRunnable;
-import org.appkit.util.SmartExecutor;
-import org.appkit.util.Throttle;
-import org.appkit.util.prefs.PrefStore;
 
 public final class ShellMemory {
 

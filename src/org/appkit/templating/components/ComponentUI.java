@@ -1,10 +1,10 @@
 package org.appkit.templating.components;
 
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
-
 import org.appkit.application.EventContext;
 import org.appkit.templating.Options;
+
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 
 public interface ComponentUI {
 

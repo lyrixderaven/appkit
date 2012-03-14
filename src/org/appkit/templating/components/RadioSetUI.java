@@ -6,6 +6,10 @@ import com.google.common.collect.Maps;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.appkit.application.EventContext;
+import org.appkit.registry.Texts.CustomI18N;
+import org.appkit.templating.Options;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -16,10 +20,6 @@ import org.eclipse.swt.widgets.Control;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import org.appkit.application.EventContext;
-import org.appkit.registry.Texts.CustomI18N;
-import org.appkit.templating.Options;
 
 /** for creating a component that uses multiple {@link Button}s to form a radio-set */
 public class RadioSetUI implements ComponentUI, CustomI18N {

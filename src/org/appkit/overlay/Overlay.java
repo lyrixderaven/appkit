@@ -9,6 +9,12 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
 
+import org.appkit.util.SWTSyncedTickReceiver;
+import org.appkit.util.SmartExecutor;
+import org.appkit.util.Ticker;
+import org.appkit.util.Ticker.TickReceiver;
+import org.appkit.widget.util.SWTUtils;
+
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.graphics.Image;
@@ -20,12 +26,6 @@ import org.eclipse.swt.widgets.Display;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import org.appkit.util.SWTSyncedTickReceiver;
-import org.appkit.util.SmartExecutor;
-import org.appkit.util.Ticker;
-import org.appkit.util.Ticker.TickReceiver;
-import org.appkit.widget.util.SWTUtils;
 
 /**
  * An overlay that can be displayed on top of an existing {@link Composite}.

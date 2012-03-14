@@ -1,12 +1,12 @@
 package org.appkit.templating.components;
 
+import org.appkit.application.EventContext;
+import org.appkit.templating.Options;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
-
-import org.appkit.application.EventContext;
-import org.appkit.templating.Options;
 
 /** no-op component for use as a spacer in GridLayouts*/
 public class SpacerUI implements ComponentUI {

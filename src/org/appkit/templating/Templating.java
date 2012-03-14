@@ -19,9 +19,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.appkit.templating.components.ButtonUI;
 import org.appkit.templating.components.ComponentGridUI;
 import org.appkit.templating.components.ComponentUI;
@@ -34,6 +31,9 @@ import org.appkit.templating.components.TableUI;
 import org.appkit.templating.components.TextUI;
 import org.appkit.util.ParamSupplier;
 import org.appkit.util.ResourceStringSupplier;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import sun.reflect.generics.reflectiveObjects.ParameterizedTypeImpl;
 

@@ -1,12 +1,12 @@
 package org.appkit.widget.util;
 
-import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.widgets.Shell;
-
 import org.appkit.util.SmartExecutor;
 import org.appkit.util.Throttle;
 import org.appkit.util.prefs.PrefStore;
+
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.widgets.Shell;
 
 /**
  * various utility-functions for working with {@link Shell}s

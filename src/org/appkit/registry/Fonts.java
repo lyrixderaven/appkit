@@ -9,6 +9,8 @@ import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multiset;
 
+import com.sun.jna.Platform;
+
 import java.util.Map;
 
 import org.eclipse.swt.SWT;
@@ -33,14 +35,12 @@ import org.slf4j.LoggerFactory;
  */
 public final class Fonts {
 
-	//~ Enumerations ---------------------------------------------------------------------------------------------------
-
-	public enum Style {NORMAL, BOLD, HUGEBOLD;
-	}
-
 	//~ Static fields/initializers -------------------------------------------------------------------------------------
 
-	private static final Logger L = LoggerFactory.getLogger(Fonts.class);
+	private static final Logger L	    = LoggerFactory.getLogger(Fonts.class);
+	public static final Style BOLD	    = new Bold();
+	public static final Style HUGEBOLD  = new HugeBold();
+	public static final Style MONOSPACE = new Monospace();
 
 	/* default font options */
 	private static final String defaultFontName;
@@ -83,22 +83,14 @@ public final class Fonts {
 		}
 
 		/* load / create font */
-		String name = defaultFontName;
-		int height  = defaultFontHeight;
+		String name = fontStyle.getName(defaultFontName);
+		int height  = fontStyle.getHeight(defaultFontHeight);
 		int style   = defaultFontStyle;
-
-		switch (fontStyle) {
-			case HUGEBOLD:
-				style = SWT.BOLD;
-				height = height + 4;
-				break;
-			case BOLD:
-				style = SWT.BOLD;
-				break;
-			case NORMAL:
-				break;
-			default:
-				throw new IllegalStateException("unknown font-style " + fontStyle);
+		if (fontStyle.bold()) {
+			style = style | SWT.BOLD;
+		}
+		if (fontStyle.italic()) {
+			style = style | SWT.ITALIC;
 		}
 
 		L.debug("setting font {} on {}", Joiner.on("-").join(name, height, fontStyle), control);
@@ -152,12 +144,94 @@ public final class Fonts {
 		}
 	}
 
+	//~ Inner Interfaces -----------------------------------------------------------------------------------------------
+
+	public interface Style {
+		int getHeight(final int defaultHeight);
+
+		String getName(final String defaultName);
+
+		boolean bold();
+
+		boolean italic();
+	}
+
 	//~ Inner Classes --------------------------------------------------------------------------------------------------
 
 	private static final class FontDisposeListener implements DisposeListener {
 		@Override
 		public void widgetDisposed(final DisposeEvent event) {
 			putBack((Control) event.widget);
+		}
+	}
+
+	public static class Bold implements Style {
+		@Override
+		public int getHeight(final int defaultHeight) {
+			return defaultHeight;
+		}
+
+		@Override
+		public String getName(final String defaultName) {
+			return defaultName;
+		}
+
+		@Override
+		public boolean bold() {
+			return true;
+		}
+
+		@Override
+		public boolean italic() {
+			return false;
+		}
+	}
+
+	public static class HugeBold implements Style {
+		@Override
+		public int getHeight(final int defaultHeight) {
+			return defaultHeight + 4;
+		}
+
+		@Override
+		public String getName(final String defaultName) {
+			return defaultName;
+		}
+
+		@Override
+		public boolean bold() {
+			return true;
+		}
+
+		@Override
+		public boolean italic() {
+			return false;
+		}
+	}
+
+	public static class Monospace implements Style {
+		@Override
+		public int getHeight(final int defaultHeight) {
+			return defaultHeight;
+		}
+
+		@Override
+		public String getName(final String defaultName) {
+			if (Platform.isWindows()) {
+				return "Lucida Console";
+			} else {
+				return defaultName;
+			}
+		}
+
+		@Override
+		public boolean bold() {
+			return false;
+		}
+
+		@Override
+		public boolean italic() {
+			return false;
 		}
 	}
 }

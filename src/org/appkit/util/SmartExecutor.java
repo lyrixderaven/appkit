@@ -42,11 +42,11 @@ public final class SmartExecutor implements Executor {
 
 	private SmartExecutor(final ExecutorService executorService) {
 		if (executorService != null) {
-			this.executorService     = null;
-			this.executorCreatedInternally = false;
+			this.executorService			   = null;
+			this.executorCreatedInternally     = false;
 		} else {
-			this.executorService     = Executors.newCachedThreadPool();
-			this.executorCreatedInternally = true;
+			this.executorService			   = Executors.newCachedThreadPool();
+			this.executorCreatedInternally     = true;
 		}
 		this.executorService.execute(new Scheduler());
 	}

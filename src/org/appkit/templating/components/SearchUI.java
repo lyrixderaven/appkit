@@ -2,6 +2,13 @@ package org.appkit.templating.components;
 
 import java.util.Locale;
 
+import org.appkit.application.EventContext;
+import org.appkit.registry.Texts;
+import org.appkit.templating.Component;
+import org.appkit.templating.Options;
+import org.appkit.templating.Templating;
+import org.appkit.templating.components.ComponentUI;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -12,13 +19,6 @@ import org.eclipse.swt.widgets.Text;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import org.appkit.application.EventContext;
-import org.appkit.registry.Texts;
-import org.appkit.templating.Component;
-import org.appkit.templating.Options;
-import org.appkit.templating.Templating;
-import org.appkit.templating.components.ComponentUI;
 
 /** for creating a component that aims to be a search-field */
 public final class SearchUI implements ComponentUI {

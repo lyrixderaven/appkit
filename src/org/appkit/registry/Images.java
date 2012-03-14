@@ -14,6 +14,9 @@ import java.io.InputStream;
 
 import java.util.Map;
 
+import org.appkit.util.ParamSupplier;
+import org.appkit.util.ResourceStreamSupplier;
+
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.graphics.Image;
@@ -25,9 +28,6 @@ import org.eclipse.swt.widgets.Shell;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import org.appkit.util.ParamSupplier;
-import org.appkit.util.ResourceStreamSupplier;
 
 /** <b>SWT Image cache/registry</b>
  * <br />

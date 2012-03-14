@@ -1,15 +1,15 @@
 package org.appkit.widget.util;
 
+import org.appkit.util.SmartExecutor;
+import org.appkit.util.Throttle;
+import org.appkit.util.prefs.PrefStore;
+
 import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.ControlListener;
 import org.eclipse.swt.widgets.Tree;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import org.appkit.util.SmartExecutor;
-import org.appkit.util.Throttle;
-import org.appkit.util.prefs.PrefStore;
 
 /**
  * various utility-functions for working with {@link Tree}s
