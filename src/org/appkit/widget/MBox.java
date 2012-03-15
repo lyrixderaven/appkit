@@ -1,10 +1,6 @@
 package org.appkit.widget;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
-
 import java.util.Arrays;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -21,8 +17,11 @@ import org.eclipse.swt.widgets.Text;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableList;
+
 /**
- * A more sophisticated MessageBox.
+ * A more sophisticated MessageBox. Returns -1 if just disposed without clicking any button.
  */
 public final class MBox {
 
@@ -46,15 +45,14 @@ public final class MBox {
 
 	public MBox(final Shell parentShell, final Type type, final String title, final String message, final int def,
 				final String... optionArray) {
-		this.options										 = ImmutableList.copyOf(Arrays.asList(optionArray));
-		this.answer											 = def;
 
+		this.options = ImmutableList.copyOf(Arrays.asList(optionArray));
+		
+		/* The default answer is not the same as the answer returned when the MSGBox is just disposed*/
+		this.answer = -1;
+		
 		Preconditions.checkArgument(this.options.size() > 0, "empy options");
-		Preconditions.checkArgument(
-			(def >= 0) && (def < this.options.size()),
-			"%s options but default %s specified",
-			this.options.size(),
-			def);
+		Preconditions.checkArgument(def >= 0 && def < this.options.size(), "%s options but default %s specified", this.options.size(), def);
 
 		this.shell = new Shell(parentShell, SWT.APPLICATION_MODAL | SWT.DIALOG_TRIM | SWT.SHEET);
 		this.shell.setLayout(new GridLayout(2, false));
@@ -67,7 +65,7 @@ public final class MBox {
 		gl.marginWidth	    = 10;
 		compIcon.setLayout(gl);
 
-		Label label     = new Label(compIcon, SWT.NONE);
+		Label label = new Label(compIcon, SWT.NONE);
 
 		int systemImage;
 		switch (type) {
@@ -83,8 +81,8 @@ public final class MBox {
 			default:
 				systemImage = SWT.ICON_INFORMATION;
 		}
-
-		Image image     = this.shell.getDisplay().getSystemImage(systemImage);
+		Image image =
+			this.shell.getDisplay().getSystemImage(systemImage);
 		label.setImage(image);
 
 		this.shell.setText(title);
@@ -113,8 +111,8 @@ public final class MBox {
 			spacer.setLayoutData(new GridData(SWT.FILL, SWT.NONE, true, false));
 		}
 
-		int i		  = 0;
-		Button btn    = null;
+		int i	   = 0;
+		Button btn = null;
 		Button defBtn = null;
 		for (final String option : options) {
 			btn = new Button(compButtons, SWT.PUSH);
@@ -122,7 +120,7 @@ public final class MBox {
 			btn.setLayoutData(new GridData(SWT.NONE, SWT.NONE, false, false));
 			btn.addSelectionListener(new BClicked(i));
 
-			if (i == answer) {
+			if (i == def) {
 				defBtn = btn;
 			}
 
@@ -171,7 +169,9 @@ public final class MBox {
 	}
 
 	public String openReturningString() {
-		return this.options.get(this.openReturningInt());
+		/* If no answer was given, return "?" as a String representation of -1 */
+		int answer = this.openReturningInt();
+		return answer == -1 ? "?" : this.options.get(answer);
 	}
 
 	//~ Inner Classes --------------------------------------------------------------------------------------------------
