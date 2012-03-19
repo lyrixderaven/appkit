@@ -16,7 +16,15 @@ public final class SWTUtils {
 		if (SWT.getPlatform().equalsIgnoreCase("win32") || SWT.getPlatform().equalsIgnoreCase("win64")) {
 			return true;
 		}
-		
+
+		return false;
+	}
+
+	public static boolean isMac() {
+		if (SWT.getPlatform().equalsIgnoreCase("cocoa") || SWT.getPlatform().equalsIgnoreCase("carbon")) {
+			return true;
+		}
+
 		return false;
 	}
 

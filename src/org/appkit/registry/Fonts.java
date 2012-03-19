@@ -218,6 +218,8 @@ public final class Fonts {
 		public String getName(final String defaultName) {
 			if (SWTUtils.isWindows()) {
 				return "Lucida Console";
+			} else if (SWTUtils.isMac()) {
+				return "Monaco";
 			} else {
 				return defaultName;
 			}
